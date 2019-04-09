@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+ext {
+    android_sourceSet = true
+    pom_name = "uniflow-androidx"
+    pom_description = "UniFlow a Kotlin unidrectional data flow framework for AndroidX"
+}
+
+android {
+    compileSdkVersion android_target_version
+    buildToolsVersion android_build_tools_version
+
+    defaultConfig {
+        minSdkVersion android_min_version
+//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+    api project(":uniflow-core")
+
+    implementation "androidx.appcompat:appcompat:$androidx_lib_version"
+    implementation("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {
+        exclude group: "core-runtime"
+    }
+    // Architecture ViewModel
+    implementation("androidx.lifecycle:lifecycle-extensions:$androidx_arch_version") {
+        exclude module: "lifecycle-livedata"
+        exclude module: "lifecycle-service"
+        exclude module: "lifecycle-process"
+        exclude module: "runtime"
+        exclude group: "androidx.legacy"
+    }
+}
+
+apply from: '../gradle/publish-android.gradle'

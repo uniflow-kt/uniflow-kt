@@ -1,0 +1,11 @@
+apply plugin: 'kotlin'
+
+archivesBaseName = 'uniflow-core'
+description = 'UniFlow a Kotlin unidrectional data flow framework'
+
+dependencies {
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+}
+
+apply from: '../gradle/publish.gradle'
