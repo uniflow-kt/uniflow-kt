@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 
 ext {
     android_sourceSet = true
-    pom_name = "uniflow-android"
-    pom_description = "UniFlow a Kotlin unidrectional data flow framework for Android"
+    pom_name = "uniflow-android-test"
+    pom_description = "UniFlow a Kotlin unidrectional data flow framework for testing Android"
 }
 
 android {
@@ -18,9 +18,8 @@ android {
 }
 
 dependencies {
-    api project(":uniflow-core")
-
-    testImplementation "io.mockk:mockk:$mockk_version"
+    api project(":uniflow-android")
+    implementation "io.mockk:mockk:$mockk_version"
 
     implementation "com.android.support:appcompat-v7:$support_lib_version"
     implementation("android.arch.lifecycle:common:$android_arch_version")

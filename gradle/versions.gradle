@@ -12,6 +12,9 @@ ext {
     // Bintray
     bintray_version = "1.8.4"
 
+    // Mockk
+    mockk_version = "1.9"
+
     asciidoctor_version = "1.5.3"
     asciidoctor_pdf_version = "1.5.0-alpha.15"
 

@@ -12,21 +12,21 @@ artifacts {
     archives sourcesJar, dokkaJar
 }
 
-//if (hasProperty('bintray_user') && hasProperty('bintray_apikey')) {
-//    bintray {
-//        user = bintray_user
-//        key = bintray_apikey
-//
-//        configurations = ['archives']
-//
-//        publish = true
-//        override = true
-//        pkg {
-//            repo = 'koin'
-//            name = archivesBaseName
-//            userOrg = 'ekito'
-//            licenses = ['Apache-2.0']
-//            vcsUrl = 'https://github.com/Ekito/koin.git'
-//        }
-//    }
-//}
+if (hasProperty('bintray_user') && hasProperty('bintray_apikey')) {
+    bintray {
+        user = bintray_user
+        key = bintray_apikey
+
+        configurations = ['archives']
+
+        publish = true
+        override = true
+        pkg {
+            repo = 'uniflow'
+            name = archivesBaseName
+            userOrg = 'uniflow'
+            licenses = ['Apache-2.0']
+            vcsUrl = 'https://github.com/arnaudgiuliani/uniflow.git'
+        }
+    }
+}

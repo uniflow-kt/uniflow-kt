@@ -20,13 +20,12 @@ buildscript {
 }
 
 allprojects {
-
     repositories {
         google()
         jcenter()
     }
 
-    group = 'io.arnaudgiuliani'
+    group = 'io.uniflow'
     version = "$dataflow_version"
 
     // Dokka
