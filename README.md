@@ -1,9 +1,9 @@
 
-# UniFlow - A Simple Kotlin Unidirectional Data Flow framework for Android, using Kotlin coroutines
+# UniFlow - A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
 
 ## Current Version
 
-Current version is `0.1.0`
+Uniflow current version is `0.1.0`
 
 ## Setup
 
@@ -14,27 +14,59 @@ Choose one of the following dependency:
 implementation 'io.uniflow:uniflow-android:$version'
 testImplementation 'io.uniflow:uniflow-android-test:$version'
 
-// or
 // AndroidX
 implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-## What is a Unidirectional Data Flow?
+## What is UniFlow?
 
-Redux, MVI
+A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
 
-## Declare your Data Flow
 
-### States
+```kotlin
+data class WeatherState(val weather : Weather) : UIState()
 
-### Events
+class WeatherViewModelFlow : DataFlow() {
 
-### ViewModel
+    init {
+        // init state as Loading
+        setState { UIState.Loading }
+    }
 
-## Generic States & Events
+    fun getMyWeather(val day : String) = setState {
+        // Background call
+        val weather = getWeatherForDay(day).await()
+        // return state to UI
+        WeatherState(weather)
+    }
 
-## Observe your Data Flow 
+    // Unhandled errors here
+    override fun onError(error: Throwable) = setState { UIState.Failed(error = error) }
+}
+```
 
-## Test your Data Flow
+```kotlin
+
+class WeatherActivity : AppCompatActivity {
+
+    // created WeatherViewModelFlow ViewModel instance here
+    val myWeatherFlow : WeatherViewModelFlow ...
+
+     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Observe incoming states flow
+        observeStates(myWeatherFlow) { state ->
+            when (state) {
+                is UIState.Failed -> showError(state.error)
+                is UIState.Failed -> showError(state.error)
+                is DetailState -> showDetail(state)
+            }
+        }
+        myWeatherFlow.getMyWeather("monday")
+    }
+}
+
+```
 
