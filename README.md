@@ -29,7 +29,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Setup UniFlow
+        // Setup loggers & Coroutine dispatchers for UniFlow
         setupUniFlow()
     }
 }
