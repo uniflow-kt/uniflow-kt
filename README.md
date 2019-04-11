@@ -59,9 +59,9 @@ class WeatherActivity : AppCompatActivity {
         // Observe incoming states flow
         observeStates(myWeatherFlow) { state ->
             when (state) {
+                is UIState.Loading -> showLoading()
+                is WeatherState -> showWeather(state)
                 is UIState.Failed -> showError(state.error)
-                is UIState.Failed -> showError(state.error)
-                is DetailState -> showDetail(state)
             }
         }
         myWeatherFlow.getMyWeather("monday")
