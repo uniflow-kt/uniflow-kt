@@ -23,6 +23,19 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
 
+```kotlin
+class MainApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Setup UniFlow
+        setupUniFlow()
+    }
+}
+```
+
+Describe your data flow states & ViewModel:
 
 ```kotlin
 data class WeatherState(val weather : Weather) : UIState()
@@ -46,8 +59,9 @@ class WeatherViewModelFlow : DataFlow() {
 }
 ```
 
-```kotlin
+Just observe your state flow from your Activity or Fragment:
 
+```kotlin
 class WeatherActivity : AppCompatActivity {
 
     // created WeatherViewModelFlow ViewModel instance here
