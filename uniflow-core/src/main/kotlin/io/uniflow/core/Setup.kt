@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.android
+package io.uniflow.core
 
-import io.uniflow.android.logger.AndroidMessageLogger
 import io.uniflow.core.dispatcher.ApplicationDispatcherConfiguration
 import io.uniflow.core.dispatcher.DataFlowDispatchers
 import io.uniflow.core.dispatcher.DispatcherConfiguration
 import io.uniflow.core.logger.EventLogger
 import io.uniflow.core.logger.MessageLogger
+import io.uniflow.core.logger.SimpleMessageLogger
 
 /**
  * Setup UniFlow
  *
  * @author Arnaud Giuliani
  */
-fun setupUniFlow(logger: MessageLogger = AndroidMessageLogger(), dispatcherConfiguration: DispatcherConfiguration = ApplicationDispatcherConfiguration()) {
+fun setupUniFlow(logger: MessageLogger = SimpleMessageLogger(), dispatcherConfiguration: DispatcherConfiguration = ApplicationDispatcherConfiguration()) {
     EventLogger.loggers += logger
     DataFlowDispatchers.dispatcherConfig = dispatcherConfiguration
 }

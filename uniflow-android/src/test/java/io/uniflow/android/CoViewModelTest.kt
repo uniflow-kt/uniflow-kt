@@ -6,7 +6,7 @@
 //import com.myweatherapp.unit.MockedData
 //import io.mockk.coEvery
 //import io.mockk.mockk
-//import io.uniflow.android.setupUniFlow
+//import io.uniflow.core.setupUniFlow
 //import io.uniflow.core.dispatcher.TestDispatcherConfiguration
 //import io.uniflow.core.logger.SimpleMessageLogger
 //import kotlinx.coroutines.runBlocking
