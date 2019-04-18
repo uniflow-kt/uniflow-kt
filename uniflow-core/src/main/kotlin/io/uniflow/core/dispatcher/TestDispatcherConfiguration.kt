@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
  * @author Arnaud Giuliani
  */
 class TestDispatcherConfiguration : DispatcherConfiguration {
-    override fun ui(): CoroutineDispatcher = Dispatchers.Unconfined
+    override fun main(): CoroutineDispatcher = Dispatchers.Unconfined
     override fun io(): CoroutineDispatcher = Dispatchers.Unconfined
-    override fun compuation(): CoroutineDispatcher = Dispatchers.Unconfined
+    override fun default(): CoroutineDispatcher = Dispatchers.Unconfined
 }

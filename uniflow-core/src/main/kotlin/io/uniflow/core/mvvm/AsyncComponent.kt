@@ -32,7 +32,7 @@ import kotlin.coroutines.CoroutineContext
 class AsyncComponent : CoroutineScope {
 
     val parentJob = Job()
-    override val coroutineContext: CoroutineContext = parentJob + dispatcherConfig.ui()
+    override val coroutineContext: CoroutineContext = parentJob + dispatcherConfig.main()
 
     fun launch(context: CoroutineContext = coroutineContext, function: suspend CoroutineScope.() -> Unit, errorHandling: ErrorFunction? = null): Job? {
         return launch(context = context) {

@@ -24,7 +24,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  * @author Arnaud Giuliani
  */
 interface DispatcherConfiguration {
-    fun compuation(): CoroutineDispatcher
+    fun default(): CoroutineDispatcher
     fun io(): CoroutineDispatcher
-    fun ui(): CoroutineDispatcher
+    fun main(): CoroutineDispatcher
 }

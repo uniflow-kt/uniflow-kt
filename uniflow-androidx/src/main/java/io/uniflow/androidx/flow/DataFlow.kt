@@ -45,7 +45,7 @@ open class DataFlow : AsyncViewModel() {
         get() = _events
 
     suspend fun sendEvent(event: UIEvent): UIState? {
-        withContext(dispatcherConfig.ui()) {
+        withContext(dispatcherConfig.main()) {
             EventLogger.log("UI Event - $event")
             _events.value = Event(event)
         }
@@ -55,7 +55,7 @@ open class DataFlow : AsyncViewModel() {
     fun getCurrentState(): UIState? = _states.value
 
     suspend fun applyState(state: UIState) {
-        withContext(dispatcherConfig.ui()) {
+        withContext(dispatcherConfig.main()) {
             EventLogger.log("UI State - $state")
             _states.value = state
         }

@@ -2,7 +2,7 @@
 //
 //import com.myweatherapp.domain.model.weather.DailyForecastId
 //import com.myweatherapp.domain.usecase.weather.GetWeatherDetail
-//import com.myweatherapp.ui.view.detail.mapToDetailState
+//import com.myweatherapp.main.view.detail.mapToDetailState
 //import com.myweatherapp.unit.MockedData
 //import io.mockk.coEvery
 //import io.mockk.mockk

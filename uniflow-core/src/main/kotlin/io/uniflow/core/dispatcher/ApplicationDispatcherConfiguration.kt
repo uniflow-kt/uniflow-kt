@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
  * @author Arnaud Giuliani
  */
 class ApplicationDispatcherConfiguration : DispatcherConfiguration {
-    override fun ui(): CoroutineDispatcher = Dispatchers.Main
+    override fun main(): CoroutineDispatcher = Dispatchers.Main
+    override fun default(): CoroutineDispatcher = Dispatchers.Default
     override fun io(): CoroutineDispatcher = Dispatchers.IO
-    override fun compuation(): CoroutineDispatcher = Dispatchers.Default
 }

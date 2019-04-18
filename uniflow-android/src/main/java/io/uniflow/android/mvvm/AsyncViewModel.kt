@@ -22,6 +22,8 @@ import io.uniflow.core.mvvm.AsyncComponent
 import io.uniflow.core.mvvm.ErrorFunction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
+
 /**
  * Spcialized ViewModel for coroutines primitive delegates to AsyncComponent
  *
@@ -44,12 +46,22 @@ abstract class AsyncViewModel : ViewModel() {
     /**
      * Run coroutine in IO context
      */
-    internal fun launchAsync(block: suspend CoroutineScope.() -> Unit, errorHandling: ErrorFunction): Job? = coroutineContext.launch(coroutineContext.parentJob + dispatcherConfig.io(), function = block, errorHandling = errorHandling)
+    internal fun launchAsync(block: suspend CoroutineScope.() -> Unit, errorHandling: ErrorFunction): Job? = coroutineContext.launch(coroutineContext.parentJob + dispatcherConfig.default(), function = block, errorHandling = errorHandling)
 
     /**
      * Run coroutine in IO context
      */
-    internal fun launchAsync(block: suspend CoroutineScope.() -> Unit): Job? = coroutineContext.launch(coroutineContext.parentJob + dispatcherConfig.io(), function = block, errorHandling = ::onError)
+    internal fun launchAsync(block: suspend CoroutineScope.() -> Unit): Job? = coroutineContext.launch(coroutineContext.parentJob + dispatcherConfig.default(), function = block, errorHandling = ::onError)
+
+
+    suspend fun onIO(block: suspend CoroutineScope.() -> Unit) =
+            withContext(coroutineContext.parentJob + dispatcherConfig.io(), block)
+
+    suspend fun onUI(block: suspend CoroutineScope.() -> Unit) =
+            withContext(coroutineContext.parentJob + dispatcherConfig.main(), block)
+
+    suspend fun onBackground(block: suspend CoroutineScope.() -> Unit) =
+            withContext(coroutineContext.parentJob + dispatcherConfig.default(), block)
 
     open fun onError(error: Throwable) {
         EventLogger.log("Error from $this - $error")
