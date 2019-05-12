@@ -1,0 +1,71 @@
+/*
+ * Copyright 2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed launchOn an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.uniflow.android.flow
+
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.Event
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.logger.EventLogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlin.coroutines.CoroutineContext
+
+/**
+ * AndroidDataFlow
+ * Unidirectional dataflow with states & events
+ *
+ * @author Arnaud Giuliani
+ */
+abstract class AndroidDataFlow : ViewModel(), DataFlow {
+
+    private val viewModelJob = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
+
+    private val _states = MutableLiveData<UIState>()
+    val states: LiveData<UIState>
+        get() = _states
+
+    private val _events = MutableLiveData<Event<UIEvent>>()
+    val events: LiveData<Event<UIEvent>>
+        get() = _events
+
+    override suspend fun sendEvent(event: UIEvent): UIState? {
+        onMain {
+            EventLogger.log("UI Event - $event")
+            _events.value = Event(event)
+        }
+        return null
+    }
+
+    override suspend fun applyState(state: UIState) {
+        onMain {
+            EventLogger.log("UI State - $state")
+            _states.value = state
+        }
+    }
+
+    override fun getCurrentState(): UIState? = _states.value
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
+}

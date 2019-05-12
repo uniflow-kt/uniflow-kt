@@ -8,7 +8,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed launchOn an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -21,15 +21,15 @@ import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 
 /**
- * DataFlow Observers for states & events
+ * AndroidDataFlow Observers for states & events
  *
  * @author Arnaud Giuliani
  */
 
-fun LifecycleOwner.observeStates(vm: DataFlow, handleStates: (UIState) -> Unit) {
+fun LifecycleOwner.observeStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     vm.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
 }
 
-fun LifecycleOwner.observeEvents(vm: DataFlow, handleEvents: (UIEvent?) -> Unit) {
+fun LifecycleOwner.observeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
     vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.get()) } })
 }

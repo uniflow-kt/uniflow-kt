@@ -18,8 +18,8 @@ package io.uniflow.androidx.mvvm
 import androidx.lifecycle.ViewModel
 import io.uniflow.core.dispatcher.DataFlowDispatchers.dispatcherConfig
 import io.uniflow.core.logger.EventLogger
-import io.uniflow.core.mvvm.AsyncComponent
-import io.uniflow.core.mvvm.ErrorFunction
+import io.uniflow.core.coroutine.AsyncComponent
+import io.uniflow.core.coroutine.ErrorFunction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext

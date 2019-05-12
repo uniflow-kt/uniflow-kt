@@ -23,7 +23,7 @@ import io.uniflow.core.flow.Event
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.EventLogger
-import io.uniflow.core.mvvm.ErrorFunction
+import io.uniflow.core.coroutine.ErrorFunction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 
