@@ -35,9 +35,7 @@ interface DataFlow : CoroutineScope {
     /**
      * Make an Action to update the current state
      *
-     * @param executionContext - coroutine execution context
      * @param updateFunction - function to produce a new state, from the current state
-     * @return Action
      */
     fun <U : UIState> setState(updateFunction: ActionFunction<U>, errorFunction: ErrorFunction) {
         executeAction(Action(updateFunction, errorFunction))
@@ -51,9 +49,7 @@ interface DataFlow : CoroutineScope {
      * Make an Action that can update or not the current state
      * More for side effects
      *
-     * @param executionContext - coroutine execution context
      * @param actionFunction - function run against the current state
-     * @return Action
      */
     fun withState(actionFunction: ActionFunction<Any?>, errorFunction: ErrorFunction) {
         executeAction(Action(actionFunction, errorFunction))

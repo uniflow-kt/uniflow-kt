@@ -70,6 +70,22 @@ class TodoListTest {
     }
 
     @Test
+    fun `filter dones`() {
+        dataFlow.getAll()
+        dataFlow.add("first")
+        dataFlow.add("second")
+        dataFlow.done("first")
+        dataFlow.filterDones()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+        assertEquals(TodoListState(listOf(Todo("first"), Todo("second"))), dataFlow.states[3])
+        assertEquals(TodoListState(listOf(Todo("second"), Todo("first", true))), dataFlow.states[4])
+        assertEquals(TodoListState(listOf(Todo("first", true))), dataFlow.states[5])
+    }
+
+    @Test
     fun `done - fail`() {
         dataFlow.getAll()
         dataFlow.done("first")
@@ -122,6 +138,20 @@ class TodoListTest {
 
         assertTrue(dataFlow.states[3] is UIState.Failed)
         assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `child action error`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.asyncChildError()
+        delay(300)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertTrue(dataFlow.states[2] is UIState.Failed)
+
+        assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)
     }
 
