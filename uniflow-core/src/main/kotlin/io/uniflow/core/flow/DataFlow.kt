@@ -39,24 +39,28 @@ interface DataFlow : CoroutineScope {
      * @param updateFunction - function to produce a new state, from the current state
      * @return Action
      */
-    fun <U : UIState> setState(updateFunction: ActionFunction<U>): Action<U> {
-        val action = Action(updateFunction)
-        executeAction(action)
-        return action
+    fun <U : UIState> setState(updateFunction: ActionFunction<U>, errorFunction: ErrorFunction) {
+        executeAction(Action(updateFunction, errorFunction))
+    }
+
+    fun <U : UIState> setState(updateFunction: ActionFunction<U>) {
+        executeAction(Action(updateFunction))
     }
 
     /**
-     * Make an Action that can update (or not) the current state
+     * Make an Action that can update or not the current state
      * More for side effects
      *
      * @param executionContext - coroutine execution context
      * @param actionFunction - function run against the current state
      * @return Action
      */
-    fun withState(actionFunction: ActionFunction<UIState?>): Action<UIState?> {
-        val action = Action<UIState?>(actionFunction)
-        executeAction(action)
-        return action
+    fun withState(actionFunction: ActionFunction<Any?>, errorFunction: ErrorFunction) {
+        executeAction(Action(actionFunction, errorFunction))
+    }
+
+    fun withState(actionFunction: ActionFunction<Any?>) {
+        executeAction(Action(actionFunction))
     }
 
     /**
@@ -72,7 +76,7 @@ interface DataFlow : CoroutineScope {
      * Execute the withState & catch any error
      * @param action
      */
-    fun <T> executeAction(action: Action<T>) = launch(action.executionContext) {
+    fun <T> executeAction(action: Action<T>) = launch(UniFlowDispatcher.dispatcher.default()) {
         try {
             val result = action.actionFunction.invoke(this, getCurrentState())
             if (result is UIState) {

@@ -63,20 +63,19 @@ class MyTodoListFlow(private val repository: MyTodoRepository) : StackDataFlow()
         async {
             delay(1000)
             repository.add("LongTodo")
-            repository.getAllTodo()
-        }.await().mapToTodoListState()
+        }.await()
     }
 
-    fun longWait() = setState {
+    fun longWait() = withState {
         delay(1000)
         repository.add("LongTodo")
-        repository.getAllTodo().mapToTodoListState()
     }
 
-    fun makeOnError() = withState {
-        error("boom")
-    } onError { sendEvent(UIEvent.Fail("Event logError", it)) }
-
+    fun makeOnError() = withState(
+            {
+                error("boom")
+            },
+            { error -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
 
     fun makeGlobalError() = withState {

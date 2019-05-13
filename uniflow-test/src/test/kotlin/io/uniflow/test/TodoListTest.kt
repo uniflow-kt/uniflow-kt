@@ -4,6 +4,8 @@ import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.test.rule.UniFlowDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -105,6 +107,35 @@ class TodoListTest {
 
         assertTrue(dataFlow.states[3] is UIState.Failed)
         assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `child io action error`() {
+        dataFlow.getAll()
+        dataFlow.add("first")
+        dataFlow.childIOError()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+
+        assertTrue(dataFlow.states[3] is UIState.Failed)
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `cancel test`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.longWait()
+        delay(300)
+        dataFlow.cancel()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+
+        assertTrue(dataFlow.states.size == 2)
         assertTrue(dataFlow.events.size == 0)
     }
 
