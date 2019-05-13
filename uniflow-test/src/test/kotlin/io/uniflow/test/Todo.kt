@@ -12,11 +12,25 @@ class MyTodoRepository {
 
     fun getAllTodo() = allTodo.toList()
 
-    fun addTodo(title: String): Boolean {
+    fun isDone(title: String): Boolean {
+        val todo = allTodo.firstOrNull { it.title == title }
+        todo?.let {
+            val done = it.copy(done = true)
+            remove(title)
+            allTodo.add(done)
+        }
+        return todo != null
+    }
+
+    fun add(title: String): Boolean {
         val canAdd = allTodo.size < max
         if (canAdd) {
             allTodo.add(Todo(title))
         }
         return canAdd
+    }
+
+    fun remove(title: String): Boolean {
+        return allTodo.removeIf { it.title == title }
     }
 }

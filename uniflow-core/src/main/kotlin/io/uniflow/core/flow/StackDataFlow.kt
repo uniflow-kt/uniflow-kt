@@ -3,7 +3,6 @@ package io.uniflow.core.flow
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.CoroutineContext
 
 abstract class StackDataFlow : DataFlow {
@@ -11,8 +10,8 @@ abstract class StackDataFlow : DataFlow {
     private val viewModelJob = SupervisorJob()
     override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
 
-    val states = ConcurrentLinkedQueue<UIState>()
-    val events = ConcurrentLinkedQueue<UIEvent>()
+    val states = arrayListOf<UIState>()
+    val events = arrayListOf<UIEvent>()
 
     override suspend fun sendEvent(event: UIEvent): UIState? {
         onMain {

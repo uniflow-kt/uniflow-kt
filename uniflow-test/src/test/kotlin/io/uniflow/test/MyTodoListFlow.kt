@@ -25,42 +25,59 @@ class MyTodoListFlow(private val repository: MyTodoRepository) : StackDataFlow()
 
     fun add(title: String) = setState { currentState ->
         if (currentState is TodoListState) {
-            val added = repository.addTodo(title)
+            val added = repository.add(title)
             if (added) {
                 repository.getAllTodo().mapToTodoListState()
             } else {
                 sendEvent(UIEvent.Fail("Can't add '$title'"))
             }
         } else {
-            sendEvent(UIEvent.Fail("Can't add todo"))
+            sendEvent(UIEvent.Fail("Can't add todo - List not loaded"))
         }
     }
 
-    fun childAdd() = setState {
-        async {
-            delay(1000)
-            repository.addTodo("LongTodo")
-            repository.getAllTodo()
-        }.await().mapToTodoListState()
+    fun done(title: String) = setState { currentState ->
+        if (currentState is TodoListState) {
+            val done = repository.isDone(title)
+            if (done) {
+                repository.getAllTodo().mapToTodoListState()
+            } else {
+                sendEvent(UIEvent.Fail("Can't make done '$title'"))
+            }
+        } else {
+            sendEvent(UIEvent.Fail("Can't make done - List not loaded"))
+        }
     }
 
-    fun childAddError() = withState {
+    fun childIOError() = withState {
+        onIO {
+            error("Boom on IO")
+        }
+    }
+
+    fun asyncChildError() = withState {
         async {
             delay(200)
             error("child boom")
         }
         async {
             delay(1000)
-            repository.addTodo("LongTodo")
+            repository.add("LongTodo")
             repository.getAllTodo()
         }.await().mapToTodoListState()
     }
 
-    fun eventAfterError() = withState {
+    fun longWait() = setState {
+        delay(1000)
+        repository.add("LongTodo")
+        repository.getAllTodo().mapToTodoListState()
+    }
+
+    fun makeOnError() = withState {
         error("boom")
     } onError { sendEvent(UIEvent.Fail("Event logError", it)) }
 
-    fun globalErro() = withState {
+    fun makeGlobalError() = withState {
         error("global boom")
     }
 

@@ -1,27 +1,22 @@
 package io.uniflow.test.rule
 
-import kotlinx.coroutines.Dispatchers
+import io.uniflow.core.dispatcher.DefaultDispatchers
+import io.uniflow.core.dispatcher.TestDispatchers
+import io.uniflow.core.dispatcher.UniFlowDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
-import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 class UniFlowDispatcherRule : TestWatcher() {
 
-    private val singleThreadExecutor = Executors.newSingleThreadExecutor()
-
     override fun starting(description: Description?) {
         super.starting(description)
-        Dispatchers.setMain(singleThreadExecutor.asCoroutineDispatcher())
+        UniFlowDispatcher.dispatcher = TestDispatchers()
     }
 
     override fun finished(description: Description?) {
         super.finished(description)
-        singleThreadExecutor.shutdownNow()
-        Dispatchers.resetMain()
+        UniFlowDispatcher.dispatcher = DefaultDispatchers()
     }
 }

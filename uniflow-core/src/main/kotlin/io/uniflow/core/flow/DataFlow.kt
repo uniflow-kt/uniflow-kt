@@ -1,12 +1,11 @@
 package io.uniflow.core.flow
 
+import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLogger.TAG
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Unidirectional Data Flow
@@ -40,8 +39,8 @@ interface DataFlow : CoroutineScope {
      * @param updateFunction - function to produce a new state, from the current state
      * @return Action
      */
-    fun <U : UIState> setState(executionContext: CoroutineContext = Dispatchers.Default, updateFunction: ActionFunction<U>): Action<U> {
-        val action = Action(updateFunction) launchOn executionContext
+    fun <U : UIState> setState(updateFunction: ActionFunction<U>): Action<U> {
+        val action = Action(updateFunction)
         executeAction(action)
         return action
     }
@@ -54,8 +53,8 @@ interface DataFlow : CoroutineScope {
      * @param actionFunction - function run against the current state
      * @return Action
      */
-    fun withState(executionContext: CoroutineContext = Dispatchers.Default, actionFunction: ActionFunction<UIState?>): Action<UIState?> {
-        val action = Action<UIState?>(actionFunction) launchOn executionContext
+    fun withState(actionFunction: ActionFunction<UIState?>): Action<UIState?> {
+        val action = Action<UIState?>(actionFunction)
         executeAction(action)
         return action
     }
@@ -91,22 +90,24 @@ interface DataFlow : CoroutineScope {
      */
     suspend fun <T> DataFlow.handleActionError(action: Action<T>, error: Throwable) {
         onMain {
-            action.errorFunction?.let { it.invoke(this@DataFlow, error) } ?: onError(error)
+            action.errorFunction?.let {
+                it.invoke(this@DataFlow, error)
+            } ?: onError(error)
         }
     }
 
     /**
      * Switch current execution context to Main thread
      */
-    suspend fun <T> onMain(block: suspend CoroutineScope.() -> T) = withContext(Dispatchers.Main, block = block)
+    suspend fun <T> onMain(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.main(), block = block)
 
     /**
      * Switch current execution context to Default Thread
      */
-    suspend fun <T> onDefault(block: suspend CoroutineScope.() -> T) = withContext(Dispatchers.Default, block = block)
+    suspend fun <T> onDefault(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.default(), block = block)
 
     /**
      * Switch current execution context to IO Thread
      */
-    suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(Dispatchers.IO, block = block)
+    suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.io(), block = block)
 }
