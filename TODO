@@ -2,11 +2,11 @@
 
 + Rewrite API with CoroutineScope
 
-- Testability
- - TestDispatcher?
- - Simple TODO use case
- - Android/Androidx
-- Rewrite with Actor
++ Testability
+ + TestDispatcher?
+ + Simple TODO use case
+ + Android/Androidx
++ Rewrite with Actor
 
 - TestCoroutineContext?
 

@@ -64,7 +64,6 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     suspend fun onError(error: Throwable) {
-        UniFlowLogger.logError("$TAG [ERROR] on $this", error)
         throw error
     }
 
@@ -72,14 +71,16 @@ interface DataFlow : CoroutineScope {
      * Execute the withState & catch any error
      * @param action
      */
-    fun executeAction(action: Action) = launch(UniFlowDispatcher.dispatcher.default()) {
-        try {
-            val result = action.actionFunction.invoke(this, getCurrentState())
-            if (result is UIState) {
-                applyState(result)
+    fun executeAction(action: Action) {
+        launch(UniFlowDispatcher.dispatcher.default()) {
+            try {
+                val result = action.actionFunction.invoke(this, getCurrentState())
+                if (result is UIState) {
+                    applyState(result)
+                }
+            } catch (e: Throwable) {
+                handleActionError(action, e)
             }
-        } catch (e: Throwable) {
-            handleActionError(action, e)
         }
     }
 
@@ -88,12 +89,11 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    suspend fun DataFlow.handleActionError(action: Action, error: Throwable) {
-        onMain {
-            action.errorFunction?.let {
-                it.invoke(this@DataFlow, error)
-            } ?: onError(error)
-        }
+    suspend fun handleActionError(action: Action, error: Throwable) {
+        UniFlowLogger.logError("$TAG [ERROR] on $this", error)
+        action.errorFunction?.let {
+            it.invoke(this@DataFlow, error)
+        } ?: onError(error)
     }
 
     /**

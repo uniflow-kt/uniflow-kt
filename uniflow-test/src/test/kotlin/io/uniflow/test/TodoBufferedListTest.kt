@@ -12,18 +12,18 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class TodoListTest {
+class TodoBufferedListTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
     var coroutinesMainDispatcherRule = UniFlowDispatcherRule()
 
     val repository = MyTodoRepository()
-    lateinit var dataFlow: MyTodoListFlow
+    lateinit var dataFlow: MyTodoListBufferedFlow
 
     @Before
     fun before() {
-        dataFlow = MyTodoListFlow(repository)
+        dataFlow = MyTodoListBufferedFlow(repository)
     }
 
     @Test

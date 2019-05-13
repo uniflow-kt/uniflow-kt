@@ -1,12 +1,12 @@
 package io.uniflow.test
 
-import io.uniflow.core.flow.StackFlow
+import io.uniflow.core.flow.StackActorFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-class MyTodoListFlow(private val repository: MyTodoRepository) : StackFlow() {
+class MyTodoListBufferedFlow(private val repository: MyTodoRepository) : StackActorFlow() {
 
     init {
         setState { UIState.Empty }
@@ -95,10 +95,6 @@ class MyTodoListFlow(private val repository: MyTodoRepository) : StackFlow() {
         setState { UIState.Failed("Failed state", error) }
     }
 }
-
-data class TodoListState(val todos: List<Todo>) : UIState()
-
-fun List<Todo>.mapToTodoListState() = TodoListState(this)
 
 
 

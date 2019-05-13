@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
-abstract class StackDataFlow : DataFlow {
+abstract class StackFlow : DataFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
@@ -32,7 +32,7 @@ abstract class StackDataFlow : DataFlow {
         }
     }
 
-    fun cancel() {
+    open fun cancel() {
         viewModelJob.cancel()
     }
 }

@@ -3,7 +3,7 @@
 
 ## Current Version
 
-Uniflow current version is `0.1.3`
+Uniflow current version is `0.2.0`
 
 ## Setup
 
@@ -40,7 +40,7 @@ Describe your data flow states & ViewModel:
 ```kotlin
 data class WeatherState(val weather : Weather) : UIState()
 
-class WeatherViewModelFlow : DataFlow() {
+class WeatherViewModelFlow : AndroidDataFlow() {
 
     init {
         // init state as Loading
