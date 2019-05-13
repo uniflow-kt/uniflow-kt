@@ -88,11 +88,13 @@ class TodoListTest {
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
+        assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        assertTrue(dataFlow.events.size == 1)
     }
 
     @Test
-    fun `gloval action error`() {
+    fun `global action error`() {
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.makeGlobalError()
@@ -102,6 +104,7 @@ class TodoListTest {
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
         assertTrue(dataFlow.states[3] is UIState.Failed)
+        assertTrue(dataFlow.states.size == 4)
         assertTrue(dataFlow.events.size == 0)
     }
 

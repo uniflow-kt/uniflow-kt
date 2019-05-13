@@ -77,6 +77,8 @@ class MyTodoListFlow(private val repository: MyTodoRepository) : StackDataFlow()
         error("boom")
     } onError { sendEvent(UIEvent.Fail("Event logError", it)) }
 
+
+
     fun makeGlobalError() = withState {
         error("global boom")
     }
