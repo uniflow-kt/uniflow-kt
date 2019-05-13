@@ -37,11 +37,11 @@ interface DataFlow : CoroutineScope {
      *
      * @param updateFunction - function to produce a new state, from the current state
      */
-    fun <U : UIState> setState(updateFunction: ActionFunction<U>, errorFunction: ErrorFunction) {
+    fun setState(updateFunction: ActionFunction, errorFunction: ErrorFunction) {
         executeAction(Action(updateFunction, errorFunction))
     }
 
-    fun <U : UIState> setState(updateFunction: ActionFunction<U>) {
+    fun setState(updateFunction: ActionFunction) {
         executeAction(Action(updateFunction))
     }
 
@@ -51,11 +51,11 @@ interface DataFlow : CoroutineScope {
      *
      * @param actionFunction - function run against the current state
      */
-    fun withState(actionFunction: ActionFunction<Any?>, errorFunction: ErrorFunction) {
+    fun withState(actionFunction: ActionFunction, errorFunction: ErrorFunction) {
         executeAction(Action(actionFunction, errorFunction))
     }
 
-    fun withState(actionFunction: ActionFunction<Any?>) {
+    fun withState(actionFunction: ActionFunction) {
         executeAction(Action(actionFunction))
     }
 
@@ -72,7 +72,7 @@ interface DataFlow : CoroutineScope {
      * Execute the withState & catch any error
      * @param action
      */
-    fun <T> executeAction(action: Action<T>) = launch(UniFlowDispatcher.dispatcher.default()) {
+    fun executeAction(action: Action) = launch(UniFlowDispatcher.dispatcher.default()) {
         try {
             val result = action.actionFunction.invoke(this, getCurrentState())
             if (result is UIState) {
@@ -88,7 +88,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    suspend fun <T> DataFlow.handleActionError(action: Action<T>, error: Throwable) {
+    suspend fun DataFlow.handleActionError(action: Action, error: Throwable) {
         onMain {
             action.errorFunction?.let {
                 it.invoke(this@DataFlow, error)
