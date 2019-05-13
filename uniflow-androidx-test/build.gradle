@@ -19,6 +19,7 @@ android {
 
 dependencies {
     api project(":uniflow-androidx")
+    implementation project(":uniflow-test")
     implementation "io.mockk:mockk:$mockk_version"
 
     implementation "androidx.appcompat:appcompat:$androidx_lib_version"
