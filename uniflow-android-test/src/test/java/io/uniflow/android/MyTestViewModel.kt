@@ -34,7 +34,7 @@
 //        })
 //    }
 //
-//    fun error(): Job? {
+//    fun logError(): Job? {
 //        return launchOnIO({ runTask() }, { e -> uiError = e })
 //    }
 //

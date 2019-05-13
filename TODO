@@ -3,7 +3,12 @@
 + Rewrite API with CoroutineScope
 
 - Testability
+ - TestDispatcher?
  - Simple TODO use case
  - Android/Androidx
 - Rewrite with Actor
+
+- Readme Doc
+
+- Example
 

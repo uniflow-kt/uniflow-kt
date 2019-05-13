@@ -13,18 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.uniflow.core.logger
 
-package io.uniflow.core.dispatcher
-
-import kotlinx.coroutines.CoroutineDispatcher
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
 
 /**
- * Coroutine Dispatcher dispatcherConfig - to be used directly in DataFlow
+ * Event Logger
  *
  * @author Arnaud Giuliani
  */
-interface DispatcherConfiguration {
-    fun default(): CoroutineDispatcher
-    fun io(): CoroutineDispatcher
-    fun main(): CoroutineDispatcher
+object UniFlowLogger : Logger {
+
+    private var logger: Logger = SimpleMessageLogger()
+
+    fun init(logger: Logger) {
+        this.logger = logger
+    }
+
+    override fun log(message: String) = logger.log(message)
+
+    override fun logState(state: UIState) = logger.logState(state)
+
+    override fun logEvent(event: UIEvent) = logger.logEvent(event)
+
+    override fun logError(errorMessage: String, error: Throwable?) = logger.logError(errorMessage, error)
+
+    const val TAG = "[UniFlow]"
 }

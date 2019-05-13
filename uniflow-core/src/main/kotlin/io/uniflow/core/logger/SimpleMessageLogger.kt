@@ -15,17 +15,29 @@
  */
 package io.uniflow.core.logger
 
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.logger.UniFlowLogger.TAG
+
 /**
  * Simple Message Logger
  *
  * @author Arnaud Giuliani
  */
-class SimpleMessageLogger : MessageLogger {
-    override fun error(tag: String, message: String, error: Throwable?) {
-        System.err.println("$tag :: error :: $message :: $error")
+class SimpleMessageLogger : Logger {
+    override fun log(message: String) {
+        println("$TAG - $message")
     }
 
-    override fun log(tag: String, message: String) {
-        println("$tag - $message")
+    override fun logState(state: UIState) {
+        println("$TAG - [STATE] - $state")
+    }
+
+    override fun logEvent(event: UIEvent) {
+        println("$TAG - [EVENT] - $event")
+    }
+
+    override fun logError(errorMessage: String, error: Throwable?) {
+        println("$TAG - [ERROR] - $errorMessage - error:$error")
     }
 }

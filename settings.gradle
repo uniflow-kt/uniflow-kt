@@ -1,8 +1,6 @@
 // Core modules
-include 'uniflow-core'
-include 'uniflow-android'
-include 'uniflow-android-test'
-//include 'uniflow-androidx'
-//include 'uniflow-androidx-test'
+include 'uniflow-core','uniflow-test'
+include 'uniflow-android', 'uniflow-android-test'
+include 'uniflow-androidx', 'uniflow-androidx-test'
 
 // Samples

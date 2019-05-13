@@ -16,19 +16,31 @@
 package io.uniflow.androidx.logger
 
 import android.util.Log
-import io.uniflow.core.logger.MessageLogger
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.logger.Logger
+import io.uniflow.core.logger.UniFlowLogger
 
 /**
  * Android Logger
  *
  * @author Arnaud Giuliani
  */
-class AndroidMessageLogger : MessageLogger {
-    override fun error(tag: String, message: String, error: Throwable?) {
-        Log.e(tag, message, error)
+class AndroidMessageLogger : Logger {
+    override fun log(message: String) {
+        Log.i(UniFlowLogger.TAG, message)
     }
 
-    override fun log(tag: String, message: String) {
-        Log.i(tag, message)
+    override fun logState(state: UIState) {
+        Log.i(UniFlowLogger.TAG, "[STATE] - $state")
     }
+
+    override fun logEvent(event: UIEvent) {
+        Log.i(UniFlowLogger.TAG, "[EVENT] - $event")
+    }
+
+    override fun logError(errorMessage: String, error: Throwable?) {
+        Log.i(UniFlowLogger.TAG, "[ERROR] - $errorMessage :: $error")
+    }
+
 }

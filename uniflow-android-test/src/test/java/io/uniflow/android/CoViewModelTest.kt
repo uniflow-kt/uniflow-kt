@@ -58,14 +58,14 @@
 //
 //    @Test
 //    fun testLaunchIOError() = runBlocking {
-//        val error = Throwable("Boom")
+//        val logError = Throwable("Boom")
 //
 //        val vm = MyTestViewModel(id, getWeatherDetail)
 //
-//        coEvery { getWeatherDetail(id) } throws error
-//        vm.error()
+//        coEvery { getWeatherDetail(id) } throws logError
+//        vm.logError()
 //
-//        assertEquals(error, vm.uiError)
+//        assertEquals(logError, vm.uiError)
 //        assertTrue(vm.uiDetail == null)
 //
 //        vm.clear()

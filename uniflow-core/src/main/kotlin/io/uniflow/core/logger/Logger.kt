@@ -15,6 +15,9 @@
  */
 package io.uniflow.core.logger
 
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+
 /**
  * Logger
  *
@@ -22,5 +25,7 @@ package io.uniflow.core.logger
  */
 interface Logger {
     fun log(message: String)
-    fun error(message: String, error: Throwable? = null)
+    fun logState(state: UIState)
+    fun logEvent(event: UIEvent)
+    fun logError(errorMessage: String, error: Throwable? = null)
 }

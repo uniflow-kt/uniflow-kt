@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+
+archivesBaseName = 'uniflow-test'
+description = 'UniFlow a Kotlin unidrectional data flow framework'
+
+dependencies {
+    api project(":uniflow-core")
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    implementation "junit:junit:$junit_version"
+    implementation "io.mockk:mockk:$mockk_version"
+}
+
+apply from: '../gradle/publish.gradle'

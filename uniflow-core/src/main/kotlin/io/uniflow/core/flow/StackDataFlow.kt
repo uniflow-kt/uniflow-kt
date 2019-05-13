@@ -1,9 +1,6 @@
-package io.uniflow.core
+package io.uniflow.core.flow
 
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
-import io.uniflow.core.logger.EventLogger
+import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -19,7 +16,7 @@ abstract class StackDataFlow : DataFlow {
 
     override suspend fun sendEvent(event: UIEvent): UIState? {
         onMain {
-            EventLogger.log("UI Event - $event")
+            UniFlowLogger.logEvent(event)
             events.add(event)
         }
         return null
@@ -31,8 +28,12 @@ abstract class StackDataFlow : DataFlow {
 
     override suspend fun applyState(state: UIState) {
         onMain {
-            EventLogger.log("UI State - $state")
+            UniFlowLogger.logState(state)
             states.add(state)
         }
+    }
+
+    fun cancel() {
+        viewModelJob.cancel()
     }
 }

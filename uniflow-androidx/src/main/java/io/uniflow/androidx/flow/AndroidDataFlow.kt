@@ -8,16 +8,16 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed launchOn an "AS IS" BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.android.flow
+package io.uniflow.androidx.flow
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.uniflow.core.flow.DataFlow
 import io.uniflow.core.flow.Event
 import io.uniflow.core.flow.UIEvent
@@ -27,12 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
-/**
- * AndroidDataFlow
- * Unidirectional dataflow with states & events
- *
- * @author Arnaud Giuliani
- */
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     private val viewModelJob = SupervisorJob()
