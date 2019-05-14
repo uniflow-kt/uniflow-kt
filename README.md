@@ -23,18 +23,6 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
 
-```kotlin
-class MainApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        // Setup loggers & Coroutine dispatchers for UniFlow
-        setupUniFlow()
-    }
-}
-```
-
 Describe your data flow states & ViewModel:
 
 ```kotlin
@@ -55,7 +43,9 @@ class WeatherViewModelFlow : AndroidDataFlow() {
     }
 
     // Unhandled errors here
-    override fun onError(error: Throwable) = setState { UIState.Failed(error = error) }
+    override suspend fun onError(error: Throwable){
+        setState { UIState.Failed(error = error) }
+    }
 }
 ```
 
