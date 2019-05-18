@@ -37,11 +37,11 @@ interface DataFlow : CoroutineScope {
      *
      * @param updateFunction - function to produce a new state, from the current state
      */
-    fun setState(updateFunction: ActionFunction, errorFunction: ErrorFunction) {
+    fun setState(updateFunction: ActionFunction<UIState?>, errorFunction: ErrorFunction) {
         executeAction(Action(updateFunction, errorFunction))
     }
 
-    fun setState(updateFunction: ActionFunction) {
+    fun setState(updateFunction: ActionFunction<UIState?>) {
         executeAction(Action(updateFunction))
     }
 
@@ -51,11 +51,11 @@ interface DataFlow : CoroutineScope {
      *
      * @param actionFunction - function run against the current state
      */
-    fun withState(actionFunction: ActionFunction, errorFunction: ErrorFunction) {
+    fun withState(actionFunction: ActionFunction<Unit>, errorFunction: ErrorFunction) {
         executeAction(Action(actionFunction, errorFunction))
     }
 
-    fun withState(actionFunction: ActionFunction) {
+    fun withState(actionFunction: ActionFunction<Unit>) {
         executeAction(Action(actionFunction))
     }
 
@@ -71,7 +71,7 @@ interface DataFlow : CoroutineScope {
      * Execute the withState & catch any error
      * @param action
      */
-    fun executeAction(action: Action) {
+    fun executeAction(action: Action<*>) {
         launch(UniFlowDispatcher.dispatcher.default()) {
             try {
                 val result = action.actionFunction.invoke(this, getCurrentState())
@@ -89,7 +89,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    suspend fun handleActionError(action: Action, error: Throwable) {
+    suspend fun handleActionError(action: Action<*>, error: Throwable) {
         UniFlowLogger.logError("$TAG [ERROR] on $this", error)
         action.errorFunction?.let {
             it.invoke(this@DataFlow, error)

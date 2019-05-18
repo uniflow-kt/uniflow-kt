@@ -7,11 +7,11 @@ import kotlinx.coroutines.launch
 
 abstract class StackActorFlow : StackFlow() {
 
-    override fun executeAction(action: Action) {
+    override fun executeAction(action: Action<*>) {
         flowActor.offer(action)
     }
 
-    private val flowActor = actor<Action>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    private val flowActor = actor<Action<*>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             GlobalScope.launch(UniFlowDispatcher.dispatcher.default()) {
                 try {
