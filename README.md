@@ -74,3 +74,63 @@ class WeatherActivity : AppCompatActivity {
 
 ```
 
+## SetState, WithState, FromState
+
+SetState help you register a new state:
+
+```kotlin
+// update the current state
+fun getDetail() = setState{
+        getWeatherDetail(id).mapToDetailState()
+    }
+```
+
+
+FromState help you register a state if you are in the given state, else send BadOrWrongState event:
+
+```kotlin
+// Execute this state update only if current state is in WeatherListState
+fun loadNewLocation(location: String) = fromState<WeatherListState>{
+        sendEvent(WeatherListUIEvent.ProceedLocation(location))
+        getWeatherForLocation(location).mapToWeatherListState()
+    }
+``
+
+WithState help you execute a side effect against the current state:
+
+```kotlin
+// execute an action without updating the current state
+fun getLastWeather() = withState{
+        sendEvent(UIEvent.Pending)
+        loadCurrentWeather()
+        sendEvent(UIEvent.Success)
+    }
+```
+
+
+## Easy to test
+
+Create your ViewModel and State/Event observers on it:
+
+```kotlin
+@Before
+fun before() {
+    detailViewModel = DetailViewModel(id, getWeatherDetail)
+    view = detailViewModel.mockObservers()
+}
+```
+
+Now you can test incoming states and events:
+
+```kotlin
+@Test
+fun testGetLastWeather() {
+    detailViewModel.getDetail()
+
+    verifySequence {
+        view.states.onChanged(UIState.Loading)
+        view.states.onChanged(WeatherDetail(...))
+    }
+}
+```
+
