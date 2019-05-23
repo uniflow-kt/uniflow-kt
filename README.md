@@ -94,7 +94,7 @@ fun loadNewLocation(location: String) = fromState<WeatherListState>{
         sendEvent(WeatherListUIEvent.ProceedLocation(location))
         getWeatherForLocation(location).mapToWeatherListState()
     }
-``
+```
 
 WithState help you execute a side effect against the current state:
 
