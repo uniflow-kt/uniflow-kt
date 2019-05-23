@@ -24,4 +24,5 @@ open class UIEvent {
     object Pending : UIEvent()
     object Success : UIEvent()
     data class Fail(val message: String? = null, val error: Throwable? = null) : UIEvent()
+    data class BadOrWrongState(val currentState: UIState? = null) : UIEvent()
 }
