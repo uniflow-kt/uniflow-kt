@@ -3,6 +3,7 @@ package io.uniflow.test
 import io.uniflow.core.flow.StackActorFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.fromState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
@@ -23,16 +24,12 @@ class MyTodoListBufferedFlow(private val repository: MyTodoRepository) : StackAc
         }
     }
 
-    fun add(title: String) = setState { currentState ->
-        if (currentState is TodoListState) {
-            val added = repository.add(title)
-            if (added) {
-                repository.getAllTodo().mapToTodoListState()
-            } else {
-                sendEvent(UIEvent.Fail("Can't add '$title'"))
-            }
+    fun add(title: String) = fromState<TodoListState> {
+        val added = repository.add(title)
+        if (added) {
+            repository.getAllTodo().mapToTodoListState()
         } else {
-            sendEvent(UIEvent.Fail("Can't add todo - List not loaded"))
+            sendEvent(UIEvent.Fail("Can't add '$title'"))
         }
     }
 
@@ -45,7 +42,7 @@ class MyTodoListBufferedFlow(private val repository: MyTodoRepository) : StackAc
                 sendEvent(UIEvent.Fail("Can't make done '$title'"))
             }
         } else {
-            sendEvent(UIEvent.Fail("Can't make done - List not loaded"))
+            sendEvent(UIEvent.BadOrWrongState(getCurrentState()))
         }
     }
 

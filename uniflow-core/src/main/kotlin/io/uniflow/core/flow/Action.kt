@@ -2,7 +2,8 @@ package io.uniflow.core.flow
 
 import kotlinx.coroutines.CoroutineScope
 
-data class Action<T>(val actionFunction: ActionFunction<T>, val errorFunction: ErrorFunction? = null)
+data class Action<R : UIState?, T : Any?>(val actionFunction: ActionFunction<R, T>, val errorFunction: ErrorFunction? = null)
 
-typealias ActionFunction<T> = suspend CoroutineScope.(UIState?) -> T
+typealias ActionFunction<R, T> = suspend CoroutineScope.(R) -> T
+
 typealias ErrorFunction = suspend CoroutineScope.(Throwable) -> Unit

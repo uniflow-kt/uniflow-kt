@@ -54,7 +54,7 @@ class TodoBufferedListTest {
 
         assertEquals(UIState.Empty, dataFlow.states[0])
 
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        assertTrue(dataFlow.events[0] is UIEvent.BadOrWrongState)
     }
 
     @Test
