@@ -18,9 +18,8 @@ package io.uniflow.android.flow
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.Action
 import io.uniflow.core.flow.UIState
-import kotlinx.coroutines.GlobalScope
+import io.uniflow.core.flow.onIO
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.launch
 
 /**
  * AndroidDataFlow
@@ -30,13 +29,13 @@ import kotlinx.coroutines.launch
  */
 abstract class AndroidActorFlow : AndroidDataFlow() {
 
-    override fun executeAction(action: Action<UIState?,*>) {
+    override fun executeAction(action: Action<UIState?, *>) {
         flowActor.offer(action)
     }
 
-    private val flowActor = actor<Action<UIState?,*>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    private val flowActor = actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
-            GlobalScope.launch(UniFlowDispatcher.dispatcher.default()) {
+            onIO {
                 try {
                     val result = action.actionFunction.invoke(this, getCurrentState())
                     if (result is UIState) {

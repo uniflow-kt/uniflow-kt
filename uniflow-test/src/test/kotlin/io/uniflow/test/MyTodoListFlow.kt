@@ -3,6 +3,7 @@ package io.uniflow.test
 import io.uniflow.core.flow.StackFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.onIO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 

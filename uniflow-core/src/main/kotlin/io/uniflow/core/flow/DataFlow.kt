@@ -113,22 +113,22 @@ interface DataFlow : CoroutineScope {
             it.invoke(this@DataFlow, error)
         } ?: onError(error)
     }
-
-    /**
-     * Switch current execution context to Main thread
-     */
-    suspend fun <T> onMain(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.main(), block = block)
-
-    /**
-     * Switch current execution context to Default Thread
-     */
-    suspend fun <T> onDefault(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.default(), block = block)
-
-    /**
-     * Switch current execution context to IO Thread
-     */
-    suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.io(), block = block)
 }
+
+/**
+ * Switch current execution context to Main thread
+ */
+suspend fun <T> onMain(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.main(), block = block)
+
+/**
+ * Switch current execution context to Default Thread
+ */
+suspend fun <T> onDefault(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.default(), block = block)
+
+/**
+ * Switch current execution context to IO Thread
+ */
+suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.io(), block = block)
 
 
 /**
