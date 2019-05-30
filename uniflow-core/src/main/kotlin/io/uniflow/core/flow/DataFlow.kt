@@ -109,9 +109,12 @@ interface DataFlow : CoroutineScope {
      */
     suspend fun handleActionError(action: Action<*, *>, error: Throwable) {
         UniFlowLogger.logError("$TAG [ERROR] on $this", error)
-        action.errorFunction?.let {
-            it.invoke(this@DataFlow, error)
-        } ?: onError(error)
+        if (action.errorFunction != null) {
+            val failState = action.errorFunction.let {
+                it.invoke(this@DataFlow, error)
+            }
+            failState?.let { applyState(failState) }
+        } else onError(error)
     }
 }
 

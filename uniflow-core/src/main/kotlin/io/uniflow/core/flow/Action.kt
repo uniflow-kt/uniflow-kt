@@ -6,4 +6,4 @@ data class Action<R : UIState?, T : Any?>(val actionFunction: ActionFunction<R, 
 
 typealias ActionFunction<R, T> = suspend CoroutineScope.(R) -> T
 
-typealias ErrorFunction = suspend CoroutineScope.(Throwable) -> Unit
+typealias ErrorFunction = suspend CoroutineScope.(Throwable) -> UIState?

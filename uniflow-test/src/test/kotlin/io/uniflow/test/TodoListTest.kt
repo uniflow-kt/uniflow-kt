@@ -107,8 +107,23 @@ class TodoListTest {
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
         assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        assertTrue(dataFlow.events.last() is UIEvent.Fail)
         assertTrue(dataFlow.events.size == 1)
+    }
+
+    @Test
+    fun `action failed error`() {
+        dataFlow.getAll()
+        dataFlow.add("first")
+        dataFlow.makeOnFailed()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.states.last() is UIState.Failed)
+        assertTrue(dataFlow.events.size == 0)
     }
 
     @Test
@@ -131,7 +146,7 @@ class TodoListTest {
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
-        assertTrue(dataFlow.states[3] is UIState.Failed)
+        assertTrue(dataFlow.states.last() is UIState.Failed)
         assertTrue(dataFlow.states.size == 4)
         assertTrue(dataFlow.events.size == 0)
     }
@@ -160,7 +175,7 @@ class TodoListTest {
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertTrue(dataFlow.states[2] is UIState.Failed)
+        assertTrue(dataFlow.states.last() is UIState.Failed)
 
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)

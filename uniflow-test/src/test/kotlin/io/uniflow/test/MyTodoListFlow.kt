@@ -87,6 +87,12 @@ class MyTodoListFlow(private val repository: MyTodoRepository) : StackFlow() {
             },
             { error -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
+    fun makeOnFailed() = withState(
+            {
+                error("boom")
+            },
+            { error -> UIState.Failed(error.message, error) })
+
 
     fun makeGlobalError() = withState {
         error("global boom")
