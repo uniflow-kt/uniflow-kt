@@ -23,12 +23,12 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 A Simple Unidirectional Data Flow framework for Android, using Kotlin Coroutines
 
-Describe your data flow states:
 
+Describe your data flow states with `UIState`:
 
 ```kotlin
 data class WeatherState(val weather : Weather) : UIState()
-``
+```
 
 Publish states from your ViewModel:
 
@@ -58,8 +58,7 @@ class WeatherActivity : AppCompatActivity {
     val myWeatherFlow : WeatherViewModelFlow ...
 
      override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+     
         // Observe incoming states
         onStates(myWeatherFlow) { state ->
             when (state) {
@@ -68,7 +67,6 @@ class WeatherActivity : AppCompatActivity {
                 is UIState.Failed -> showError(state.error)
             }
         }
-        myWeatherFlow.getMyWeather("monday")
     }
 }
 
@@ -141,7 +139,7 @@ class WeatherViewModelFlow : AndroidDataFlow() {
 
 ## Also Events
 
-From your Data Flow VIewModel, trigger events with `sendEvent()`:
+Define some events with `UIEvent`:
 
 ```kotlin
 // Events definition
@@ -149,7 +147,11 @@ sealed class WeatherEvent : UIEvent() {
     data class ProceedLocation(val location: String) : WeatherEvent()
     data class ProceedLocationFailed(val location: String, val error: Throwable? = null) : WeatherEvent()
 }
+```
 
+From your Data Flow VIewModel, trigger events with `sendEvent()`:
+
+```kotlin
 class WeatherListViewModel(
         private val getCurrentWeather: GetCurrentWeather,
         private val getWeatherForLocation: GetWeatherForGivenLocation
@@ -182,7 +184,7 @@ onEvents(viewModel) { event ->
 
 ```
 
-## Easy testing
+## Easy testing with Mockk
 
 Create your ViewModel and State/Event observers on it:
 
