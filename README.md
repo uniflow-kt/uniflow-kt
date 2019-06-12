@@ -21,13 +21,18 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 ## What is UniFlow?
 
-A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
+A Simple Unidirectional Data Flow framework for Android, using Kotlin Coroutines
 
-Describe your data flow states & ViewModel:
+Describe your data flow states:
+
 
 ```kotlin
 data class WeatherState(val weather : Weather) : UIState()
+``
 
+Publish states from your ViewModel:
+
+```kotlin
 class WeatherViewModelFlow : AndroidDataFlow() {
 
     init {
@@ -41,26 +46,21 @@ class WeatherViewModelFlow : AndroidDataFlow() {
         // return state to UI
         WeatherState(weather)
     }
-
-    // Unhandled errors here
-    override suspend fun onError(error: Throwable){
-        setState { UIState.Failed(error = error) }
-    }
 }
 ```
 
-Just observe your state flow from your Activity or Fragment:
+Observe your state flow from your Activity or Fragment:
 
 ```kotlin
 class WeatherActivity : AppCompatActivity {
 
-    // created WeatherViewModelFlow ViewModel instance here
+    // ViewModel instance here
     val myWeatherFlow : WeatherViewModelFlow ...
 
      override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Observe incoming states flow
+        // Observe incoming states
         onStates(myWeatherFlow) { state ->
             when (state) {
                 is UIState.Loading -> showLoading()
@@ -107,6 +107,80 @@ fun getLastWeather() = withState{
     }
 ```
 
+## Clean Error Handling
+
+
+Each action allow you to provide an error handling function. You can also catch any error more globally:
+
+
+```kotlin
+class WeatherViewModelFlow : AndroidDataFlow() {
+
+    init {
+        // init state as Loading
+        setState { UIState.Loading }
+    }
+
+    fun getMyWeather(val day : String) = setState(
+        { lastState ->
+            // Background call
+            val weather = getWeatherForDay(day).await()
+            // return state to UI
+            WeatherState(weather)
+        },
+        { error -> // get error here })
+
+    // Unhandled errors here
+    override suspend fun onError(error: Throwable){
+        // ...
+    }
+
+}
+```
+
+
+## Also Events
+
+From your Data Flow VIewModel, trigger events with `sendEvent()`:
+
+```kotlin
+// Events definition
+sealed class WeatherEvent : UIEvent() {
+    data class ProceedLocation(val location: String) : WeatherEvent()
+    data class ProceedLocationFailed(val location: String, val error: Throwable? = null) : WeatherEvent()
+}
+
+class WeatherListViewModel(
+        private val getCurrentWeather: GetCurrentWeather,
+        private val getWeatherForLocation: GetWeatherForGivenLocation
+) : AndroidDataFlow() {
+
+
+    fun loadNewLocation(location: String) = fromState<WeatherListState> (
+            {
+                // send event
+                sendEvent(WeatherEvent.ProceedLocation(location))
+                // ...
+            },
+            { error ->
+                // on error send event
+                sendEvent(WeatherEvent.ProceedLocationFailed(location,error))
+            })
+}
+
+```
+
+Observe events from your ViewModel with `onEvent`:
+
+```kotlin
+onEvents(viewModel) { event ->
+    when (event) {
+        is WeatherListUIEvent.ProceedLocation -> showLoadingLocation(event.location)
+        is WeatherListUIEvent.ProceedLocationFailed -> showLocationSearchFailed(event.location, event.error)
+    }
+}
+
+```
 
 ## Easy testing
 
