@@ -137,9 +137,9 @@ class WeatherViewModelFlow : AndroidDataFlow() {
 ```
 
 
-## Also Events
+## Trigger also Events
 
-Define some events with `UIEvent`:
+For fire and forget side effetcs/events, define some events with `UIEvent`:
 
 ```kotlin
 // Events definition
