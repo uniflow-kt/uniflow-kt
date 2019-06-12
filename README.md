@@ -3,7 +3,7 @@
 
 ## Current Version
 
-Uniflow current version is `0.2.4`
+Uniflow current version is `0.2.7`
 
 ## Setup
 
@@ -61,7 +61,7 @@ class WeatherActivity : AppCompatActivity {
         super.onCreate(savedInstanceState)
 
         // Observe incoming states flow
-        observeStates(myWeatherFlow) { state ->
+        onStates(myWeatherFlow) { state ->
             when (state) {
                 is UIState.Loading -> showLoading()
                 is WeatherState -> showWeather(state)
@@ -108,7 +108,7 @@ fun getLastWeather() = withState{
 ```
 
 
-## Easy to test
+## Easy testing
 
 Create your ViewModel and State/Event observers on it:
 

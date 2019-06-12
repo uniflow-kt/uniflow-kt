@@ -26,10 +26,10 @@ import io.uniflow.core.flow.UIState
  * @author Arnaud Giuliani
  */
 
-fun LifecycleOwner.observeStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
+fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     vm.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
 }
 
-fun LifecycleOwner.observeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
     vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.get()) } })
 }
