@@ -7,7 +7,10 @@ import io.uniflow.core.flow.Event
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 
-data class DataFlowObserver(val states: Observer<UIState>, val events: Observer<Event<UIEvent>>)
+data class DataFlowObserver(val states: Observer<UIState>, val events: Observer<Event<UIEvent>>) {
+    fun hasState(state: UIState) = states.onChanged(state)
+    fun hasEvent(event: UIEvent) = events.onChanged(Event(event))
+}
 
 fun AndroidDataFlow.mockObservers(): DataFlowObserver {
     val viewStates: Observer<UIState> = mockk(relaxed = true)
