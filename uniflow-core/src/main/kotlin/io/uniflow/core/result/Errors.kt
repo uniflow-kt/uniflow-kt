@@ -4,8 +4,8 @@ import io.uniflow.core.flow.DataFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 
-class NetworkException(message: String? = null, val exception: Throwable? = null) : Exception(message, exception)
-class DatabaseException(message: String? = null, val exception: Throwable? = null) : Exception(message, exception)
+class NetworkException(message: String? = null, exception: Throwable? = null) : Exception(message, exception)
+class DatabaseException(message: String? = null, exception: Throwable? = null) : Exception(message, exception)
 
 data class DatabaseRequestFailure(val error: Throwable) : UIEvent()
 suspend fun DataFlow.sendDatabaseFailure(error: Throwable): UIState? {
