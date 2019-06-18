@@ -16,4 +16,3 @@ sealed class Result<out T : Any> {
 fun <T : Any> success(t: T): Result<T> = Result.Success(t)
 fun <T : Any> error(exception: Exception): Result<T> = Result.Error(exception.message.orEmpty(), exception)
 fun <T : Any> error(message: String, exception: Exception? = null): Result<T> = Result.Error(message, exception)
-
