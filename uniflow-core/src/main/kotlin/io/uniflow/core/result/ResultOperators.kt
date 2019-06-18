@@ -2,48 +2,48 @@ package io.uniflow.core.result
 
 import io.uniflow.core.flow.UIState
 
-suspend fun <R : Any, T : Any> Result<R>.map(result: suspend (R) -> T): Result<T> {
+suspend fun <R : Any, T : Any> FlowResult<R>.map(result: suspend (R) -> T): FlowResult<T> {
     return when (this) {
-        is Result.Success -> success(result(this.value))
-        is Result.Error -> error(message, exception)
+        is FlowResult.Success -> success(result(this.value))
+        is FlowResult.Error -> error(message, exception)
     }
 }
 
-suspend fun <R : Any, T : Any> Result<R>.flatMap(result: suspend (R) -> Result<T>): Result<T> {
+suspend fun <R : Any, T : Any> FlowResult<R>.flatMap(result: suspend (R) -> FlowResult<T>): FlowResult<T> {
     return when (this) {
-        is Result.Success -> result(this.value)
-        is Result.Error -> error(message, exception)
+        is FlowResult.Success -> result(this.value)
+        is FlowResult.Error -> error(message, exception)
     }
 }
 
-fun <R : Any> Result<R>.value(): R {
+fun <R : Any> FlowResult<R>.value(): R {
     return when (this) {
-        is Result.Success -> this.value
-        is Result.Error -> exception?.let { throw exception } ?: kotlin.error(message)
+        is FlowResult.Success -> this.value
+        is FlowResult.Error -> exception?.let { throw exception } ?: kotlin.error(message)
     }
 }
 
-suspend fun <R : Any> Result<R>.onValue(block: suspend (R) -> Unit): Result<R> {
+suspend fun <R : Any> FlowResult<R>.onValue(block: suspend (R) -> Unit): FlowResult<R> {
     return when (this) {
-        is Result.Success -> {
+        is FlowResult.Success -> {
             block(this.value)
             this
         }
-        is Result.Error -> exception?.let { throw exception } ?: kotlin.error(message)
+        is FlowResult.Error -> exception?.let { throw exception } ?: kotlin.error(message)
     }
 }
 
-suspend fun <R : Any> Result<R>.mapUIState(onResult: suspend (R) -> UIState?): UIState? {
+suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState?): UIState? {
     return when (this) {
-        is Result.Success -> onResult(this.value)
-        is Result.Error -> exception?.let { throw exception } ?: kotlin.error(message)
+        is FlowResult.Success -> onResult(this.value)
+        is FlowResult.Error -> exception?.let { throw exception } ?: kotlin.error(message)
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-suspend fun <R : Any> Result<R>.mapUIState(onResult: suspend (R) -> UIState?, onError: suspend (Result<Nothing>) -> UIState?): UIState? {
+suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState?, onError: suspend (FlowResult<Nothing>) -> UIState?): UIState? {
     return when (this) {
-        is Result.Success -> onResult(this.value)
-        else -> onError(this as Result<Nothing>)
+        is FlowResult.Success -> onResult(this.value)
+        else -> onError(this as FlowResult<Nothing>)
     }
 }
