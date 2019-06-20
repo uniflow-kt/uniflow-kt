@@ -34,7 +34,3 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
     vm.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
 }
-
-fun LifecycleOwner.onBroadcastEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
-    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.peek()) } })
-}

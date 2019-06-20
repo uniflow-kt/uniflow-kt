@@ -29,7 +29,7 @@ data class Event<out T>(private val content: T) {
     /**
      * Returns the content and prevents its use again.
      */
-    fun get(): T? {
+    fun take(): T? {
         return if (hasBeenHandled) {
             null
         } else {
@@ -41,8 +41,8 @@ data class Event<out T>(private val content: T) {
     /**
      * Return and execute code on given value
      */
-    fun get(code: (T) -> Unit) {
-        get()?.let { code(it) }
+    fun take(code: (T) -> Unit) {
+        take()?.let { code(it) }
     }
 
     /**
