@@ -27,7 +27,7 @@ data class Event<out T>(private val content: T) {
         private set // Allow external read but not write
 
     /**
-     * Returns the content and prevents its use again.
+     * Returns the content and put the event has handled
      */
     fun take(): T? {
         return if (hasBeenHandled) {
@@ -40,6 +40,7 @@ data class Event<out T>(private val content: T) {
 
     /**
      * Return and execute code on given value
+     * put the event has handled
      */
     fun take(code: (T) -> Unit) {
         take()?.let { code(it) }
