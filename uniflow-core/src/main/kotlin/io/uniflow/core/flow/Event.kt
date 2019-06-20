@@ -39,7 +39,14 @@ data class Event<out T>(private val content: T) {
     }
 
     /**
+     * Return and execute code on given value
+     */
+    fun get(code: (T) -> Unit) {
+        get()?.let { code(it) }
+    }
+
+    /**
      * Returns the content, even if it's already been handled.
      */
-    fun peekContent(): T = content
+    fun peek(): T = content
 }

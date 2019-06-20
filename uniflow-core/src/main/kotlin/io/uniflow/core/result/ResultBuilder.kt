@@ -20,7 +20,7 @@ suspend fun <T : Any> networkResult(errorMessage: String = "Network error", code
     return try {
         code()
     } catch (e: Throwable) {
-        FlowResult.Error(errorMessage, NetworkException(exception = e))
+        FlowResult.Error(errorMessage, NetworkException("$errorMessage - $e",e))
     }
 }
 
@@ -28,7 +28,7 @@ suspend fun <T : Any> networkResultForValue(errorMessage: String = "Network erro
     return try {
         success(code())
     } catch (e: Throwable) {
-        FlowResult.Error(errorMessage, NetworkException(exception = e))
+        FlowResult.Error(errorMessage, NetworkException("$errorMessage - $e",e))
     }
 }
 
@@ -36,7 +36,7 @@ suspend fun <T : Any> databaseResult(errorMessage: String = "Database error", co
     return try {
         code()
     } catch (e: Throwable) {
-        FlowResult.Error(errorMessage, DatabaseException(exception = e))
+        FlowResult.Error(errorMessage, DatabaseException("$errorMessage - $e",e))
     }
 }
 
@@ -45,7 +45,7 @@ suspend fun <T : Any> databaseResultForValue(errorMessage: String = "Database er
     return try {
         success(code())
     } catch (e: Throwable) {
-        FlowResult.Error(errorMessage, DatabaseException(exception = e))
+        FlowResult.Error(errorMessage, DatabaseException("$errorMessage - $e",e))
     }
 }
 

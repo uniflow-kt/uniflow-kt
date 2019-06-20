@@ -17,6 +17,7 @@ package io.uniflow.android.flow
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
+import io.uniflow.core.flow.Event
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 
@@ -30,10 +31,10 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
     vm.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
 }
 
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
-    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.get()) } })
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
+    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
 }
 
 fun LifecycleOwner.onBroadcastEvents(vm: AndroidDataFlow, handleEvents: (UIEvent?) -> Unit) {
-    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.peekContent()) } })
+    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event.peek()) } })
 }
