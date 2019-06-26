@@ -2,7 +2,9 @@ package io.uniflow.test
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.test.rule.UniFlowDispatcherRule
+import io.uniflow.core.logger.DebugMessageLogger
+import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -14,9 +16,13 @@ import org.junit.Test
 
 class TodoListTest {
 
+    init {
+        UniFlowLogger.init(DebugMessageLogger())
+    }
+
     @ExperimentalCoroutinesApi
     @get:Rule
-    var coroutinesMainDispatcherRule = UniFlowDispatcherRule()
+    var coroutinesMainDispatcherRule = TestDispatchersRule()
 
     val repository = MyTodoRepository()
     lateinit var dataFlow: MyTodoListFlow

@@ -24,20 +24,23 @@ import io.uniflow.core.logger.UniFlowLogger.TAG
  *
  * @author Arnaud Giuliani
  */
-class SimpleMessageLogger : Logger {
+open class SimpleMessageLogger(val tag: String = TAG, debugThread: Boolean = false) : Logger {
+
+    val dbg_th: String = if (debugThread) "[${Thread.currentThread().name}]" else ""
+
     override fun log(message: String) {
-        println("$TAG - $message")
+        println("$tag$dbg_th - $message")
     }
 
     override fun logState(state: UIState) {
-        println("$TAG - [STATE] - $state")
+        println("$tag$dbg_th [STATE] - $state")
     }
 
     override fun logEvent(event: UIEvent) {
-        println("$TAG - [EVENT] - $event")
+        println("$tag$dbg_th <EVENT> - $event")
     }
 
     override fun logError(errorMessage: String, error: Throwable?) {
-        println("$TAG - [ERROR] - $errorMessage - error:$error")
+        System.err.println("$tag$dbg_th !ERROR! - $errorMessage :: $error")
     }
 }

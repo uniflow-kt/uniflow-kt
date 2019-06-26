@@ -19,6 +19,7 @@ import android.util.Log
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.Logger
+import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLogger.TAG
 
 /**
@@ -26,21 +27,23 @@ import io.uniflow.core.logger.UniFlowLogger.TAG
  *
  * @author Arnaud Giuliani
  */
-class AndroidMessageLogger : Logger {
+class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, debugThread: Boolean = false) : Logger {
+
+    val dbg_th: String = if (debugThread) "[${Thread.currentThread().name}] " else ""
+
     override fun log(message: String) {
-        Log.i(TAG, message)
+        Log.i(tag,"$dbg_th $message")
     }
 
     override fun logState(state: UIState) {
-        Log.i(TAG, "[STATE] - $state")
+        Log.i(tag,"$dbg_th[STATE] - $state")
     }
 
     override fun logEvent(event: UIEvent) {
-        Log.i(TAG, "[EVENT] - $event")
+        Log.i(tag,"$dbg_th<EVENT> - $event")
     }
 
     override fun logError(errorMessage: String, error: Throwable?) {
-        Log.i(TAG, "[ERROR] - $errorMessage :: $error")
+        Log.e(tag,"$dbg_th!ERROR! - $errorMessage :: $error")
     }
-
 }

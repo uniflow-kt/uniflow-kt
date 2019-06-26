@@ -15,30 +15,11 @@
  */
 package io.uniflow.core.logger
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.logger.UniFlowLogger.FUN_TAG
 
 /**
- * Event Logger
+ * Funnier Message Logger
  *
  * @author Arnaud Giuliani
  */
-object UniFlowLogger : Logger {
-
-    private var logger: Logger = SimpleMessageLogger()
-
-    fun init(logger: Logger) {
-        this.logger = logger
-    }
-
-    override fun log(message: String) = logger.log(message)
-
-    override fun logState(state: UIState) = logger.logState(state)
-
-    override fun logEvent(event: UIEvent) = logger.logEvent(event)
-
-    override fun logError(errorMessage: String, error: Throwable?) = logger.logError(errorMessage, error)
-
-    const val TAG = "[UniFlow]"
-    const val FUN_TAG = "🦄"
-}
+class DebugMessageLogger : SimpleMessageLogger(FUN_TAG, true)
