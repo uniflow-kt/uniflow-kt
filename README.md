@@ -95,36 +95,14 @@ fun loadNewLocation(location: String) = fromState<WeatherListState>{ currentStat
     }
 ```
 
-## Clean Error Handling
-
-
-Each action allow you to provide an error handling function. You can also catch any error more globally:
-
+For more side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
 
 ```kotlin
-class WeatherViewModelFlow : AndroidDataFlow() {
-
-    init {
-        // init state as Loading
-        setState { UIState.Loading }
+fun getDetail() = withState {
+        // won't update the current state
     }
-
-    fun getMyWeather(val day : String) = setState(
-        { lastState ->
-            // Background call
-            val weather = getWeatherForDay(day).await()
-            // return state to UI
-            WeatherState(weather)
-        },
-        { error -> // get error here })
-
-    // Unhandled errors here
-    override suspend fun onError(error: Throwable){
-        // ...
-    }
-
-}
 ```
+
 
 ## Trigger also Events
 
@@ -178,6 +156,38 @@ On an event, you can either `take()` or `peek()` its data:
 
 - `take` - consume the event data, can't be taken by other event consumer
 - `peek` - peek the event's data, even if the data has been consumed
+
+
+## Clean Error Handling
+
+
+Each action allow you to provide an error handling function. You can also catch any error more globally:
+
+
+```kotlin
+class WeatherViewModelFlow : AndroidDataFlow() {
+
+    init {
+        // init state as Loading
+        setState { UIState.Loading }
+    }
+
+    fun getMyWeather(val day : String) = setState(
+        { lastState ->
+            // Background call
+            val weather = getWeatherForDay(day).await()
+            // return state to UI
+            WeatherState(weather)
+        },
+        { error -> // get error here })
+
+    // Unhandled errors here
+    override suspend fun onError(error: Throwable){
+        // ...
+    }
+
+}
+```
 
 ## Scheduling & Testing
 
