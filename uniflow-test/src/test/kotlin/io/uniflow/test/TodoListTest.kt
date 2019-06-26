@@ -20,9 +20,8 @@ class TodoListTest {
         UniFlowLogger.init(DebugMessageLogger())
     }
 
-    @ExperimentalCoroutinesApi
     @get:Rule
-    var coroutinesMainDispatcherRule = TestDispatchersRule()
+    var rule = TestDispatchersRule()
 
     val repository = MyTodoRepository()
     lateinit var dataFlow: MyTodoListFlow

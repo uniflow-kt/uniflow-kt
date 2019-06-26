@@ -3,7 +3,7 @@
 
 ## Current Version
 
-Uniflow current version is `0.2.7`
+Uniflow current version is `0.3.5`
 
 ## Setup
 
@@ -79,7 +79,8 @@ SetState help you register a new state:
 ```kotlin
 // update the current state
 fun getDetail() = setState{
-        getWeatherDetail(id).mapToDetailState()
+        // return directly your state object
+        WeatherState(...)
     }
 ```
 
@@ -88,20 +89,9 @@ FromState help you register a state if you are in the given state, else send Bad
 
 ```kotlin
 // Execute this state update only if current state is in WeatherListState
-fun loadNewLocation(location: String) = fromState<WeatherListState>{
-        sendEvent(WeatherListUIEvent.ProceedLocation(location))
-        getWeatherForLocation(location).mapToWeatherListState()
-    }
-```
-
-WithState help you execute a side effect against the current state:
-
-```kotlin
-// execute an action without updating the current state
-fun getLastWeather() = withState{
-        sendEvent(UIEvent.Pending)
-        loadCurrentWeather()
-        sendEvent(UIEvent.Success)
+fun loadNewLocation(location: String) = fromState<WeatherListState>{ currentState ->
+        // currentState is WeatherListState
+        // ...
     }
 ```
 
@@ -136,16 +126,15 @@ class WeatherViewModelFlow : AndroidDataFlow() {
 }
 ```
 
-
 ## Trigger also Events
 
-For fire and forget side effetcs/events, define some events with `UIEvent`:
+For fire and forget side effects/events, define some events with `UIEvent`:
 
 ```kotlin
 // Events definition
 sealed class WeatherEvent : UIEvent() {
-    data class ProceedLocation(val location: String) : WeatherEvent()
-    data class ProceedLocationFailed(val location: String, val error: Throwable? = null) : WeatherEvent()
+    data class Success(val location: String) : WeatherEvent()
+    data class Failed(val location: String, val error: Throwable? = null) : WeatherEvent()
 }
 ```
 
@@ -161,32 +150,51 @@ class WeatherListViewModel(
     fun loadNewLocation(location: String) = fromState<WeatherListState> (
             {
                 // send event
-                sendEvent(WeatherEvent.ProceedLocation(location))
-                // ...
+                sendEvent(WeatherEvent.Success(location))
+
             },
             { error ->
                 // on error send event
-                sendEvent(WeatherEvent.ProceedLocationFailed(location,error))
+                sendEvent(WeatherEvent.Failed(location,error))
             })
 }
 
 ```
 
+_note_: sendEvent() return a null state (UIState?). Can help write
+
 Observe events from your ViewModel with `onEvent`:
 
 ```kotlin
 onEvents(viewModel) { event ->
-    when (event) {
-        is WeatherListUIEvent.ProceedLocation -> showLoadingLocation(event.location)
-        is WeatherListUIEvent.ProceedLocationFailed -> showLocationSearchFailed(event.location, event.error)
+    when (val data = event.take()) {
+        is WeatherListUIEvent.Success -> showSuccess(data.location)
+        is WeatherListUIEvent.Failed -> showFailed(data.location, data.error)
     }
 }
-
 ```
+
+On an event, you can either `take()` or `peek()` its data:
+
+- `take` - consume the event data, can't be taken by other event consumer
+- `peek` - peek the event's data, even if the data has been consumed
+
+## Scheduling & Testing
+
+First don't forget to use thr following rule:
+
+```kotlin
+@get:Rule
+var rule = TestDispatchersRule()
+```
+
+`TestDispatchersRule` allow you to dispatch with `Unconfined` thread, as we flatten all scheduling to help sequential running of all states & events.
+
+You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
 
 ## Easy testing with Mockk
 
-Create your ViewModel and State/Event observers on it:
+Create your ViewModel instance and mock your states/events observer (``view` here):
 
 ```kotlin
 @Before
@@ -196,7 +204,7 @@ fun before() {
 }
 ```
 
-Now you can test incoming states and events:
+Now you can test incoming states with `hasState`:
 
 ```kotlin
 @Test
@@ -204,9 +212,20 @@ fun testGetLastWeather() {
     detailViewModel.getDetail()
 
     verifySequence {
-        view.states.onChanged(UIState.Loading)
-        view.states.onChanged(WeatherDetail(...))
+        view.hasState(UIState.Loading)
+        view.hasState(WeatherDetail(...))
     }
 }
 ```
 
+also check incoming events with `hasEvents`:
+
+```kotlin
+@Test
+fun testGetLastWeather() {
+    detailViewModel.getDetail()
+
+    verifySequence {
+        view.hasEventWeatherListUIEvent.Success)
+    }
+}
