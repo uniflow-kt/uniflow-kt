@@ -2,7 +2,6 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.logger.UniFlowLogger.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,6 +63,7 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     suspend fun onError(error: Throwable) {
+        UniFlowLogger.logError("Got error", error)
         throw error
     }
 
@@ -108,7 +108,6 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     suspend fun handleActionError(action: Action<*, *>, error: Throwable) {
-        UniFlowLogger.logError("$TAG [ERROR] on $this", error)
         onMain {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction?.let {
