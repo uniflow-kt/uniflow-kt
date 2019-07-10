@@ -23,6 +23,13 @@ fun <R : Any> FlowResult<R>.value(): R {
     }
 }
 
+fun <R : Any> FlowResult<R>.valueOrNull(): R? {
+    return when (this) {
+        is FlowResult.Success -> this.value
+        is FlowResult.Error -> null
+    }
+}
+
 suspend fun <R : Any> FlowResult<R>.onValue(block: suspend (R) -> Unit): FlowResult<R> {
     return when (this) {
         is FlowResult.Success -> {
