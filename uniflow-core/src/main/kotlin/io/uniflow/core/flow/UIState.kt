@@ -15,6 +15,9 @@
  */
 package io.uniflow.core.flow
 
+import io.uniflow.core.result.DatabaseException
+import io.uniflow.core.result.NetworkException
+
 /**
  * Data Flow UI State
  *
@@ -25,3 +28,6 @@ open class UIState {
     object Loading : UIState()
     data class Failed(val message: String? = null, val error: Throwable? = null) : UIState()
 }
+
+fun UIState.Failed.isNetworkError() = this.error is NetworkException
+fun UIState.Failed.isDatabaseError() = this.error is DatabaseException
