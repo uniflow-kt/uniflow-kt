@@ -108,7 +108,7 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     suspend fun handleActionError(action: Action<*, *>, error: Throwable) {
-        onMain {
+        launch(UniFlowDispatcher.dispatcher.io()) {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction?.let {
                     it.invoke(this@DataFlow, error)
