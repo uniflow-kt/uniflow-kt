@@ -26,6 +26,7 @@ import io.uniflow.core.result.NetworkException
 open class UIState {
     object Empty : UIState()
     object Loading : UIState()
+    object Success : UIState()
     data class Failed(val message: String? = null, val error: Throwable? = null) : UIState()
 }
 
