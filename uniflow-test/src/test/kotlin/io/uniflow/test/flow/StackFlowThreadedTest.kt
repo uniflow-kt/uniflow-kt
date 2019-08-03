@@ -11,6 +11,7 @@ import io.uniflow.test.data.TodoStackFlow
 import io.uniflow.test.rule.TestThreadRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -57,6 +58,20 @@ class StackFlowThreadedTest {
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+    }
+
+    @Test
+    fun `stateflow test`() = runBlocking {
+        dataFlow.flow()
+        delay(10)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Empty, dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        Assert.assertTrue(dataFlow.states.size == 4)
+        Assert.assertTrue(dataFlow.events.size == 0)
     }
 
 //    @Test

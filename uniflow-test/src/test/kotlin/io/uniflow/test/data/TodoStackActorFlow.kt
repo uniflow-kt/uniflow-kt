@@ -1,10 +1,7 @@
 package io.uniflow.test.data
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.fromState
-import io.uniflow.core.flow.impl.StackActorFlow
-import io.uniflow.core.flow.onIO
+import io.uniflow.core.flow.*
+import io.uniflow.core.sample.StackActorFlow
 import kotlinx.coroutines.delay
 
 class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlow() {
@@ -24,7 +21,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         }
     }
 
-    fun add(title: String) = fromState<TodoListState> {
+    fun add(title: String) = setStateFrom<TodoListState> {
         val added = repository.add(title)
         if (added) {
             repository.getAllTodo().mapToTodoListState()
@@ -77,6 +74,12 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         delay(1000)
         repository.add("LongTodo")
         repository.getAllTodo().mapToTodoListState()
+    }
+
+    fun flow() = stateFlow {
+        setState(UIState.Empty)
+        setState(UIState.Loading)
+        setState(UIState.Success)
     }
 
     fun makeOnError() = withState(

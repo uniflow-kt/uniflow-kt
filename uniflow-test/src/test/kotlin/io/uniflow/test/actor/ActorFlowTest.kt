@@ -176,6 +176,19 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `stateflow test`() = runBlocking {
+        dataFlow.flow()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Empty, dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
     fun `cancel test`() = runBlocking {
         dataFlow.getAll()
         dataFlow.longWait()

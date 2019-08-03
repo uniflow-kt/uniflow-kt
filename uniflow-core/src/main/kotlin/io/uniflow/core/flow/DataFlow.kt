@@ -60,6 +60,35 @@ interface DataFlow : CoroutineScope {
     }
 
     /**
+     * An action that can trigger several state changes
+     *
+     * stateFlowFunction allow to use the StateFlowPublisher.setState(...) function to set any new state
+     *
+     * @param stateFlowFunction - flow state
+     * @param errorFunction - error function
+     */
+    fun stateFlow(stateFlowFunction: StateFlowFunction, errorFunction: ErrorFunction) {
+        launch(dispatcher.io()) {
+            val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
+            stateFlowFunction(publisher, getCurrentState())
+        }
+    }
+
+    /**
+     * An action that can trigger several state changes
+     *
+     * stateFlowFunction allow to use the StateFlowPublisher.setState(...) function to set any new state
+     *
+     * @param stateFlowFunction - flow state
+     */
+    fun stateFlow(stateFlowFunction: StateFlowFunction) {
+        launch(dispatcher.io()) {
+            val publisher = StateFlowPublisher(this@DataFlow)
+            stateFlowFunction(publisher, getCurrentState())
+        }
+    }
+
+    /**
      * If any error occurs and is not caught, this function catch it
      * @param error
      */
@@ -129,7 +158,7 @@ suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(UniFlo
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>) {
+inline fun <reified T : UIState?> DataFlow.setStateFrom(noinline fromBlock: ActionFunction<T, UIState?>) {
     if (getCurrentState() is T) {
         onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
     } else {
@@ -141,9 +170,27 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline fromBlock: ActionF
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>, noinline errorFunction: ErrorFunction) {
+inline fun <reified T : UIState> DataFlow.setStateFrom(noinline fromBlock: ActionFunction<T, UIState?>, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
         onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
+    } else {
+        withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction) {
+    if (getCurrentState() is T) {
+        stateFlow(stateFlowFunction)
+    } else {
+        withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction, noinline errorFunction: ErrorFunction) {
+    if (getCurrentState() is T) {
+        stateFlow(stateFlowFunction, errorFunction)
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }

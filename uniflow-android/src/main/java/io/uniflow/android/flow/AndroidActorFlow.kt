@@ -36,14 +36,7 @@ abstract class AndroidActorFlow : AndroidDataFlow() {
     private val flowActor = actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             onIO {
-                try {
-                    val result = action.actionFunction.invoke(this, getCurrentState())
-                    if (result is UIState) {
-                        applyState(result)
-                    }
-                } catch (e: Throwable) {
-                    onError(action, e)
-                }
+                proceedAction(action)
             }
         }
     }

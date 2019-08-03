@@ -2,6 +2,7 @@ package io.uniflow.test.flow
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.stateFlowFrom
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.TodoStackFlow
@@ -187,6 +188,40 @@ class StackFlowTest {
 
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `stateflow test`() = runBlocking {
+        dataFlow.flow()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Empty, dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `flowFrom test`() = runBlocking {
+        dataFlow.flowFrom()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Empty, dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `flowFrom error test`() = runBlocking {
+        dataFlow.flowFromError()
+
+        assertTrue(dataFlow.states.size == 1)
+        assertTrue(dataFlow.events.size == 1)
     }
 
     @Test

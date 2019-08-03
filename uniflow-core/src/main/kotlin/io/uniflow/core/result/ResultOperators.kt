@@ -40,17 +40,18 @@ suspend fun <R : Any> FlowResult<R>.onValue(block: suspend (R) -> Unit): FlowRes
     }
 }
 
-suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState?): UIState? {
+suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState): UIState {
     return when (this) {
         is FlowResult.Success -> onResult(this.value)
         is FlowResult.Error -> exception?.let { throw exception } ?: kotlin.error(message)
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState?, onError: suspend (FlowResult<Nothing>) -> UIState?): UIState? {
-    return when (this) {
-        is FlowResult.Success -> onResult(this.value)
-        else -> onError(this as FlowResult<Nothing>)
-    }
-}
+//TODO hckec if needed
+//@Suppress("UNCHECKED_CAST")
+//suspend fun <R : Any> FlowResult<R>.mapUIState(onResult: suspend (R) -> UIState, onError: suspend (FlowResult<Nothing>) -> UIState): UIState {
+//    return when (this) {
+//        is FlowResult.Success -> onResult(this.value)
+//        else -> onError(this as FlowResult<Nothing>)
+//    }
+//}
