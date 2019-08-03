@@ -21,7 +21,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         }
     }
 
-    fun add(title: String) = setStateFrom<TodoListState> {
+    fun add(title: String) = fromState<TodoListState> {
         val added = repository.add(title)
         if (added) {
             repository.getAllTodo().mapToTodoListState()

@@ -3,7 +3,7 @@
 
 ## Current Version
 
-Uniflow current version is `0.3.9`
+Uniflow current version is `0.4.0`
 
 ## Setup
 
