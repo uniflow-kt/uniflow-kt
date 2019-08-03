@@ -1,6 +1,7 @@
 package io.uniflow.core.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
+import io.uniflow.core.dispatcher.UniFlowDispatcher.dispatcher
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -37,11 +38,11 @@ interface DataFlow : CoroutineScope {
      * @param updateFunction - function to produce a new state, from the current state
      */
     fun setState(updateFunction: ActionFunction<UIState?, UIState?>, errorFunction: ErrorFunction) {
-        executeAction(Action(updateFunction, errorFunction))
+        onAction(Action(updateFunction, errorFunction))
     }
 
     fun setState(updateFunction: ActionFunction<UIState?, UIState?>) {
-        executeAction(Action(updateFunction))
+        onAction(Action(updateFunction))
     }
 
     /**
@@ -51,11 +52,11 @@ interface DataFlow : CoroutineScope {
      * @param actionFunction - function run against the current state
      */
     fun withState(actionFunction: ActionFunction<UIState?, Unit>, errorFunction: ErrorFunction) {
-        executeAction(Action(actionFunction, errorFunction))
+        onAction(Action(actionFunction, errorFunction))
     }
 
     fun withState(actionFunction: ActionFunction<UIState?, Unit>) {
-        executeAction(Action(actionFunction))
+        onAction(Action(actionFunction))
     }
 
     /**
@@ -71,34 +72,23 @@ interface DataFlow : CoroutineScope {
      * Execute the action & catch any error
      * @param action
      */
-    fun executeAction(action: Action<UIState?, *>) {
-        launch(UniFlowDispatcher.dispatcher.io()) {
-            try {
-                val result = action.actionFunction.invoke(this, getCurrentState())
-                if (result is UIState) {
-                    applyState(result)
-                }
-            } catch (e: Throwable) {
-                handleActionError(action, e)
-            }
+    fun onAction(action: Action<UIState?, *>) {
+        launch(dispatcher.io()) {
+            proceedAction(action)
         }
     }
 
     /**
-     * Execute the action from the given state T & catch any error
-     * @param action
+     * Execute action on coroutine
      */
-    fun <T : UIState> safeExecuteAction(action: Action<T, *>) {
-        launch(UniFlowDispatcher.dispatcher.io()) {
-            try {
-                val result = action.actionFunction.invoke(this, getCurrentState() as T?
-                        ?: error("Current state is null"))
-                if (result is UIState) {
-                    applyState(result)
-                }
-            } catch (e: Throwable) {
-                handleActionError(action, e)
+    suspend fun proceedAction(action: Action<UIState?, *>) {
+        try {
+            val result = action.actionFunction.invoke(this, getCurrentState())
+            if (result is UIState) {
+                applyState(result)
             }
+        } catch (e: Throwable) {
+            onError(action, e)
         }
     }
 
@@ -107,8 +97,8 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    suspend fun handleActionError(action: Action<*, *>, error: Throwable) {
-        launch(UniFlowDispatcher.dispatcher.io()) {
+    fun onError(action: Action<*, *>, error: Throwable) {
+        launch(dispatcher.io()) {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction?.let {
                     it.invoke(this@DataFlow, error)
@@ -138,9 +128,10 @@ suspend fun <T> onIO(block: suspend CoroutineScope.() -> T) = withContext(UniFlo
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>) {
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : UIState?> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>) {
     if (getCurrentState() is T) {
-        safeExecuteAction(Action(fromBlock))
+        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
@@ -149,9 +140,10 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFu
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
+@Suppress("UNCHECKED_CAST")
 inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        safeExecuteAction(Action(fromBlock, errorFunction))
+        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }

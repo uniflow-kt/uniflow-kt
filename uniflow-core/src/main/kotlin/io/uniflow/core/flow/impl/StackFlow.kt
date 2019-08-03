@@ -1,5 +1,9 @@
-package io.uniflow.core.flow
+package io.uniflow.core.flow.impl
 
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.onMain
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,15 +25,15 @@ abstract class StackFlow : DataFlow {
         return null
     }
 
-    override fun getCurrentState(): UIState? {
-        return states.lastOrNull()
-    }
-
     override suspend fun applyState(state: UIState) {
         onMain {
             UniFlowLogger.logState(state)
             states.add(state)
         }
+    }
+
+    override fun getCurrentState(): UIState? {
+        return states.lastOrNull()
     }
 
     open fun cancel() {

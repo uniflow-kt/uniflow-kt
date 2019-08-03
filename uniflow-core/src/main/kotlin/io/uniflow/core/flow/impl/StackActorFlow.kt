@@ -1,26 +1,27 @@
-package io.uniflow.core.flow
+package io.uniflow.core.flow.impl
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import kotlinx.coroutines.GlobalScope
+import io.uniflow.core.flow.Action
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.onIO
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.launch
 
 abstract class StackActorFlow : StackFlow() {
 
-    override fun executeAction(action: Action<UIState?, *>) {
+    override fun onAction(action: Action<UIState?, *>) {
         flowActor.offer(action)
     }
 
     private val flowActor = actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
-            GlobalScope.launch(UniFlowDispatcher.dispatcher.default()) {
+            onIO {
                 try {
                     val result = action.actionFunction.invoke(this, getCurrentState())
                     if (result is UIState) {
                         applyState(result)
                     }
                 } catch (e: Throwable) {
-                    handleActionError(action, e)
+                    onError(action, e)
                 }
             }
         }

@@ -29,7 +29,7 @@ import kotlinx.coroutines.channels.actor
  */
 abstract class AndroidActorFlow : AndroidDataFlow() {
 
-    override fun executeAction(action: Action<UIState?, *>) {
+    override fun onAction(action: Action<UIState?, *>) {
         flowActor.offer(action)
     }
 
@@ -42,7 +42,7 @@ abstract class AndroidActorFlow : AndroidDataFlow() {
                         applyState(result)
                     }
                 } catch (e: Throwable) {
-                    handleActionError(action, e)
+                    onError(action, e)
                 }
             }
         }

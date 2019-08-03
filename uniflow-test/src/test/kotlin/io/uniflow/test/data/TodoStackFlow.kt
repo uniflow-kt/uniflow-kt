@@ -1,13 +1,13 @@
-package io.uniflow.test
+package io.uniflow.test.data
 
-import io.uniflow.core.flow.StackFlow
+import io.uniflow.core.flow.impl.StackFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onIO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-class MyTodoListFlow(private val repository: MyTodoRepository) : StackFlow() {
+class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
 
     init {
         setState { UIState.Empty }

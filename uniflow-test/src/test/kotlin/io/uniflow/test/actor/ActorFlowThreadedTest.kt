@@ -1,58 +1,61 @@
-//package io.uniflow.test
-//
-//import io.uniflow.core.flow.UIEvent
-//import io.uniflow.core.flow.UIState
-//import io.uniflow.core.logger.SimpleMessageLogger
-//import io.uniflow.core.logger.UniFlowLogger
-//import io.uniflow.core.logger.UniFlowLogger.FUN_TAG
-//import io.uniflow.test.rule.TestThreadRule
-//import kotlinx.coroutines.delay
-//import kotlinx.coroutines.runBlocking
-//import org.junit.Assert.assertEquals
-//import org.junit.Assert.assertTrue
-//import org.junit.Before
-//import org.junit.Rule
-//import org.junit.Test
-//
-//class TodoListThreadTest {
-//
-//    init {
-//        UniFlowLogger.init(SimpleMessageLogger(FUN_TAG, debugThread = true))
-//    }
-//
-//    @get:Rule
-//    var coroutinesMainDispatcherRule = TestThreadRule()
-//
-//    val repository = MyTodoRepository()
-//    lateinit var dataFlow: MyTodoListFlow
-//
-//    @Before
-//    fun before() {
-//        dataFlow = MyTodoListFlow(repository)
-//    }
-//
-//    @Test
-//    fun `empty state`() {
-//        assertEquals(UIState.Empty, dataFlow.states.first())
-//    }
-//
-//    @Test
-//    fun `get all`() {
-//        dataFlow.getAll()
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//    }
-//
-//    @Test
-//    fun `add one`() {
-//        dataFlow.getAll()
-//        dataFlow.add("first")
-//
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-//    }
-//
+package io.uniflow.test.actor
+
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.logger.SimpleMessageLogger
+import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLogger.FUN_TAG
+import io.uniflow.test.data.*
+import io.uniflow.test.rule.TestThreadRule
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+class ActorFlowThreadedTest {
+
+    init {
+        UniFlowLogger.init(SimpleMessageLogger(FUN_TAG, debugThread = true))
+    }
+
+    @get:Rule
+    var coroutinesMainDispatcherRule = TestThreadRule()
+
+    val repository = TodoRepository()
+    lateinit var dataFlow: TodoStackActorFlow
+
+    @Before
+    fun before() {
+        dataFlow = TodoStackActorFlow(repository)
+    }
+
+    @Test
+    fun `empty state`() = runBlocking {
+        delay(10)
+        assertEquals(UIState.Empty, dataFlow.states.first())
+    }
+
+    @Test
+    fun `get all`() = runBlocking {
+        dataFlow.getAll()
+        delay(10)
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+    }
+
+    @Test
+    fun `add one`() = runBlocking {
+        dataFlow.getAll()
+        delay(10)
+        dataFlow.add("first")
+        delay(10)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+    }
+
 //    @Test
 //    fun `add one - fail`() {
 //        dataFlow.add("first")
@@ -199,5 +202,5 @@
 //        assertTrue(dataFlow.states.size == 2)
 //        assertTrue(dataFlow.events.size == 0)
 //    }
-//
-//}
+
+}

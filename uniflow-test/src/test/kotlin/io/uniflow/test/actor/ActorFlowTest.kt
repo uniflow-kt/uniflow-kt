@@ -1,34 +1,38 @@
-package io.uniflow.test
+package io.uniflow.test.actor
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.logger.DebugMessageLogger
+import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.test.data.Todo
+import io.uniflow.test.data.TodoListState
+import io.uniflow.test.data.TodoRepository
+import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class TodoListTest {
+class ActorFlowTest {
 
     init {
-        UniFlowLogger.init(DebugMessageLogger())
+        UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
     }
 
+    @ExperimentalCoroutinesApi
     @get:Rule
-    var rule = TestDispatchersRule()
+    var coroutinesMainDispatcherRule = TestDispatchersRule()
 
-    val repository = MyTodoRepository()
-    lateinit var dataFlow: MyTodoListFlow
+    val repository = TodoRepository()
+    lateinit var dataFlow: TodoStackActorFlow
 
     @Before
     fun before() {
-        dataFlow = MyTodoListFlow(repository)
+        dataFlow = TodoStackActorFlow(repository)
     }
 
     @Test
@@ -59,7 +63,7 @@ class TodoListTest {
 
         assertEquals(UIState.Empty, dataFlow.states[0])
 
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        assertTrue(dataFlow.events[0] is UIEvent.BadOrWrongState)
     }
 
     @Test
@@ -112,23 +116,8 @@ class TodoListTest {
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
         assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.last() is UIEvent.Fail)
+        assertTrue(dataFlow.events[0] is UIEvent.Fail)
         assertTrue(dataFlow.events.size == 1)
-    }
-
-    @Test
-    fun `action failed error`() {
-        dataFlow.getAll()
-        dataFlow.add("first")
-        dataFlow.makeOnFailed()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.states.last() is UIState.Failed)
-        assertTrue(dataFlow.events.size == 0)
     }
 
     @Test
@@ -151,7 +140,7 @@ class TodoListTest {
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
 
-        assertTrue(dataFlow.states.last() is UIState.Failed)
+        assertTrue(dataFlow.states[3] is UIState.Failed)
         assertTrue(dataFlow.states.size == 4)
         assertTrue(dataFlow.events.size == 0)
     }
@@ -180,7 +169,7 @@ class TodoListTest {
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertTrue(dataFlow.states.last() is UIState.Failed)
+        assertTrue(dataFlow.states[2] is UIState.Failed)
 
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)

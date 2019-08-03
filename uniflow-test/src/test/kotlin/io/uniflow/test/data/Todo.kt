@@ -1,11 +1,11 @@
-package io.uniflow.test
+package io.uniflow.test.data
 
 import java.util.concurrent.ConcurrentLinkedDeque
 
 
 data class Todo(val title: String, val done: Boolean = false)
 
-class MyTodoRepository {
+class TodoRepository {
 
     private val allTodo = ConcurrentLinkedDeque<Todo>()
     private val max = 10
