@@ -4,7 +4,7 @@ import io.uniflow.core.flow.UIState
 
 suspend fun <R : Any, T : Any> FlowResult<R>.map(result: suspend (R) -> T): FlowResult<T> {
     return when (this) {
-        is FlowResult.Success -> success(result(this.value))
+        is FlowResult.Success -> flowSuccess(result(this.value))
         is FlowResult.Error -> this
     }
 }

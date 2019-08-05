@@ -34,7 +34,7 @@
 //
 //        coEvery { getWeatherDetail(id) } returns weather
 //
-//        vm.success()!!.join()
+//        vm.flowSuccess()!!.join()
 //
 //        Assert.assertEquals(weather.mapToDetailState(), vm.uiDetail)
 //

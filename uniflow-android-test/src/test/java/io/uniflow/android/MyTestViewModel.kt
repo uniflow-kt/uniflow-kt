@@ -15,7 +15,7 @@
 //    var uiDetail: String? = null
 //    var uiError: Throwable? = null
 //
-//    fun success(): Job? {
+//    fun flowSuccess(): Job? {
 //        return launch({
 //            runTask()
 //        })

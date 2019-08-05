@@ -1,11 +1,9 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.dispatcher.UniFlowDispatcher.dispatcher
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Unidirectional Data Flow
@@ -65,12 +63,16 @@ interface DataFlow : CoroutineScope {
      * stateFlowFunction allow to use the StateFlowPublisher.setState(...) function to set any new state
      *
      * @param stateFlowFunction - flow state
-     * @param errorFunction - error function
+     * @param errorFunction - flowError function
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction, errorFunction: ErrorFunction) {
         launch(dispatcher.io()) {
-            val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
-            stateFlowFunction(publisher, getCurrentState())
+            try {
+                val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
+                stateFlowFunction(publisher, getCurrentState())
+            } catch (e: Throwable) {
+                errorFunction(e)?.let { applyState(it) }
+            }
         }
     }
 
@@ -83,22 +85,26 @@ interface DataFlow : CoroutineScope {
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction) {
         launch(dispatcher.io()) {
-            val publisher = StateFlowPublisher(this@DataFlow)
-            stateFlowFunction(publisher, getCurrentState())
+            try {
+                val publisher = StateFlowPublisher(this@DataFlow)
+                stateFlowFunction(publisher, getCurrentState())
+            } catch (e: Throwable) {
+                onError(e)
+            }
         }
     }
 
     /**
-     * If any error occurs and is not caught, this function catch it
+     * If any flowError occurs and is not caught, this function catch it
      * @param error
      */
     suspend fun onError(error: Throwable) {
-        UniFlowLogger.logError("Got error", error)
+        UniFlowLogger.logError("Got flowError", error)
         throw error
     }
 
     /**
-     * Execute the action & catch any error
+     * Execute the action & catch any flowError
      * @param action
      */
     fun onAction(action: Action<UIState?, *>) {
@@ -122,7 +128,7 @@ interface DataFlow : CoroutineScope {
     }
 
     /**
-     * Handle error catch for given withState
+     * Handle flowError catch for given withState
      * @param action
      * @param error
      */

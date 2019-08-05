@@ -123,7 +123,7 @@ class StackFlowThreadedTest {
 //    }
 //
 //    @Test
-//    fun `action error`() {
+//    fun `action flowError`() {
 //        dataFlow.getAll()
 //        dataFlow.add("first")
 //        dataFlow.makeOnError()
@@ -138,7 +138,7 @@ class StackFlowThreadedTest {
 //    }
 //
 //    @Test
-//    fun `action failed error`() {
+//    fun `action failed flowError`() {
 //        dataFlow.getAll()
 //        dataFlow.add("first")
 //        dataFlow.makeOnFailed()
@@ -153,7 +153,7 @@ class StackFlowThreadedTest {
 //    }
 //
 //    @Test
-//    fun `global action error`() = runBlocking {
+//    fun `global action flowError`() = runBlocking {
 //        dataFlow.makeGlobalError()
 //        delay(100)
 //
@@ -163,7 +163,7 @@ class StackFlowThreadedTest {
 //    }
 //
 //    @Test
-//    fun `child io action error`() {
+//    fun `child io action flowError`() {
 //        dataFlow.getAll()
 //        dataFlow.add("first")
 //        dataFlow.childIOError()
@@ -194,7 +194,7 @@ class StackFlowThreadedTest {
 //    }
 //
 //    @Test
-//    fun `child action error`() = runBlocking {
+//    fun `child action flowError`() = runBlocking {
 //        dataFlow.getAll()
 //        dataFlow.asyncChildError()
 //        delay(500)
