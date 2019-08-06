@@ -2,7 +2,7 @@ package io.uniflow.core.result
 
 sealed class FlowResult<out T : Any> {
 
-    data class Success<out T : Any>(val value: T) : FlowResult<T>()
+    data class Success<out T : Any>(internal val value: T) : FlowResult<T>()
     open class Error(val message: String, val exception: Exception? = null) : FlowResult<Nothing>()
 
     override fun toString(): String {
@@ -13,11 +13,11 @@ sealed class FlowResult<out T : Any> {
     }
 }
 
-@Deprecated("use flowSuccess", ReplaceWith("flowSuccess(t)"))
+@Deprecated("use flowSuccess", ReplaceWith("flowSuccess"))
 fun <T : Any> success(t: T): FlowResult<T> = FlowResult.Success(t)
-@Deprecated("use flowError", ReplaceWith("flowError(t)"))
+@Deprecated("use flowError", ReplaceWith("flowError"))
 fun <T : Any> error(exception: Exception): FlowResult<T> = FlowResult.Error(exception.message.orEmpty(), exception)
-@Deprecated("use flowError", ReplaceWith("flowError(t)"))
+@Deprecated("use flowError", ReplaceWith("flowError"))
 fun <T : Any> error(message: String, exception: Exception? = null): FlowResult<T> = FlowResult.Error(message, exception)
 
 fun <T : Any> flowSuccess(t: T): FlowResult<T> = FlowResult.Success(t)
