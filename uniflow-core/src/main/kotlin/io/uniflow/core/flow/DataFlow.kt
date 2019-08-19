@@ -1,9 +1,7 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher.dispatcher
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Unidirectional Data Flow
@@ -66,7 +64,7 @@ interface DataFlow : CoroutineScope {
      * @param errorFunction - flowError function
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction, errorFunction: ErrorFunction) {
-        launch(dispatcher.io()) {
+        launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
                 stateFlowFunction(publisher, getCurrentState())
@@ -84,7 +82,7 @@ interface DataFlow : CoroutineScope {
      * @param stateFlowFunction - flow state
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction) {
-        launch(dispatcher.io()) {
+        launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow)
                 stateFlowFunction(publisher, getCurrentState())
@@ -108,7 +106,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      */
     fun onAction(action: Action<UIState?, *>) {
-        launch(dispatcher.io()) {
+        launchOnIO {
             proceedAction(action)
         }
     }
@@ -133,7 +131,7 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     fun onError(action: Action<*, *>, error: Throwable) {
-        launch(dispatcher.io()) {
+        launchOnIO {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction?.let {
                     it.invoke(this@DataFlow, error)

@@ -1,9 +1,9 @@
 
-# UniFlow 🦄 - A Simple Unidirectional Data Flow framework for Android, using Kotlin coroutines
+# UniFlow 🦄 - Unidirectional Data Flow for Kotlin & Android, using coroutines 🚀
 
 ## Current Version
 
-Uniflow current version is `0.4.1`
+#### Uniflow current version is `0.4.3`
 
 ## Setup
 
@@ -19,9 +19,48 @@ implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-## What is UniFlow?
+## Unidirectional Data Flow
 
-A Simple Unidirectional Data Flow framework for Android, using Kotlin Coroutines
+Unidirectional Data Flow is a concept that came in the Javascript/React ecosystem.
+
+In general this concept means that data has one, and only one, way to be transferred to other parts of the application.
+
+This means that:
+
+- state is passed to the view
+- actions are triggered by the view
+- actions can update the state
+- the state change is passed to the view
+
+The view is a result of the application state. State can only change when actions happen. When actions happen, the state is updated.
+
+Thanks to one-way bindings, data cannot flow in the opposite way (as would happen with two-way bindings, for example), and this has some key advantages:
+
+it’s less error prone, as you have more control over your data
+it’s easier to debug, as you know what is coming from where
+
+## Why UniFlow🦄?
+
+UniFlow help you write your app with states and events to ensure consistency through the time.
+
+UniFlow provides:
+
+* Easy way to write a Data flow in pure Kotlin
+* Android extensions around ViewModel component, to let you just focus on States & Events
+* Smart error handling to drive your data until your ViewModel
+* Everything is ready for Coroutines
+* Test easily of your data flow
+
+
+## Describe your app with States
+
+## Running with your states
+
+## Ready for coroutines
+
+## Smart error handling
+
+## Easily testing
 
 
 Describe your data flow states with `UIState`:
