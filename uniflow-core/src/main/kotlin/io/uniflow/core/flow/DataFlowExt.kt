@@ -18,7 +18,7 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline fromBlock: ActionF
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
+        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>, errorFunction))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
