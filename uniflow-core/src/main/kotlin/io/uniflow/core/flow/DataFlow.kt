@@ -63,7 +63,7 @@ interface DataFlow : CoroutineScope {
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
      */
-    fun stateFlow(stateFlowFunction: StateFlowFunction, errorFunction: ErrorFunction) {
+    fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>, errorFunction: ErrorFunction) {
         launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
@@ -81,7 +81,7 @@ interface DataFlow : CoroutineScope {
      *
      * @param stateFlowFunction - flow state
      */
-    fun stateFlow(stateFlowFunction: StateFlowFunction) {
+    fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>) {
         launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow)

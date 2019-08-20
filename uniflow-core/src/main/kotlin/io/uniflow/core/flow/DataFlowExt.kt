@@ -25,18 +25,18 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFu
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction) {
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction<T>) {
     if (getCurrentState() is T) {
-        stateFlow(stateFlowFunction)
+        stateFlow(stateFlowFunction as StateFlowFunction<UIState?>)
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction, noinline errorFunction: ErrorFunction) {
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction<T>, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        stateFlow(stateFlowFunction, errorFunction)
+        stateFlow(stateFlowFunction as StateFlowFunction<UIState?>, errorFunction)
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
