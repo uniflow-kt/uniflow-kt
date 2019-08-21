@@ -97,7 +97,7 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     suspend fun onError(error: Throwable) {
-        UniFlowLogger.logError("Got flowError", error)
+        UniFlowLogger.logError("Got Flow Error", error)
         throw error
     }
 
