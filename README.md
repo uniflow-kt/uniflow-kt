@@ -79,7 +79,9 @@ class WeatherActivity : AppCompatActivity {
 
 	val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
 	
-		override fun onCreate(savedInstanceState: Bundle?) {		// Observe incoming states
+		override fun onCreate(savedInstanceState: Bundle?) {		
+		
+		// Observe incoming states
 		onStates(weatherFlow) { state ->
 			when (state) {
 				// react on WeatherState update
@@ -102,9 +104,9 @@ lateinit var dataFlow : WeatherDataFlow
 @Before
 fun before() {
 	// create WeatherDataFlow instance with mocked WeatherRepository
-   dataFlow = WeatherDataFlow(mockedRepo)
-   // create mocked observer
-   view = detailViewModel.mockObservers()
+	dataFlow = WeatherDataFlow(mockedRepo)
+	// create mocked observer
+	view = detailViewModel.mockObservers()
 }
 ```
 
