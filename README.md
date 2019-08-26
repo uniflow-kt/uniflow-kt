@@ -77,18 +77,16 @@ Observe your state flow from your Activity or Fragment:
 ```kotlin
 class WeatherActivity : AppCompatActivity {
 
-    val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
-
-     override fun onCreate(savedInstanceState: Bundle?) {
-     
-        // Observe incoming states
-        onStates(weatherFlow) { state ->
-            when (state) {
-            		// react on WeatherState update
-                is WeatherState -> showWeather(state)
-            }
-        }
-    }
+	val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
+	
+		override fun onCreate(savedInstanceState: Bundle?) {		// Observe incoming states
+		onStates(weatherFlow) { state ->
+			when (state) {
+				// react on WeatherState update
+				is WeatherState -> showWeather(state)
+			}
+		}
+	}
 }
 
 ```
