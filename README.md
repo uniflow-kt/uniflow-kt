@@ -103,9 +103,10 @@ lateinit var dataFlow : WeatherDataFlow
 
 @Before
 fun before() {
-    dataFlow = WeatherDataFlow(mockedRepo)
-    // create mocked observer
-    view = detailViewModel.mockObservers()
+	// create WeatherDataFlow instance with mocked WeatherRepository
+   dataFlow = WeatherDataFlow(mockedRepo)
+   // create mocked observer
+   view = detailViewModel.mockObservers()
 }
 ```
 
@@ -114,18 +115,18 @@ Now you can test incoming states with `hasState`. We are providing Mockk to help
 ```kotlin
 @Test
 fun `has some weather`() {
-   // test data
+	// prepare test data
 	val weatherData = WeatherData(...)
-	// mocked call
+	// setup mocked call
 	coEvery { mockedRepo.getWeatherForToday() } return weatherData
-	
-	// Call DataFlow action
-   dataFlow.getWeather()
-	
+		
+	// Call getWeather()
+	dataFlow.getWeather()
+		
 	// verify state
-    verifySequence {
-        view.hasState(WeatherState(weatherData.day, weatherData.temperature))
-    }
+	verifySequence {
+	    view.hasState(WeatherState(weatherData.day, weatherData.temperature))
+	}
 }
 ```
 
@@ -133,7 +134,9 @@ fun `has some weather`() {
 
 ## Ready for coroutines
 
-## FlowResult: coroutines & functional
+Threading primitives
+
+## FlowResult: smart fucntional coroutines
 
 ## More test tools
 
