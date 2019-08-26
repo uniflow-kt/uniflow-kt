@@ -131,9 +131,21 @@ fun `has some weather`() {
 
 ## Actions, States & Events
 
+### Writing states with immutable data
+
+To describe your data flow states, inherit from `UIState` class directly or by sealed class:
+
+```kotlin
+class WeatherStates : UIState(){
+	object LoadingWeather : WeatherStates()
+	data class WeatherState(val day : String, val temperature : String) : WeatherStates()
+}
+
+```
+
 ### Updating current state
 
-SetState help you to set a new state:
+`SetState` is an action builder to set a new state:
 
 ```kotlin
 // update the current state
@@ -143,8 +155,20 @@ fun getWeather() = setState{
 }
 ```
 
+Don't forget to listen to states from your Activity/Fragment with `onStates`:
 
-FromState help you save a state only if you are in the given state, else send BadOrWrongState event:
+```kotlin
+// Observe incoming states
+onStates(weatherFlow) { state ->
+	when (state) {
+		// react on WeatherState update
+		is WeatherState -> showWeather(state)
+	}
+}
+```
+
+
+`FromState` help you save a state only if you are in the given state, else send BadOrWrongState event:
 
 ```kotlin
 // Execute this state update only if current state is in WeatherListState
@@ -153,6 +177,8 @@ fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
     // ...
 }
 ```
+
+### Side effets
 
 For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
 
@@ -163,7 +189,9 @@ fun getWeather() = withState {
 }
 ```
 
-### StateFlow: several state updates from one action
+### StateFlow: multiple state updates from one action
+
+When you need to publish several states from one action function, then you can't use one of the function above. Use the `stateFlow` action builder to let you publish states when needed, with `setState()` function:
 
 ```kotlin
 // push state updates
@@ -187,13 +215,15 @@ sealed class WeatherEvent : UIEvent() {
 }
 ```
 
+Note that, like States, Events are immutable data too.
+
 From your Data Flow VIewModel, trigger events with `sendEvent()`:
 
 ```kotlin
 	fun loadNewLocation(location: String) = fromState<WeatherListState>{
-        // send event
-        sendEvent(WeatherEvent.Success(location))
-    }
+	    // send event
+	    sendEvent(WeatherEvent.Success(location))
+	}
 }
 
 ```
@@ -218,9 +248,6 @@ On an event, you can either `take()` or `peek()` its data:
 
 
 ## Smart Coroutines
-
-### Handling Threading
-
 
 ### Clean Error Handling
 
@@ -252,8 +279,11 @@ class WeatherViewModelFlow : AndroidDataFlow() {
 }
 ```
 
+### Handling Coroutines Threading
+
 
 ### FlowResult: functional coroutines
+
 
 ## More tools for test
 
