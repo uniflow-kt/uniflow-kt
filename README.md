@@ -135,9 +135,9 @@ fun `has some weather`() {
 
 Threading primitives
 
-## FlowResult: smart fucntional coroutines
+## FlowResult: smart functional coroutines
 
-## More test tools
+## More tools for test
 
 SetState help you register a new state:
 
