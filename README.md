@@ -129,47 +129,53 @@ fun `has some weather`() {
 }
 ```
 
-## Actions & events
+## Actions, States & Events
 
-## Ready for coroutines
+### Updating current state
 
-Threading primitives
-
-## FlowResult: smart functional coroutines
-
-## More tools for test
-
-SetState help you register a new state:
+SetState help you to set a new state:
 
 ```kotlin
 // update the current state
-fun getDetail() = setState{
-        // return directly your state object
-        WeatherState(...)
-    }
+fun getWeather() = setState{
+    // return directly your state object
+    WeatherState(...)
+}
 ```
 
 
-FromState help you register a state if you are in the given state, else send BadOrWrongState event:
+FromState help you save a state only if you are in the given state, else send BadOrWrongState event:
 
 ```kotlin
 // Execute this state update only if current state is in WeatherListState
-fun loadNewLocation(location: String) = fromState<WeatherListState>{ currentState ->
-        // currentState is WeatherListState
-        // ...
-    }
+fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
+    // currentState is WeatherListState
+    // ...
+}
 ```
 
-For more side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
+For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
 
 ```kotlin
-fun getDetail() = withState {
-        // won't update the current state
-    }
+fun getWeather() = withState {
+    sendEvent(...)
+    // won't update the current state
+}
 ```
 
+### StateFlow: several state updates from one action
 
-## Trigger also Events
+```kotlin
+// push state updates
+fun getWeather() = stateFlow {
+	// Set loading state
+	setState(UIState.Loading)
+	// return directly your state object
+	setState(WeatherState(...))
+}
+```
+
+### Triggering events
 
 For fire and forget side effects/events, define some events with `UIEvent`:
 
@@ -184,22 +190,10 @@ sealed class WeatherEvent : UIEvent() {
 From your Data Flow VIewModel, trigger events with `sendEvent()`:
 
 ```kotlin
-class WeatherListViewModel(
-        private val getCurrentWeather: GetCurrentWeather,
-        private val getWeatherForLocation: GetWeatherForGivenLocation
-) : AndroidDataFlow() {
-
-
-    fun loadNewLocation(location: String) = fromState<WeatherListState> (
-            {
-                // send event
-                sendEvent(WeatherEvent.Success(location))
-
-            },
-            { error ->
-                // on error send event
-                sendEvent(WeatherEvent.Failed(location,error))
-            })
+	fun loadNewLocation(location: String) = fromState<WeatherListState>{
+        // send event
+        sendEvent(WeatherEvent.Success(location))
+    }
 }
 
 ```
@@ -223,8 +217,12 @@ On an event, you can either `take()` or `peek()` its data:
 - `peek` - peek the event's data, even if the data has been consumed
 
 
-## Clean Error Handling
+## Smart Coroutines
 
+### Handling Threading
+
+
+### Clean Error Handling
 
 Each action allow you to provide an error handling function. You can also catch any error more globally:
 
@@ -254,7 +252,12 @@ class WeatherViewModelFlow : AndroidDataFlow() {
 }
 ```
 
-## Scheduling & Testing
+
+### FlowResult: functional coroutines
+
+## More tools for test
+
+### Scheduling & Testing
 
 First don't forget to use thr following rule:
 
@@ -267,16 +270,4 @@ var rule = TestDispatchersRule()
 
 You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
 
-## Easy testing with Mockk
 
-also check incoming events with `hasEvents`:
-
-```kotlin
-@Test
-fun testGetLastWeather() {
-    detailViewModel.getDetail()
-
-    verifySequence {
-        view.hasEventWeatherListUIEvent.Success)
-    }
-}
