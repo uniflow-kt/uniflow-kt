@@ -79,8 +79,7 @@ class WeatherActivity : AppCompatActivity {
 
 	val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
 	
-		override fun onCreate(savedInstanceState: Bundle?) {		
-		
+	override fun onCreate(savedInstanceState: Bundle?) {		
 		// Observe incoming states
 		onStates(weatherFlow) { state ->
 			when (state) {
@@ -119,13 +118,13 @@ fun `has some weather`() {
 	val weatherData = WeatherData(...)
 	// setup mocked call
 	coEvery { mockedRepo.getWeatherForToday() } return weatherData
-		
+
 	// Call getWeather()
 	dataFlow.getWeather()
 		
 	// verify state
 	verifySequence {
-	    view.hasState(WeatherState(weatherData.day, weatherData.temperature))
+		view.hasState(WeatherState(weatherData.day, weatherData.temperature))
 	}
 }
 ```
