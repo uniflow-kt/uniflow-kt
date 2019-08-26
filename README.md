@@ -1,29 +1,9 @@
 
-# UniFlow 🦄 - Unidirectional Data Flow for Kotlin & Android, using coroutines 🚀
+# UniFlow 🦄 - Unidirectional Data Flow for Android, using Kotlin coroutines
 
-## Current Version
+## What is Unidirectional Data Flow?
 
-#### Uniflow current version is `0.4.3`
-
-## Setup
-
-Choose one of the following dependency:
-
-```gradle
-// Android
-implementation 'io.uniflow:uniflow-android:$version'
-testImplementation 'io.uniflow:uniflow-android-test:$version'
-
-// AndroidX
-implementation 'io.uniflow:uniflow-androidx:$version'
-testImplementation 'io.uniflow:uniflow-androidx-test:$version'
-```
-
-## Unidirectional Data Flow
-
-Unidirectional Data Flow is a concept that came in the Javascript/React ecosystem.
-
-In general this concept means that data has one, and only one, way to be transferred to other parts of the application.
+Unidirectional Data Flow is a concept that means that data has one, and only one, way to be transferred to other parts of the application.
 
 This means that:
 
@@ -41,49 +21,53 @@ it’s easier to debug, as you know what is coming from where
 
 ## Why UniFlow🦄?
 
-UniFlow help you write your app with states and events to ensure consistency through the time.
+UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
 
 UniFlow provides:
 
-* Easy way to write a Data flow in pure Kotlin
-* Android extensions around ViewModel component, to let you just focus on States & Events
-* Smart error handling to drive your data until your ViewModel
-* Everything is ready for Coroutines
-* Test easily of your data flow
+* Smart way to write a Data flow in pure Kotlin
+* Android extensions to let you just focus on States & Events
+* Ready for Kotlin coroutines
+* Easy to test
 
+## Setup
 
-## Describe your app with States
+#### Current version is `0.6.2`
 
-## Running with your states
+Choose one of the following dependency:
 
-## Ready for coroutines
+```gradle
+// Android
+implementation 'io.uniflow:uniflow-android:$version'
+testImplementation 'io.uniflow:uniflow-android-test:$version'
 
-## Smart error handling
+// AndroidX
+implementation 'io.uniflow:uniflow-androidx:$version'
+testImplementation 'io.uniflow:uniflow-androidx-test:$version'
+```
 
-## Easily testing
+this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
+## Quick intro
+
+### Writing your first UI state
 
 Describe your data flow states with `UIState`:
 
 ```kotlin
-data class WeatherState(val weather : Weather) : UIState()
+data class WeatherState(val day : String, val temperature : String) : UIState()
 ```
 
-Publish states from your ViewModel:
+Publish state updates from your ViewModel:
 
 ```kotlin
-class WeatherViewModelFlow : AndroidDataFlow() {
+class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow() {
 
-    init {
-        // init state as Loading
-        setState { UIState.Loading }
-    }
-
-    fun getMyWeather(val day : String) = setState {
-        // Background call
-        val weather = getWeatherForDay(day).await()
-        // return state to UI
-        WeatherState(weather)
+    fun getWeather() = setState {
+        // call to get data
+        val weather = repo.getWeatherForToday().await()
+        // return a new state
+        WeatherState(weather.day, weather.temperature)
     }
 }
 ```
@@ -93,17 +77,15 @@ Observe your state flow from your Activity or Fragment:
 ```kotlin
 class WeatherActivity : AppCompatActivity {
 
-    // ViewModel instance here
-    val myWeatherFlow : WeatherViewModelFlow ...
+    val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
 
      override fun onCreate(savedInstanceState: Bundle?) {
      
         // Observe incoming states
-        onStates(myWeatherFlow) { state ->
+        onStates(weatherFlow) { state ->
             when (state) {
-                is UIState.Loading -> showLoading()
+            		// react on WeatherState update
                 is WeatherState -> showWeather(state)
-                is UIState.Failed -> showError(state.error)
             }
         }
     }
@@ -111,7 +93,49 @@ class WeatherActivity : AppCompatActivity {
 
 ```
 
-## SetState, WithState, FromState
+### Easy testing!
+
+Create your ViewModel instance and mock your states observer:
+
+```kotlin
+val mockedRepo : WeatherRepository = mockk(relaxed = true)
+lateinit var dataFlow : WeatherDataFlow
+
+@Before
+fun before() {
+    dataFlow = WeatherDataFlow(mockedRepo)
+    // create mocked observer
+    view = detailViewModel.mockObservers()
+}
+```
+
+Now you can test incoming states with `hasState`. We are providing Mockk to help mock underlying coroutines call: 
+
+```kotlin
+@Test
+fun `has some weather`() {
+   // test data
+	val weatherData = WeatherData(...)
+	// mocked call
+	coEvery { mockedRepo.getWeatherForToday() } return weatherData
+	
+	// Call DataFlow action
+   dataFlow.getWeather()
+	
+	// verify state
+    verifySequence {
+        view.hasState(WeatherState(weatherData.day, weatherData.temperature))
+    }
+}
+```
+
+## Actions & events
+
+## Ready for coroutines
+
+## FlowResult: coroutines & functional
+
+## More test tools
 
 SetState help you register a new state:
 
@@ -242,30 +266,6 @@ var rule = TestDispatchersRule()
 You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
 
 ## Easy testing with Mockk
-
-Create your ViewModel instance and mock your states/events observer (``view` here):
-
-```kotlin
-@Before
-fun before() {
-    detailViewModel = DetailViewModel(id, getWeatherDetail)
-    view = detailViewModel.mockObservers()
-}
-```
-
-Now you can test incoming states with `hasState`:
-
-```kotlin
-@Test
-fun testGetLastWeather() {
-    detailViewModel.getDetail()
-
-    verifySequence {
-        view.hasState(UIState.Loading)
-        view.hasState(WeatherDetail(...))
-    }
-}
-```
 
 also check incoming events with `hasEvents`:
 
