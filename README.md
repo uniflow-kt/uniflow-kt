@@ -1,35 +1,6 @@
 
 # UniFlow 🦄 - Unidirectional Data Flow for Android, using Kotlin coroutines
 
-## What is Unidirectional Data Flow?
-
-Unidirectional Data Flow is a concept that means that data has one, and only one, way to be transferred to other parts of the application.
-
-This means that:
-
-- state is passed to the view
-- actions are triggered by the view
-- actions can update the state
-- the state change is passed to the view
-
-The view is a result of the application state. State can only change when actions happen. When actions happen, the state is updated.
-
-Thanks to one-way bindings, data cannot flow in the opposite way (as would happen with two-way bindings, for example), and this has some key advantages:
-
-it’s less error prone, as you have more control over your data
-it’s easier to debug, as you know what is coming from where
-
-## Why UniFlow🦄?
-
-UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
-
-UniFlow provides:
-
-* Smart way to write a Data flow in pure Kotlin
-* Android extensions to let you just focus on States & Events
-* Ready for Kotlin coroutines
-* Easy to test
-
 ## Setup
 
 #### Current version is `0.6.2`
@@ -49,6 +20,37 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
 ## Quick intro
+
+### What is Unidirectional Data Flow?
+
+Unidirectional Data Flow is a concept that means that data has one, and only one, way to be transferred to other parts of the application.
+
+This means that:
+
+- state is passed to the view
+- actions are triggered by the view
+- actions can update the state
+- the state change is passed to the view
+
+The view is a result of the application state. State can only change when actions happen. When actions happen, the state is updated.
+
+Thanks to one-way bindings, data cannot flow in the opposite way (as would happen with two-way bindings, for example), and this has some key advantages:
+
+it’s less error prone, as you have more control over your data
+it’s easier to debug, as you know what is coming from where
+
+### Why UniFlow🦄?
+
+UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
+
+UniFlow provides:
+
+* Smart way to write a Data flow in pure Kotlin
+* Android extensions to let you just focus on States & Events
+* Ready for Kotlin coroutines
+* Easy to test
+
+## Getting Started
 
 ### Writing your first UI state
 
@@ -131,9 +133,31 @@ fun `has some weather`() {
 
 ## Actions, States & Events
 
-### Writing states with immutable data
+Your ViewModel class, aka your DataFlow, will provide `actions` that will trigger states and events.
 
-To describe your data flow states, inherit from `UIState` class directly or by sealed class:
+An action is a simple function, that directly use one state operator:
+
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
+    
+    // getWeather action
+    fun getWeather() = setState {
+        ...
+    }
+}
+```
+
+The state operator are the following:
+
+- `setState { current -> ... newState}` - from current state, udpate the current state
+- `withState { current -> ... }` - from current state, do a side effect
+- `fromState<T> { current as T -> newState }` - from current state <T>, udpate the current state
+- `stateFlow { setState() ... }` - allow several state updates from same flow/job
+
+
+### Writing states as immutable data
+
+To describe your data flow states, inherit from `UIState` class directly or use a sealed class as follow:
 
 ```kotlin
 class WeatherStates : UIState(){
@@ -143,9 +167,9 @@ class WeatherStates : UIState(){
 
 ```
 
-### Updating current state
+### Updating the current state
 
-`SetState` is an action builder to set a new state:
+`SetState` is an action builder to simply set a new state:
 
 ```kotlin
 // update the current state
@@ -167,11 +191,10 @@ onStates(weatherFlow) { state ->
 }
 ```
 
-
-`FromState` help you save a state only if you are in the given state, else send BadOrWrongState event:
+The `FromState<T>` operator, help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
 
 ```kotlin
-// Execute this state update only if current state is in WeatherListState
+// Execute loadNewLocation action only if current state is in WeatherListState
 fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
     // currentState is WeatherListState
     // ...
