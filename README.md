@@ -19,7 +19,7 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
-## Quick intro
+## Quick intro 🚸
 
 ### What is Unidirectional Data Flow?
 
@@ -50,7 +50,7 @@ UniFlow provides:
 * Ready for Kotlin coroutines
 * Easy to test
 
-## Getting Started
+## Getting Started 🚀
 
 ### Writing your first UI state
 
@@ -131,7 +131,7 @@ fun `has some weather`() {
 }
 ```
 
-## Actions, States & Events
+## Actions, States & Events 🔄
 
 Your ViewModel class, aka your DataFlow, will provide `actions` that will trigger states and events.
 
@@ -147,12 +147,12 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-The state operator are the following:
+The state mutation operator are the following:
 
 - `setState { current -> ... newState}` - from current state, udpate the current state
-- `withState { current -> ... }` - from current state, do a side effect
 - `fromState<T> { current as T -> newState }` - from current state <T>, udpate the current state
 - `stateFlow { setState() ... }` - allow several state updates from same flow/job
+- `withState { current -> ... }` - from current state, do a side effect
 
 
 ### Writing states as immutable data
@@ -201,17 +201,6 @@ fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
 }
 ```
 
-### Side effets
-
-For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
-
-```kotlin
-fun getWeather() = withState {
-    sendEvent(...)
-    // won't update the current state
-}
-```
-
 ### StateFlow: multiple state updates from one action
 
 When you need to publish several states from one action function, then you can't use one of the function above. Use the `stateFlow` action builder to let you publish states when needed, with `setState()` function:
@@ -226,9 +215,18 @@ fun getWeather() = stateFlow {
 }
 ```
 
-### Triggering events
+### Side effets & events
 
-For fire and forget side effects/events, define some events with `UIEvent`:
+For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
+
+```kotlin
+fun getWeather() = withState {
+    sendEvent(...)
+    // won't update the current state
+}
+```
+
+The same way you define States, we define events from `UIEvent` class, as immutable Kotlin data:
 
 ```kotlin
 // Events definition
@@ -238,12 +236,10 @@ sealed class WeatherEvent : UIEvent() {
 }
 ```
 
-Note that, like States, Events are immutable data too.
-
-From your Data Flow VIewModel, trigger events with `sendEvent()`:
+From your VIewModel, simply trigger an event with `sendEvent()` function:
 
 ```kotlin
-	fun loadNewLocation(location: String) = fromState<WeatherListState>{
+	fun getWeather() = withState {
 	    // send event
 	    sendEvent(WeatherEvent.Success(location))
 	}
@@ -251,9 +247,10 @@ From your Data Flow VIewModel, trigger events with `sendEvent()`:
 
 ```
 
-_note_: sendEvent() return a null state (UIState?). Can help write
+_note_: sendEvent() can be used in any state mutation operator
 
-Observe events from your ViewModel with `onEvent`:
+
+To observe events from your Activity/Fragment view class, use the  `onEvent` fucntion with your ViewModel instance:
 
 ```kotlin
 onEvents(viewModel) { event ->
@@ -270,42 +267,59 @@ On an event, you can either `take()` or `peek()` its data:
 - `peek` - peek the event's data, even if the data has been consumed
 
 
-## Smart Coroutines
+## Smart Coroutines ✨🦄
 
-### Clean Error Handling
+### Coroutines, the easy way
 
-Each action allow you to provide an error handling function. You can also catch any error more globally:
+Every action launched by a DataFlow is runned in a coroutines context, by default on IO Thread. Then you know that by default, we launch things in background for you 👍
 
+If you need to switch context of the current thread you use from your action:
+
+- `onIO { }` - equivalent of withContext(IO dispatcher)
+- `onMain { }` - equivalent of withContext(IO Main)
+- `onDefault { }` - equivalent of withContext(IO default)
+
+And if you need to launch a job on different thread, use:
+
+- `launchOnIO { }` - equivalent of withContext(IO dispatcher)
+- `launchOnMain { }` - equivalent of withContext(IO Main)
+- `launchOnDefault { }` - equivalent of withContext(IO default)
+
+_note_: we simplify here the wirting of such threading operator, as we also make an asbtaction around the used dispatcher to help further testing. See testing section below.
+
+### Error handling out of the box
+
+Each action is surrounded by a `try/catch` block for you under the hood. It avoids you to use `try/catch` block every where around your code. Then you can catch errors in 2 ways: 
+
+- provide a second function passed to the state mutation operator, that receive an error:
 
 ```kotlin
-class WeatherViewModelFlow : AndroidDataFlow() {
+class WeatherDataFlow(...) : AndroidDataFlow() {
 
-    init {
-        // init state as Loading
-        setState { UIState.Loading }
-    }
-
-    fun getMyWeather(val day : String) = setState(
-        { lastState ->
-            // Background call
-            val weather = getWeatherForDay(day).await()
-            // return state to UI
-            WeatherState(weather)
-        },
-        { error -> // get error here })
-
-    // Unhandled errors here
-    override suspend fun onError(error: Throwable){
-        // ...
-    }
-
+    fun getWeather() = setState({
+        // call to get data
+        val weather = repo.getWeatherForToday().await()
+        // return a new state
+        WeatherState(weather.day, weather.temperature)
+    }, { error -> // get error here })
+    
 }
 ```
 
-### Handling Coroutines Threading
+- override the `onError` function to receive any uncaught exception:
 
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
 
-### FlowResult: functional coroutines
+    // Unhandled errors here
+    override suspend fun onError(error: Throwable){
+        // get error here
+    }
+}
+```
+
+### FlowResult: functional coroutines until the UI
+
 
 
 ## More tools for test
