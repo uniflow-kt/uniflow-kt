@@ -1,6 +1,14 @@
 package io.uniflow.core.result
 
-suspend fun <T : Any> result(code: suspend () -> T, onError: suspend (Throwable) -> FlowResult<T>): FlowResult<T> {
+suspend fun <T : Any> result(code: suspend () -> FlowResult<T>, onError: suspend (Throwable) -> FlowResult<T>): FlowResult<T> {
+    return try {
+        code()
+    } catch (e: Throwable) {
+        onError(e)
+    }
+}
+
+suspend fun <T : Any> resultForValue(code: suspend () -> T, onError: suspend (Throwable) -> FlowResult<T>): FlowResult<T> {
     return try {
         flowSuccess(code())
     } catch (e: Throwable) {
