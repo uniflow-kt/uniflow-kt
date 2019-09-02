@@ -52,7 +52,7 @@ class ErrorResultTest {
     @Test
     fun `map State`() = runBlocking {
         val result = errorResult(error)
-                .mapState { UIState.Success }
+                .mapState({ UIState.Success }, { UIState.Failed(error = it) })
 
         assertTrue(result.get() == UIState.Failed(error = error))
     }

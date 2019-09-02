@@ -11,15 +11,15 @@ fun <T : Any> T.asSafeResult(): SafeResult<T> = safeResult(this)
 suspend fun <T : Any> safeCall(expr: suspend () -> T): SafeResult<T> {
     return try {
         expr().asSafeResult()
-    } catch (exception: Throwable) {
-        SafeResult.Error(exception)
+    } catch (error: Exception) {
+        SafeResult.Error(error)
     }
 }
 
-suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Throwable) -> Throwable): SafeResult<T> {
+suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Exception) -> Exception): SafeResult<T> {
     return try {
         expr().asSafeResult()
-    } catch (exception: Throwable) {
+    } catch (exception: Exception) {
         SafeResult.Error(onError(exception))
     }
 }
@@ -27,15 +27,15 @@ suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Throwable) -> Th
 suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>): SafeResult<T> {
     return try {
         expr()
-    } catch (exception: Throwable) {
+    } catch (exception: Exception) {
         SafeResult.Error(exception)
     }
 }
 
-suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>, onError: (Throwable) -> Throwable): SafeResult<T> {
+suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>, onError: (Exception) -> Exception): SafeResult<T> {
     return try {
         expr()
-    } catch (exception: Throwable) {
+    } catch (exception: Exception) {
         SafeResult.Error(onError(exception))
     }
 }

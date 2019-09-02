@@ -52,7 +52,7 @@ class SuccessResultTest {
     @Test
     fun `map State`() = runBlocking {
         val result = value.asSafeResult()
-                .mapState { UIState.Success }
+                .map { UIState.Success }
 
         assertTrue(result.get() == UIState.Success)
     }
