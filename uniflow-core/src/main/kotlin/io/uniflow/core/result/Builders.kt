@@ -24,15 +24,31 @@ suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Throwable) -> Th
     }
 }
 
+suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>): SafeResult<T> {
+    return try {
+        expr()
+    } catch (exception: Throwable) {
+        SafeResult.Error(exception)
+    }
+}
+
+suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>, onError: (Throwable) -> Throwable): SafeResult<T> {
+    return try {
+        expr()
+    } catch (exception: Throwable) {
+        SafeResult.Error(onError(exception))
+    }
+}
+
 suspend fun <T : Any> networkCall(expr: suspend () -> T): SafeResult<T> {
     return safeCall(expr) { error ->
-        NetworkException(error)
+        NetworkException(error = error)
     }
 }
 
 suspend fun <T : Any> databaseCall(expr: suspend () -> T): SafeResult<T> {
     return safeCall(expr) { error ->
-        DatabaseException(error)
+        DatabaseException(error = error)
     }
 }
 
