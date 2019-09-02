@@ -25,4 +25,7 @@ open class UIEvent {
     object Success : UIEvent()
     data class Fail(val message: String? = null, val error: Throwable? = null) : UIEvent()
     data class BadOrWrongState(val currentState: UIState? = null) : UIEvent()
+
+    data class DatabaseRequestFailure(val error: Throwable) : UIEvent()
+    data class NetworkRequestFailure(val error: Throwable) : UIEvent()
 }
