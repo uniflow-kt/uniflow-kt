@@ -5,7 +5,7 @@ references:
 # Cache Configuration
 # ----------------------------
   cache_key: &cache_key
-    key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "demo-app/build.gradle" }}
+    key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}
   restore_dependency_cache: &restore_dependency_cache
     restore_cache:
       <<: *cache_key
