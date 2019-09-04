@@ -13,6 +13,9 @@ class SuccessResultTest {
     fun `create result`() {
         val result = value.asSafeResult()
         assertTrue(result.get() == value)
+
+        assertTrue(result.isSuccess())
+        assertTrue(!result.isError())
     }
 
     @Test

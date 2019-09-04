@@ -13,6 +13,9 @@ class ErrorResultTest {
     fun `create result`() {
         val result = errorResult(error)
         assertTrue(result.getOrNull() == null)
+
+        assertTrue(!result.isSuccess())
+        assertTrue(result.isError())
     }
 
     @Test
