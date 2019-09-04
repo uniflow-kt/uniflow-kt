@@ -42,7 +42,7 @@ class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, debugThread: Boo
         Log.i(tag,"$dbg_th<EVENT> - $event")
     }
 
-    override fun logError(errorMessage: String, error: Throwable?) {
+    override fun logError(errorMessage: String, error: Exception?) {
         Log.e(tag,"$dbg_th!ERROR! - $errorMessage :: $error")
     }
 }

@@ -27,5 +27,5 @@ interface Logger {
     fun log(message: String)
     fun logState(state: UIState)
     fun logEvent(event: UIEvent)
-    fun logError(errorMessage: String, error: Throwable? = null)
+    fun logError(errorMessage: String, error: Exception? = null)
 }

@@ -68,7 +68,7 @@ interface DataFlow : CoroutineScope {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
                 stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 errorFunction(e)?.let { applyState(it) }
             }
         }
@@ -86,7 +86,7 @@ interface DataFlow : CoroutineScope {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow)
                 stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 onError(e)
             }
         }
@@ -96,7 +96,7 @@ interface DataFlow : CoroutineScope {
      * If any flowError occurs and is not caught, this function catch it
      * @param error
      */
-    suspend fun onError(error: Throwable) {
+    suspend fun onError(error: Exception) {
         UniFlowLogger.logError("Got Flow Error", error)
         throw error
     }
@@ -120,7 +120,7 @@ interface DataFlow : CoroutineScope {
             if (result is UIState) {
                 applyState(result)
             }
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             onError(action, e)
         }
     }
@@ -130,7 +130,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    fun onError(action: Action<*, *>, error: Throwable) {
+    fun onError(action: Action<*, *>, error: Exception) {
         launchOnIO {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction?.let {

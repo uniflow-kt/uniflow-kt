@@ -20,7 +20,7 @@ abstract class StackActorFlow : StackFlow() {
                     if (result is UIState) {
                         applyState(result)
                     }
-                } catch (e: Throwable) {
+                } catch (e: Exception) {
                     onError(action, e)
                 }
             }

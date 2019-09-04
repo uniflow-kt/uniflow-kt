@@ -8,4 +8,4 @@ typealias ActionFunction<R, T> = suspend CoroutineScope.(R) -> T
 
 typealias StateFlowFunction<T> = suspend StateFlowPublisher.(T) -> Unit
 
-typealias ErrorFunction = suspend CoroutineScope.(Throwable) -> UIState?
+typealias ErrorFunction = suspend CoroutineScope.(Exception) -> UIState?

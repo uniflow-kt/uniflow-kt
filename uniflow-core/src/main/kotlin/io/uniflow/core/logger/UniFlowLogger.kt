@@ -37,7 +37,7 @@ object UniFlowLogger : Logger {
 
     override fun logEvent(event: UIEvent) = logger.logEvent(event)
 
-    override fun logError(errorMessage: String, error: Throwable?) = logger.logError(errorMessage, error)
+    override fun logError(errorMessage: String, error: Exception?) = logger.logError(errorMessage, error)
 
     const val TAG = "[UniFlow]"
     const val FUN_TAG = "🦄"

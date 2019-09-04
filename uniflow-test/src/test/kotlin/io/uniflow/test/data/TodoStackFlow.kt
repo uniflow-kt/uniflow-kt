@@ -117,7 +117,7 @@ class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
         error("global boom")
     }
 
-    override suspend fun onError(error: Throwable) {
+    override suspend fun onError(error: Exception) {
         setState { UIState.Failed("Failed state", error) }
     }
 }

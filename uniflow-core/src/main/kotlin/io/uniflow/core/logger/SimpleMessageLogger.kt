@@ -40,7 +40,7 @@ open class SimpleMessageLogger(val tag: String = TAG, debugThread: Boolean = fal
         println("$tag$dbg_th <EVENT> - $event")
     }
 
-    override fun logError(errorMessage: String, error: Throwable?) {
+    override fun logError(errorMessage: String, error: Exception?) {
         System.err.println("$tag$dbg_th !ERROR! - $errorMessage :: $error")
     }
 }

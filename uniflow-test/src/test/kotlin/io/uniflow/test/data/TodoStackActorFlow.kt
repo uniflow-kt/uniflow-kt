@@ -3,6 +3,7 @@ package io.uniflow.test.data
 import io.uniflow.core.flow.*
 import io.uniflow.core.sample.StackActorFlow
 import kotlinx.coroutines.delay
+import java.lang.Exception
 
 class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlow() {
 
@@ -93,7 +94,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         error("global boom")
     }
 
-    override suspend fun onError(error: Throwable) {
+    override suspend fun onError(error: Exception) {
         setState { UIState.Failed("Failed state", error) }
     }
 }
