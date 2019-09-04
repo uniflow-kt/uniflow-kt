@@ -15,6 +15,9 @@ sealed class SafeResult<out T : Any> {
     abstract suspend fun onValue(block: suspend (T) -> Unit): SafeResult<T>
     abstract suspend fun onError(block: suspend (Exception) -> Unit): SafeResult<T>
 
+    abstract fun isSuccess(): Boolean
+    abstract fun isError(): Boolean
+
     suspend fun <R : UIState> mapState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R?): SafeResult<R> {
         return when (this) {
             is Success -> map(onSuccess)
@@ -82,6 +85,9 @@ sealed class SafeResult<out T : Any> {
             block(value)
             return this
         }
+
+        override fun isSuccess(): Boolean = true
+        override fun isError(): Boolean = false
     }
 
     open class Error(val exception: Exception) : SafeResult<Nothing>() {
@@ -105,6 +111,8 @@ sealed class SafeResult<out T : Any> {
 
         override suspend fun onValue(block: suspend (Nothing) -> Unit): SafeResult<Nothing> = this
 
+        override fun isSuccess(): Boolean = false
+        override fun isError(): Boolean = true
     }
 }
 
