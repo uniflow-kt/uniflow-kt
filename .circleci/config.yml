@@ -28,7 +28,6 @@ jobs:
         - run:
             name: Download dependencies
             command: ./gradlew androidDependencies
-        - *save_dependency_cache
         - run:
             name: Run Tests
             command: ./test.sh
@@ -38,7 +37,6 @@ jobs:
     <<: *android_config
     steps:
       - checkout
-      - *restore_dependency_cache
       - run:
           name: Gradle build (debug)
           command: ./release.sh
