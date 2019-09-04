@@ -1,21 +1,6 @@
 ersion: 2
 
 references:
-# ----------------------------
-# Cache Configuration
-# ----------------------------
-  cache_key: &cache_key
-    key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}
-  restore_dependency_cache: &restore_dependency_cache
-    restore_cache:
-      <<: *cache_key
-  save_dependency_cache: &save_dependency_cache
-    save_cache:
-      <<: *cache_key
-      paths:
-        - ~/.gradle
-        - ~/.m2
-
 
 # ----------------------------
 # Docker Configuration
