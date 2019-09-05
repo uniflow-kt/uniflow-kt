@@ -347,7 +347,7 @@ val myError : Exception ...
 errorResult(myError)
 ```
 
-### making any IO call safe
+### Wrapping unsafe code
 
 To help you deal with expression that can raise exceptions, we provide lazy SafeResult builder, that will catch any error for you. Use the `safeCall` function to wrap an expression as SafeResult:
 
@@ -363,9 +363,11 @@ safeCall { myDangerousCall() }
 
 Here we have the following SafeResult builders:
 
-- safeCall
-- networkCall - catch exception and wap it in a `NetworkException` object
-- databaseCall- catch exception and wap it in a `DatabaseException` object
+- `safeCall { } ` - wrap SafeResult (data or exception)
+- `networkCall { } ` - wrap SafeResult, catch exception and wap it in a `NetworkException` object
+- `databaseCall { } `- wrap SafeResult, catch exception and wap it in a `DatabaseException` object
+
+You can also make your own SafeResult builder, depending on your APIs 👍
 
 ### Functional operators
 
