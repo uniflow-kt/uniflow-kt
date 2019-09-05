@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.7.0`
+#### Current version is `0.7.3`
 
 Choose one of the following dependency:
 
@@ -20,6 +20,18 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
 ## Quick intro 🚸
+
+UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
+
+UniFlow provides:
+
+* Smart way to write a Data flow in pure Kotlin
+* Android extensions to let you just focus on States & Events
+* Ready for Kotlin coroutines
+* Easy to test
+
+<details><summary>What is Unidirectional Data Flow? 🤔</summary>
+<p>
 
 ### What is Unidirectional Data Flow?
 
@@ -39,16 +51,8 @@ Thanks to one-way bindings, data cannot flow in the opposite way (as would happe
 it’s less error prone, as you have more control over your data
 it’s easier to debug, as you know what is coming from where
 
-### Why UniFlow🦄?
-
-UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
-
-UniFlow provides:
-
-* Smart way to write a Data flow in pure Kotlin
-* Android extensions to let you just focus on States & Events
-* Ready for Kotlin coroutines
-* Easy to test
+</p>
+</details>
 
 ## Getting Started 🚀
 
@@ -318,7 +322,7 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-### FlowResult: functional coroutines until the UI
+### Functional Coroutines, to safely make states & events
 
 
 
