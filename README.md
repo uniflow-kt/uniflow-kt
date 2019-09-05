@@ -21,10 +21,9 @@ this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
 ## Quick intro 🚸
 
-UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
+UniFlow help you write your app with a simple unidirectional data flow approach (think states and events) to ensure consistency through the time, and this with Kotlin Coroutines.
 
 UniFlow provides:
-
 * Smart way to write a Data flow in pure Kotlin
 * Android extensions to let you just focus on States & Events
 * Ready for Kotlin coroutines
@@ -322,7 +321,17 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-### Functional Coroutines, to safely make states & events
+## Functional Coroutines, to safely make states & events
+
+### SafeResult, your safe result wrapper!
+
+
+
+### making any IO call safe
+
+
+
+### Functional operators
 
 
 
