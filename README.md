@@ -8,6 +8,12 @@
 Choose one of the following dependency:
 
 ```gradle
+jcenter()
+
+// Minimal Core
+implementation 'io.uniflow:uniflow-core:$version'
+testImplementation 'io.uniflow:uniflow-test:$version'
+
 // Android
 implementation 'io.uniflow:uniflow-android:$version'
 testImplementation 'io.uniflow:uniflow-android-test:$version'
