@@ -100,7 +100,7 @@ sealed class SafeResult<out T : Any> {
 
         override suspend fun <R : Any> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
 
-        override fun get(): Nothing = error(exception)
+        override fun get(): Nothing = throw exception
 
         override fun getOrNull(): Nothing? = null
 
