@@ -321,19 +321,100 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-## Functional Coroutines, to safely make states & events
+## Functional Coroutines, to safely make states & events 🌈
+
+One way to handle properly exceptions, is to do it with a functional approach.
 
 ### SafeResult, your safe result wrapper!
 
+`SafeResult` is the Success/Error functional wrapper type of uniflow. It will help you write your state flow in a functional way.
 
+You can wrap any value like that:
+
+```kotlin
+val myData : Any ...
+
+// wrap it as SafeResult
+safeResult(myData) or myData.asSafeResult()
+```
+
+Concerning errors, you can wrap a SaferResult error like follow:
+
+```kotlin
+val myError : Exception ...
+
+// wrap it as SafeResult
+errorResult(myError)
+```
 
 ### making any IO call safe
 
+To help you deal with expression that can raise exceptions, we provide lazy SafeResult builder, that will catch any error for you. Use the `safeCall` function to wrap an expression as SafeResult:
 
+```kotlin
+// Will transform result as SafeResult.Success and any error to SafeResult.Error
+
+fun myDangerousCall() : MyData
+
+// will produce SafeResult<MyData>
+safeCall { myDangerousCall() }
+
+```
+
+Here we have the following SafeResult builders:
+
+- safeCall
+- networkCall - catch exception and wap it in a `NetworkException` object
+- databaseCall- catch exception and wap it in a `DatabaseException` object
 
 ### Functional operators
 
+You can then build expression to combine unsafe IO calls (here we use `networkCall` to wrap Retrofit expression):
 
+```kotlin
+networkCall { weatherDatasource.geocode(targetLocation).await() }
+	    .map { it.mapToLocation() ?: error("Can't map to location: $it") }
+	    .flatMap { (lat, lng) -> networkCall { weatherDatasource.weather(lat, lng).await() } }
+	    .map { it.mapToWeatherEntities(targetLocation) }
+	    .onValue { weatherCache.addAll(it) }
+```
+
+SafeResult offers some classic operators:
+- `map` - map value of a SafeResult
+- `flatMap` - transform a SafeResult value into another
+- `onValue` - do something on existing value
+- `onError` - do something on existing error
+- `get` - get the existing value or throw current error's exception
+- `getOrNull` - get the existing value or null
+
+`get` & `getOrNull` are terminal operators, they give you the final result of your functional flow.
+
+### Making states & events
+
+In your DataFlow ViewModel class, you will operators concerning UIState:
+
+```kotlin
+fun loadNewLocation(location: String) = fromState<WeatherListState> {
+        getWeatherForLocation(location)
+                .toState( { it.mapToWeatherListState() }, { error -> UIState.Failed(error = error) })
+    }
+```
+
+- `mapState` - map current value to a UIState value
+- `toState` - get & map current value to a UIState (can specify success & error state)
+- `toStateOrNull` - get & map current value to UIState if only it's a success
+
+`toState` & `toStateOrNull` are terminal operators
+
+To send any event, use the `onValue` or `onError` operator, to send a it:
+
+```kotlin
+fun loadNewLocation(location: String) = fromState<WeatherListState> {
+        getWeatherForLocation(location)
+                .onError { error -> sendEvent(WeatherListUIEvent.ProceedLocationFailed(location, error)) }
+                .toStateOrNull { it.mapToWeatherListState() }
+    }
+```
 
 ## More tools for test
 
