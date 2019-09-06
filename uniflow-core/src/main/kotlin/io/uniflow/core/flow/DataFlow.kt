@@ -120,7 +120,7 @@ interface DataFlow : CoroutineScope {
             if (result is UIState) {
                 applyState(result)
             } else {
-                UniFlowLogger.log("no state update")
+               //TODO do something when no update?
             }
         } catch (e: Exception) {
             onError(action, e)
