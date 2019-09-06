@@ -59,4 +59,12 @@ class SuccessResultTest {
 
         assertTrue(result.get() == UIState.Success)
     }
+
+    @Test
+    fun `to State or null`() = runBlocking {
+        val result = value.asSafeResult()
+                .toStateOrNull { UIState.Success }
+
+        assertTrue(result== UIState.Success)
+    }
 }

@@ -8,6 +8,13 @@ fun errorResult(exception: Exception): SafeResult<Nothing> = SafeResult.Error(ex
 
 fun <T : Any> T.asSafeResult(): SafeResult<T> = safeResult(this)
 
+fun emptyResult() = SafeResult.Empty
+
+@Deprecated("use asErrorResult instead", level = DeprecationLevel.ERROR)
+fun <T : Exception> T.asSafeResult(): SafeResult<T> = error("Don't use .asSafeResult() on Exception, use asErrorResult() instead")
+
+fun <T : Exception> T.asErrorResult(): SafeResult<T> = errorResult(this)
+
 suspend fun <T : Any> safeCall(expr: suspend () -> T): SafeResult<T> {
     return try {
         expr().asSafeResult()

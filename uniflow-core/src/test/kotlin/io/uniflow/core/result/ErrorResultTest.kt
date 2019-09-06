@@ -11,7 +11,7 @@ class ErrorResultTest {
 
     @Test
     fun `create result`() {
-        val result = errorResult(error)
+        val result = error.asErrorResult()
         assertTrue(result.getOrNull() == null)
 
         assertTrue(!result.isSuccess())
@@ -24,6 +24,14 @@ class ErrorResultTest {
         val result = errorResult(error)
                 .map { sndValue }
         assertTrue(result.getOrNull() == null)
+    }
+
+    @Test
+    fun `orElse result`() = runBlocking {
+        val sndValue = " #2"
+        val result = errorResult(error)
+                .orElse { sndValue }
+        assertTrue(result.get() == sndValue)
     }
 
     @Test
@@ -52,35 +60,35 @@ class ErrorResultTest {
         assertTrue(writtenValue == "$error")
     }
 
-    @Test
-    fun `map State`() = runBlocking {
-        val result = errorResult(error)
-                .mapState({ UIState.Success }, { UIState.Failed(error = it) })
-
-        assertTrue(result.get() == UIState.Failed(error = error))
-    }
-
-    @Test
-    fun `map State null`() = runBlocking {
-        val result = errorResult(error)
-                .mapState({ UIState.Success }, { null })
-
-        assertTrue(result.getOrNull() == null)
-    }
+//    @Test
+//    fun `map State`() = runBlocking {
+//        val result = errorResult(error)
+//                .mapState({ UIState.Success }, { UIState.Failed(error = it) })
+//
+//        assertTrue(result.get() == UIState.Failed(error = error))
+//    }
+//
+//    @Test
+//    fun `map State null`() = runBlocking {
+//        val result = errorResult(error)
+//                .mapState({ UIState.Success }, { null })
+//
+//        assertTrue(result.getOrNull() == null)
+//    }
 
     @Test
     fun `to State null`() = runBlocking {
         val result = errorResult(error)
-                .toStateOrNull{ UIState.Success }
+                .toStateOrNull { UIState.Success }
 
         assertTrue(result == null)
     }
 
-    @Test
-    fun `to State`() = runBlocking {
-        val result = errorResult(error)
-                .toState({ UIState.Success }, { UIState.Failed(error = it) })
-
-        assertTrue(result == UIState.Failed(error = error))
-    }
+//    @Test
+//    fun `to State`() = runBlocking {
+//        val result = errorResult(error)
+//                .toState({ UIState.Success }, { UIState.Failed(error = it) })
+//
+//        assertTrue(result == UIState.Failed(error = error))
+//    }
 }
