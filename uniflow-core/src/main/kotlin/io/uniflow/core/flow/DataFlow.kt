@@ -119,6 +119,8 @@ interface DataFlow : CoroutineScope {
             val result = action.actionFunction.invoke(this, getCurrentState())
             if (result is UIState) {
                 applyState(result)
+            } else {
+                UniFlowLogger.log("no state update")
             }
         } catch (e: Exception) {
             onError(action, e)
@@ -133,7 +135,7 @@ interface DataFlow : CoroutineScope {
     fun onError(action: Action<*, *>, error: Exception) {
         launchOnIO {
             if (action.errorFunction != null) {
-                val failState = action.errorFunction?.let {
+                val failState = action.errorFunction.let {
                     it.invoke(this@DataFlow, error)
                 }
                 failState?.let { applyState(failState) }

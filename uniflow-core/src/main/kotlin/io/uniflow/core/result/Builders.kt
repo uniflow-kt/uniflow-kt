@@ -1,12 +1,12 @@
 package io.uniflow.core.result
 
-fun <T : Any> safeResult(value: T): SafeResult<T> = SafeResult.Success(value)
+fun <T> safeResult(value: T): SafeResult<T> = SafeResult.Success(value)
 
 fun errorResult(message: String): SafeResult<Nothing> = SafeResult.Error(IllegalStateException(message))
 
 fun errorResult(exception: Exception): SafeResult<Nothing> = SafeResult.Error(exception)
 
-fun <T : Any> T.asSafeResult(): SafeResult<T> = safeResult(this)
+fun <T> T.asSafeResult(): SafeResult<T> = safeResult(this)
 
 fun emptyResult() = SafeResult.Empty
 
@@ -15,7 +15,7 @@ fun <T : Exception> T.asSafeResult(): SafeResult<T> = error("Don't use .asSafeRe
 
 fun <T : Exception> T.asErrorResult(): SafeResult<T> = errorResult(this)
 
-suspend fun <T : Any> safeCall(expr: suspend () -> T): SafeResult<T> {
+suspend fun <T> safeCall(expr: suspend () -> T): SafeResult<T> {
     return try {
         expr().asSafeResult()
     } catch (error: Exception) {
@@ -23,7 +23,7 @@ suspend fun <T : Any> safeCall(expr: suspend () -> T): SafeResult<T> {
     }
 }
 
-suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Exception) -> Exception): SafeResult<T> {
+suspend fun <T> safeCall(expr: suspend () -> T, onError: (Exception) -> Exception): SafeResult<T> {
     return try {
         expr().asSafeResult()
     } catch (exception: Exception) {
@@ -31,7 +31,7 @@ suspend fun <T : Any> safeCall(expr: suspend () -> T, onError: (Exception) -> Ex
     }
 }
 
-suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>): SafeResult<T> {
+suspend fun <T> safeResultCall(expr: suspend () -> SafeResult<T>): SafeResult<T> {
     return try {
         expr()
     } catch (exception: Exception) {
@@ -39,7 +39,7 @@ suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>): SafeRes
     }
 }
 
-suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>, onError: (Exception) -> Exception): SafeResult<T> {
+suspend fun <T> safeResultCall(expr: suspend () -> SafeResult<T>, onError: (Exception) -> Exception): SafeResult<T> {
     return try {
         expr()
     } catch (exception: Exception) {
@@ -47,13 +47,13 @@ suspend fun <T : Any> safeResultCall(expr: suspend () -> SafeResult<T>, onError:
     }
 }
 
-suspend fun <T : Any> networkCall(expr: suspend () -> T): SafeResult<T> {
+suspend fun <T> networkCall(expr: suspend () -> T): SafeResult<T> {
     return safeCall(expr) { error ->
         NetworkException(error = error)
     }
 }
 
-suspend fun <T : Any> databaseCall(expr: suspend () -> T): SafeResult<T> {
+suspend fun <T> databaseCall(expr: suspend () -> T): SafeResult<T> {
     return safeCall(expr) { error ->
         DatabaseException(error = error)
     }

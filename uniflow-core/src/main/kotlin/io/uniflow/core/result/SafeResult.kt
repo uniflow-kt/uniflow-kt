@@ -2,7 +2,7 @@ package io.uniflow.core.result
 
 import io.uniflow.core.flow.UIState
 
-sealed class SafeResult<out T : Any> {
+sealed class SafeResult<out T> {
 
     override fun toString(): String {
         return when (this) {
@@ -12,14 +12,34 @@ sealed class SafeResult<out T : Any> {
         }
     }
 
-    abstract suspend fun <R : Any> map(result: suspend (T) -> R?): SafeResult<R>
-    abstract suspend fun <R : Any> mapError(result: suspend (Exception) -> R?): SafeResult<R>
-    abstract suspend fun <R : Any> mapEmpty(result: suspend () -> R?): SafeResult<R>
-    abstract suspend fun <R : Any> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R>
+    abstract suspend fun <R> map(result: suspend (T) -> R): SafeResult<R>
+    abstract suspend fun <R> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R>
 
+    operator fun not() = get()
     abstract fun get(): T
     abstract fun getOrNull(): T?
-    operator fun not() = get()
+
+    fun getOrElse(defaultValue: @UnsafeVariance T): T =
+            when (this) {
+                is Success -> value
+                else -> defaultValue
+            }
+
+    fun getOrElse(defaultValue: () -> @UnsafeVariance T): T =
+            when (this) {
+                is Success -> value
+                else -> defaultValue()
+            }
+
+    fun orElse(defaultValue: () -> SafeResult<@UnsafeVariance T>): SafeResult<T> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: Exception) {
+                    errorResult(e)
+                }
+            }
 
     abstract suspend fun onValue(block: suspend (T) -> Unit): SafeResult<T>
     abstract suspend fun onEmpty(block: suspend () -> Unit): SafeResult<T>
@@ -30,35 +50,41 @@ sealed class SafeResult<out T : Any> {
     abstract fun isEmpty(): Boolean
 
     abstract suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R): R
+
+    suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R): R =
+            when (this) {
+                is Success -> toState(onSuccess)
+                is Error -> onError(exception)
+                is Empty -> error("Can't apply toState on Empty value")
+            }
+
+    suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R, onEmpty: suspend () -> R): R =
+            when (this) {
+                is Success -> toState(onSuccess)
+                is Error -> onError(exception)
+                is Empty -> onEmpty()
+            }
+
     abstract suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R?
 
-    suspend fun <R : Any> orElse(result: suspend () -> R): SafeResult<R> {
-        return if (getOrNull() == null) {
-            safeResult(result())
-        } else this as SafeResult<R>
-    }
 
-    data class Success<out T : Any>(internal val value: T) : SafeResult<T>() {
+    data class Success<out T>(internal val value: T) : SafeResult<T>() {
 
-        override suspend fun <R : Any> map(result: suspend (T) -> R?): SafeResult<R> {
-            return try {
-                result(value)?.let { safeResult(it) } ?: emptyResult()
-            } catch (e: Exception) {
-                errorResult(e)
-            }
-        }
+        override suspend fun <R> map(result: suspend (T) -> R): SafeResult<R> =
+                try {
+                    safeResult(result(value))
+                } catch (e: Exception) {
+                    errorResult(e)
+                }
 
-        override suspend fun <R : Any> mapError(result: suspend (Exception) -> R?): SafeResult<R> = this as SafeResult<R>
 
-        override suspend fun <R : Any> mapEmpty(result: suspend () -> R?): SafeResult<R> = this as SafeResult<R>
+        override suspend fun <R> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R> =
+                try {
+                    result(value)
+                } catch (e: Exception) {
+                    errorResult(e)
+                }
 
-        override suspend fun <R : Any> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R> {
-            return try {
-                result(value)
-            } catch (e: Exception) {
-                errorResult(e)
-            }
-        }
 
         override fun get(): T = value
 
@@ -83,19 +109,9 @@ sealed class SafeResult<out T : Any> {
 
     object Empty : SafeResult<Nothing>() {
 
-        override suspend fun <R : Any> map(result: suspend (Nothing) -> R?): SafeResult<R> = this
+        override suspend fun <R> map(result: suspend (Nothing) -> R): SafeResult<R> = this
 
-        override suspend fun <R : Any> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
-
-        override suspend fun <R : Any> mapError(result: suspend (Exception) -> R?): SafeResult<R> = this
-
-        override suspend fun <R : Any> mapEmpty(result: suspend () -> R?): SafeResult<R> {
-            return try {
-                result()?.let { safeResult(it) } ?: emptyResult()
-            } catch (e: Exception) {
-                errorResult(e)
-            }
-        }
+        override suspend fun <R> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
 
         override fun get(): Nothing = error("Empty result")
 
@@ -120,17 +136,9 @@ sealed class SafeResult<out T : Any> {
 
     open class Error(val exception: Exception) : SafeResult<Nothing>() {
 
-        override suspend fun <R : Any> map(result: suspend (Nothing) -> R?): SafeResult<R> = this
+        override suspend fun <R> map(result: suspend (Nothing) -> R): SafeResult<R> = this
 
-        override suspend fun <R : Any> mapError(result: suspend (Exception) -> R?): SafeResult<R> {
-            val newValue = result(exception)
-            return if (newValue is Exception) errorResult(exception) else newValue?.let { safeResult(it) }
-                    ?: emptyResult()
-        }
-
-        override suspend fun <R : Any> mapEmpty(result: suspend () -> R?): SafeResult<R> = this
-
-        override suspend fun <R : Any> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
+        override suspend fun <R> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
 
         override fun get(): Nothing = throw exception
 

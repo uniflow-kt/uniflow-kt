@@ -29,8 +29,9 @@ class ErrorResultTest {
     @Test
     fun `orElse result`() = runBlocking {
         val sndValue = " #2"
-        val result = errorResult(error)
-                .orElse { sndValue }
+        val result =
+                safeCall<String> { throw error }
+                        .orElse { sndValue.asSafeResult() }
         assertTrue(result.get() == sndValue)
     }
 

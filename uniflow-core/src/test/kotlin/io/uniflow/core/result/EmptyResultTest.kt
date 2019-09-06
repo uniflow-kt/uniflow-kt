@@ -25,8 +25,9 @@ class EmptyResultTest {
 
     @Test
     fun `orElse result`() = runBlocking {
-        val result = emptyResult()
-                .map { "42" }
+        val result = safeCall { "" }
+                .flatMap<String> { emptyResult() }
+                .orElse { "42".asSafeResult() }
         assertTrue(result.get() == "42")
     }
 
