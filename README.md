@@ -3,11 +3,17 @@
 
 ## Setup
 
-#### Current version is `0.7.0`
+#### Current version is `0.7.3`
 
 Choose one of the following dependency:
 
 ```gradle
+jcenter()
+
+// Minimal Core
+implementation 'io.uniflow:uniflow-core:$version'
+testImplementation 'io.uniflow:uniflow-test:$version'
+
 // Android
 implementation 'io.uniflow:uniflow-android:$version'
 testImplementation 'io.uniflow:uniflow-android-test:$version'
@@ -20,6 +26,17 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
 ## Quick intro 🚸
+
+UniFlow help you write your app with a simple unidirectional data flow approach (think states and events) to ensure consistency through the time, and this with Kotlin Coroutines.
+
+UniFlow provides:
+* Smart way to write a Data flow in pure Kotlin
+* Android extensions to let you just focus on States & Events
+* Ready for Kotlin coroutines
+* Easy to test
+
+<details><summary>What is Unidirectional Data Flow? 🤔</summary>
+<p>
 
 ### What is Unidirectional Data Flow?
 
@@ -39,16 +56,8 @@ Thanks to one-way bindings, data cannot flow in the opposite way (as would happe
 it’s less error prone, as you have more control over your data
 it’s easier to debug, as you know what is coming from where
 
-### Why UniFlow🦄?
-
-UniFlow help you write your app with states and events to ensure consistency through the time, and this with Coroutines.
-
-UniFlow provides:
-
-* Smart way to write a Data flow in pure Kotlin
-* Android extensions to let you just focus on States & Events
-* Ready for Kotlin coroutines
-* Easy to test
+</p>
+</details>
 
 ## Getting Started 🚀
 
@@ -318,9 +327,102 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-### FlowResult: functional coroutines until the UI
+## Functional Coroutines, to safely make states & events 🌈
 
+One way to handle properly exceptions, is to do it with a functional approach.
 
+### SafeResult, your safe result wrapper!
+
+`SafeResult` is the Success/Error functional wrapper type of uniflow. It will help you write your state flow in a functional way.
+
+You can wrap any value like that:
+
+```kotlin
+val myData : Any ...
+
+// wrap it as SafeResult
+safeResult(myData) or myData.asSafeResult()
+```
+
+Concerning errors, you can wrap a SaferResult error like follow:
+
+```kotlin
+val myError : Exception ...
+
+// wrap it as SafeResult
+errorResult(myError)
+```
+
+### Wrapping unsafe code
+
+To help you deal with expression that can raise exceptions, we provide lazy SafeResult builder, that will catch any error for you. Use the `safeCall` function to wrap an expression as SafeResult:
+
+```kotlin
+// Will transform result as SafeResult.Success and any error to SafeResult.Error
+
+fun myDangerousCall() : MyData
+
+// will produce SafeResult<MyData>
+safeCall { myDangerousCall() }
+
+```
+
+Here we have the following SafeResult builders:
+
+- `safeCall { } ` - wrap SafeResult (data or exception)
+- `networkCall { } ` - wrap SafeResult, catch exception and wap it in a `NetworkException` object
+- `databaseCall { } `- wrap SafeResult, catch exception and wap it in a `DatabaseException` object
+
+You can also make your own SafeResult builder, depending on your APIs 👍
+
+### Functional operators
+
+You can then build expression to combine unsafe IO calls (here we use `networkCall` to wrap Retrofit expression):
+
+```kotlin
+networkCall { weatherDatasource.geocode(targetLocation).await() }
+	    .map { it.mapToLocation() ?: error("Can't map to location: $it") }
+	    .flatMap { (lat, lng) -> networkCall { weatherDatasource.weather(lat, lng).await() } }
+	    .map { it.mapToWeatherEntities(targetLocation) }
+	    .onValue { weatherCache.addAll(it) }
+```
+
+SafeResult offers some classic operators:
+- `map` - map value of a SafeResult
+- `flatMap` - transform a SafeResult value into another
+- `onValue` - do something on existing value
+- `onError` - do something on existing error
+- `get` - get the existing value or throw current error's exception
+- `getOrNull` - get the existing value or null
+
+`get` & `getOrNull` are terminal operators, they give you the final result of your functional flow.
+
+### Making states & events
+
+In your DataFlow ViewModel class, you will operators concerning UIState:
+
+```kotlin
+fun loadNewLocation(location: String) = fromState<WeatherListState> {
+        getWeatherForLocation(location)
+                .toState( { it.mapToWeatherListState() }, { error -> UIState.Failed(error = error) })
+    }
+```
+
+- `mapState` - map current value to a UIState value
+- `toState` - get & map current value to a UIState (can specify success & error state)
+- `toStateOrNull` - get & map current value to UIState if only it's a success
+
+`toState` & `toStateOrNull` are terminal operators
+
+To send any event, use the `onValue` or `onError` operator, to send a it:
+
+```kotlin
+fun loadNewLocation(location: String) = fromState<WeatherListState> {
+        getWeatherForLocation(location)
+                .onError { error -> sendEvent(WeatherListUIEvent.ProceedLocationFailed(location, error)) }
+                .toStateOrNull { it.mapToWeatherListState() }
+    }
+```
 
 ## More tools for test
 
