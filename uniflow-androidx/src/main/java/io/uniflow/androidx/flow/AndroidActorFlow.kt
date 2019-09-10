@@ -19,6 +19,7 @@ import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.Action
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onIO
+import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.channels.actor
 
 /**
@@ -43,6 +44,10 @@ abstract class AndroidActorFlow : AndroidDataFlow() {
 
     override fun onCleared() {
         super.onCleared()
-        flowActor.close()
+        try {
+            flowActor.close()
+        } catch (e: Exception) {
+            UniFlowLogger.logError("AndroidActorFlow cancel error",e)
+        }
     }
 }

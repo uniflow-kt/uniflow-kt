@@ -57,6 +57,10 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     override fun onCleared() {
         super.onCleared()
-        viewModelJob.cancel()
+        try {
+            viewModelJob.cancel()
+        } catch (e: Exception) {
+            UniFlowLogger.logError("AndroidDataFlow cancel error", e)
+        }
     }
 }
