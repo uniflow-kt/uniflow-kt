@@ -1,5 +1,9 @@
 package io.uniflow.core.result
 
+import arrow.core.Failure
+import arrow.core.failure
+import arrow.core.orElse
+import arrow.core.success
 import io.uniflow.core.flow.UIState
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
@@ -11,17 +15,17 @@ class ErrorResultTest {
 
     @Test
     fun `create result`() {
-        val result = error.asErrorResult()
+        val result = error.failure()
         assertTrue(result.getOrNull() == null)
 
         assertTrue(!result.isSuccess())
-        assertTrue(result.isError())
+        assertTrue(result.isFailure())
     }
 
     @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
-        val result = errorResult(error)
+        val result = Failure(error)
                 .map { sndValue }
         assertTrue(result.getOrNull() == null)
     }
@@ -31,23 +35,23 @@ class ErrorResultTest {
         val sndValue = " #2"
         val result =
                 safeCall<String> { throw error }
-                        .orElse { sndValue.asSafeResult() }
+                        .orElse { sndValue.success() }
         assertTrue(result.get() == sndValue)
     }
 
     @Test
     fun `flatmap result`() = runBlocking {
         val sndValue = 42
-        val result = errorResult(error)
-                .flatMap { value -> sndValue.asSafeResult() }
+        val result = Failure(error)
+                .flatMap { value -> sndValue.success() }
         assertTrue(result.getOrNull() == null)
     }
 
     @Test
     fun `onValue`() = runBlocking {
         var writtenValue = ""
-        errorResult(error)
-                .onValue { writtenValue = "$it" }
+        Failure(error)
+                .onSuccess { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
     }
@@ -55,8 +59,8 @@ class ErrorResultTest {
     @Test
     fun `onError`() = runBlocking {
         var writtenValue = ""
-        errorResult(error)
-                .onError { writtenValue = "$it" }
+        Failure(error)
+                .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "$error")
     }
@@ -79,7 +83,7 @@ class ErrorResultTest {
 
     @Test
     fun `to State null`() = runBlocking {
-        val result = errorResult(error)
+        val result = Failure(error)
                 .toStateOrNull { UIState.Success }
 
         assertTrue(result == null)

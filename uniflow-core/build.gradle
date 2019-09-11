@@ -4,9 +4,16 @@ archivesBaseName = 'uniflow-core'
 description = 'UniFlow a Kotlin unidrectional data flow framework'
 
 dependencies {
-    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    compile ("io.arrow-kt:arrow-core-data:$arrow_version"){
+        exclude group:"org.jetbrains.kotlin"
+    }
+    compile ("io.arrow-kt:arrow-core-extensions:$arrow_version"){
+        exclude group:"org.jetbrains.kotlin"
+    }
 
     testImplementation "junit:junit:$junit_version"
 }

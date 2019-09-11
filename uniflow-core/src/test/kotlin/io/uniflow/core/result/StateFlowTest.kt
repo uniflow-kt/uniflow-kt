@@ -10,9 +10,8 @@ class StateFlowTest {
     @Test
     fun `test flow`() = runBlocking {
 
-        val value = safeCall { throw RuntimeException("boom") }
-                .orElse { errorResult(IllegalStateException("ISE Boom")) }
-                .onError { System.err.println("error -> $it") }
+        val value = safeValue { throw RuntimeException("boom") }
+                .onFailure { System.err.println("error -> $it") }
                 .toState(
                         { UIState.Success },
                         { UIState.Failed(error = it) })
