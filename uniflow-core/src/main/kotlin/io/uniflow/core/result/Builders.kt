@@ -1,18 +1,13 @@
 package io.uniflow.core.result
 
 fun <T> safeResult(value: T): SafeResult<T> = SafeResult.Success(value)
-
-fun errorResult(message: String): SafeResult<Nothing> = SafeResult.Error(IllegalStateException(message))
-
-fun errorResult(exception: Exception): SafeResult<Nothing> = SafeResult.Error(exception)
-
 fun <T> T.asSafeResult(): SafeResult<T> = safeResult(this)
 
-fun emptyResult() = SafeResult.Empty
+fun errorResult(message: String): SafeResult<Nothing> = SafeResult.Error(IllegalStateException(message))
+fun errorResult(exception: Exception): SafeResult<Nothing> = SafeResult.Error(exception)
 
 @Deprecated("use asErrorResult instead", level = DeprecationLevel.ERROR)
 fun <T : Exception> T.asSafeResult(): SafeResult<T> = error("Don't use .asSafeResult() on Exception, use asErrorResult() instead")
-
 fun <T : Exception> T.asErrorResult(): SafeResult<T> = errorResult(this)
 
 suspend fun <T> safeCall(expr: suspend () -> T): SafeResult<T> {

@@ -6,9 +6,8 @@ sealed class SafeResult<out T> {
 
     override fun toString(): String {
         return when (this) {
-            is Success<*> -> "Success[$value]"
+            is Success -> "Success[$value]"
             is Error -> "Error[$exception]"
-            is Empty -> "Empty"
         }
     }
 
@@ -47,7 +46,6 @@ sealed class SafeResult<out T> {
 
     abstract fun isSuccess(): Boolean
     abstract fun isError(): Boolean
-    abstract fun isEmpty(): Boolean
 
     abstract suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R): R
 
@@ -55,14 +53,6 @@ sealed class SafeResult<out T> {
             when (this) {
                 is Success -> toState(onSuccess)
                 is Error -> onError(exception)
-                is Empty -> error("Can't apply toState on Empty value")
-            }
-
-    suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R, onEmpty: suspend () -> R): R =
-            when (this) {
-                is Success -> toState(onSuccess)
-                is Error -> onError(exception)
-                is Empty -> onEmpty()
             }
 
     abstract suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R?
@@ -100,38 +90,10 @@ sealed class SafeResult<out T> {
         override suspend fun onEmpty(block: suspend () -> Unit): SafeResult<T> = this
 
         override fun isSuccess(): Boolean = true
-        override fun isEmpty(): Boolean = false
         override fun isError(): Boolean = false
 
         override suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R): R = onSuccess(value)
         override suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R? = onSuccess(value)
-    }
-
-    object Empty : SafeResult<Nothing>() {
-
-        override suspend fun <R> map(result: suspend (Nothing) -> R): SafeResult<R> = this
-
-        override suspend fun <R> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
-
-        override fun get(): Nothing = error("Empty result")
-
-        override fun getOrNull(): Nothing? = null
-
-        override suspend fun onError(block: suspend (Exception) -> Unit): SafeResult<Nothing> = this
-
-        override suspend fun onValue(block: suspend (Nothing) -> Unit): SafeResult<Nothing> = this
-
-        override suspend fun onEmpty(block: suspend () -> Unit): SafeResult<Nothing> {
-            block()
-            return this
-        }
-
-        override suspend fun <R : UIState> toState(onSuccess: suspend (Nothing) -> R): R = error("Empty result")
-        override suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (Nothing) -> R?): R? = null
-
-        override fun isSuccess(): Boolean = false
-        override fun isEmpty(): Boolean = true
-        override fun isError(): Boolean = false
     }
 
     open class Error(val exception: Exception) : SafeResult<Nothing>() {
@@ -156,7 +118,6 @@ sealed class SafeResult<out T> {
         override suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (Nothing) -> R?): R? = null
 
         override fun isSuccess(): Boolean = false
-        override fun isEmpty(): Boolean = false
         override fun isError(): Boolean = true
     }
 }
