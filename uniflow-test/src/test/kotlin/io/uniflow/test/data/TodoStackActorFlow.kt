@@ -1,9 +1,11 @@
 package io.uniflow.test.data
 
-import io.uniflow.core.flow.*
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.fromState
+import io.uniflow.core.flow.onIO
 import io.uniflow.core.sample.StackActorFlow
 import kotlinx.coroutines.delay
-import java.lang.Exception
 
 class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlow() {
 
@@ -58,18 +60,18 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         }
     }
 
-    fun asyncChildError() = withState({
-        setState({
-            delay(200)
-            error("child boom")
-        }, { error -> UIState.Failed(error = error) })
-
-        setState {
-            delay(1000)
-            repository.add("LongTodo")
-            repository.getAllTodo().mapToTodoListState()
-        }
-    }, { error -> UIState.Failed(error = error) })
+//    fun asyncChildError() = withState({
+//        setState({
+//            delay(200)
+//            error("child boom")
+//        }, { error -> UIState.Failed(error = error) })
+//
+//        setState {
+//            delay(1000)
+//            repository.add("LongTodo")
+//            repository.getAllTodo().mapToTodoListState()
+//        }
+//    }, { error -> UIState.Failed(error = error) })
 
     fun longWait() = setState {
         delay(1000)

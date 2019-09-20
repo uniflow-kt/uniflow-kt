@@ -3,40 +3,33 @@ package io.uniflow.core.flow
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>) {
+inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: StateUpdateFunction, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>))
+        onAction(Action(onStateUpdate, errorFunction))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
 }
 
-/**
- * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
- */
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState> DataFlow.fromState(noinline fromBlock: ActionFunction<T, UIState?>, noinline errorFunction: ErrorFunction) {
+inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: StateUpdateFunction) {
     if (getCurrentState() is T) {
-        onAction(Action(fromBlock as ActionFunction<UIState?, UIState?>, errorFunction))
+        onAction(Action(onStateUpdate))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction<T>) {
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: StateFlowFunction, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        stateFlow(stateFlowFunction as StateFlowFunction<UIState?>)
+        stateFlow(stateFlow, errorFunction)
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlowFunction: StateFlowFunction<T>, noinline errorFunction: ErrorFunction) {
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: StateFlowFunction) {
     if (getCurrentState() is T) {
-        stateFlow(stateFlowFunction as StateFlowFunction<UIState?>, errorFunction)
+        stateFlow(stateFlow)
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }

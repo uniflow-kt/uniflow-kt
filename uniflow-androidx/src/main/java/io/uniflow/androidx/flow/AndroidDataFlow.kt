@@ -27,7 +27,6 @@ import kotlin.coroutines.CoroutineContext
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     private val viewModelJob = SupervisorJob()
-
     override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
 
     private val _states = MutableLiveData<UIState>()

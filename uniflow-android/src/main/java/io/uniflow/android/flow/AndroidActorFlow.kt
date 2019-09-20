@@ -29,11 +29,11 @@ import kotlinx.coroutines.channels.actor
  */
 abstract class AndroidActorFlow : AndroidDataFlow() {
 
-    override fun onAction(action: Action<UIState?, *>) {
+    override fun onAction(action: Action) {
         flowActor.offer(action)
     }
 
-    private val flowActor = actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    private val flowActor = actor<Action>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             onIO {
                 proceedAction(action)

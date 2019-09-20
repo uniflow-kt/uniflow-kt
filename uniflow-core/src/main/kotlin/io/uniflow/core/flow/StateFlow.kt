@@ -1,6 +1,19 @@
 package io.uniflow.core.flow
 
-data class Action(val stateFunction: StateFunction<*>? = null, val errorFunction: ErrorFunction? = null) {
+class StateFlowPublisher(val flow: DataFlow, val errorFunction: ErrorFunction? = null) {
+    suspend fun setState(state: UIState) {
+        val action: Action = if (errorFunction != null) {
+            Action({ state }, errorFunction)
+        } else Action({ state })
+        flow.proceedAction(action)
+    }
+
+    suspend fun setState(state: () -> UIState) {
+        val action: Action = if (errorFunction != null) {
+            Action({ state() }, errorFunction)
+        } else Action({ state() })
+        flow.proceedAction(action)
+    }
 
     @Deprecated("", level = DeprecationLevel.ERROR)
     fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
@@ -28,7 +41,4 @@ data class Action(val stateFunction: StateFunction<*>? = null, val errorFunction
     }
 }
 
-typealias StateFunction<T> = suspend Action.(UIState?) -> T
-typealias StateUpdateFunction = StateFunction<UIState?>
-typealias StateActionFunction = StateFunction<Unit>
-typealias ErrorFunction = suspend Action.(Exception) -> UIState?
+typealias StateFlowFunction = suspend StateFlowPublisher.(UIState?) -> Unit

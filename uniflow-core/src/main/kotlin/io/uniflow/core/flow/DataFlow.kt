@@ -29,15 +29,23 @@ interface DataFlow : CoroutineScope {
     suspend fun applyState(state: UIState)
 
     /**
-     * Make an Action to update the current state
-     *
-     * @param updateFunction - function to produce a new state, from the current state
+     * If any flowError occurs and is not caught, this function catch it
+     * @param error
      */
-    fun setState(updateFunction: ActionFunction<UIState?, UIState?>, errorFunction: ErrorFunction) {
-        onAction(Action(updateFunction, errorFunction))
+    suspend fun onError(error: Exception) {
+        UniFlowLogger.logError("Got Flow Error", error)
+        throw error
     }
 
-    fun setState(updateFunction: ActionFunction<UIState?, UIState?>) {
+    /**
+     * Make an Action to update the current state
+     *
+     * @param onStateUpdate - function to produce a new state, from the current state
+     */
+    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction) {
+        onAction(Action(onStateUpdate, onActionError))
+    }
+    fun setState(updateFunction: StateUpdateFunction) {
         onAction(Action(updateFunction))
     }
 
@@ -45,14 +53,13 @@ interface DataFlow : CoroutineScope {
      * Make an Action that can update or not the current state
      * More for side effects
      *
-     * @param actionFunction - function run against the current state
+     * @param onStateAction - function run against the current state
      */
-    fun withState(actionFunction: ActionFunction<UIState?, Unit>, errorFunction: ErrorFunction) {
-        onAction(Action(actionFunction, errorFunction))
+    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction) {
+        onAction(Action(onStateAction, onActionError))
     }
-
-    fun withState(actionFunction: ActionFunction<UIState?, Unit>) {
-        onAction(Action(actionFunction))
+    fun withState(onStateAction: StateActionFunction) {
+        onAction(Action(onStateAction))
     }
 
     /**
@@ -63,49 +70,35 @@ interface DataFlow : CoroutineScope {
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
      */
-    fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>, errorFunction: ErrorFunction) {
+    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
         launchOnIO {
-            try {
-                val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
-                stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Exception) {
-                errorFunction(e)?.let { applyState(it) }
-            }
+            proceedStateFlow(onStateFlow, onActionError)
+        }
+    }
+    fun stateFlow(onStateFlow: StateFlowFunction) {
+        launchOnIO {
+            proceedStateFlow(onStateFlow)
         }
     }
 
-    /**
-     * An action that can trigger several state changes
-     *
-     * stateFlowFunction allow to use the StateFlowPublisher.setState(...) function to set any new state
-     *
-     * @param stateFlowFunction - flow state
-     */
-    fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>) {
-        launchOnIO {
-            try {
-                val publisher = StateFlowPublisher(this@DataFlow)
-                stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Exception) {
+    suspend fun proceedStateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction? = null) {
+        try {
+            val publisher = StateFlowPublisher(this, onActionError)
+            onStateFlow(publisher, getCurrentState())
+        } catch (e: Exception) {
+            if (onActionError != null) {
+                onActionError(Action(errorFunction = onActionError), e)
+            } else {
                 onError(e)
             }
         }
     }
 
     /**
-     * If any flowError occurs and is not caught, this function catch it
-     * @param error
-     */
-    suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("Got Flow Error", error)
-        throw error
-    }
-
-    /**
      * Execute the action & catch any flowError
      * @param action
      */
-    fun onAction(action: Action<UIState?, *>) {
+    fun onAction(action: Action) {
         launchOnIO {
             proceedAction(action)
         }
@@ -114,16 +107,16 @@ interface DataFlow : CoroutineScope {
     /**
      * Execute action on coroutine
      */
-    suspend fun proceedAction(action: Action<UIState?, *>) {
+    suspend fun proceedAction(action: Action) {
         try {
-            val result = action.actionFunction.invoke(this, getCurrentState())
+            val result = action.stateFunction?.invoke(action, getCurrentState())
             if (result is UIState) {
                 applyState(result)
             } else {
-               //TODO do something when no update?
+                //TODO do something when no update?
             }
         } catch (e: Exception) {
-            onError(action, e)
+            onActionError(action, e)
         }
     }
 
@@ -132,11 +125,11 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    fun onError(action: Action<*, *>, error: Exception) {
+    fun onActionError(action: Action, error: Exception) {
         launchOnIO {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction.let {
-                    it.invoke(this@DataFlow, error)
+                    it.invoke(action, error)
                 }
                 failState?.let { applyState(failState) }
             } else onError(error)
