@@ -23,7 +23,7 @@ data class Action(val stateFunction: StateFunction<*>? = null, val errorFunction
     }
 
     @Deprecated("", level = DeprecationLevel.ERROR)
-    suspend fun applyState(state: UIState){
+    fun applyState(state: UIState){
         error("")
     }
 }

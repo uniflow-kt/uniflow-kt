@@ -36,7 +36,7 @@ class StateFlowPublisher(val flow: DataFlow, val errorFunction: ErrorFunction? =
     }
 
     @Deprecated("", level = DeprecationLevel.ERROR)
-    suspend fun applyState(state: UIState){
+    fun applyState(state: UIState){
         error("")
     }
 }
