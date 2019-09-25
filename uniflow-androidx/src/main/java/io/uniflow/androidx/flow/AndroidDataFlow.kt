@@ -18,16 +18,15 @@ package io.uniflow.androidx.flow
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
-    private val viewModelJob = SupervisorJob()
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
+    override val coroutineContext: CoroutineContext = viewModelScope.coroutineContext
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>
@@ -56,6 +55,6 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     override fun onCleared() {
         super.onCleared()
-        viewModelJob.cancel()
+        viewModelScope.cancel()
     }
 }
