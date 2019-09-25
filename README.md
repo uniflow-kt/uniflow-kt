@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.7.4`
+#### Current version is `0.8.1`
 
 Choose one of the following dependency:
 
@@ -34,6 +34,7 @@ UniFlow provides:
 * Android extensions to let you just focus on States & Events
 * Ready for Kotlin coroutines
 * Easy to test
+* Open to functional programming with [Arrow](https://arrow-kt.io/)
 
 <details><summary>What is Unidirectional Data Flow? 🤔</summary>
 <p>
@@ -103,7 +104,7 @@ class WeatherActivity : AppCompatActivity {
 
 ```
 
-### Easy testing!
+### Easy to test!
 
 Create your ViewModel instance and mock your states observer:
 
@@ -224,7 +225,7 @@ fun getWeather() = stateFlow {
 }
 ```
 
-### Side effets & events
+### Side effects & Events
 
 For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
 
