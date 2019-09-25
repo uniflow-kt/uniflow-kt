@@ -16,8 +16,7 @@
 package io.uniflow.android.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.Action
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.StateAction
 import io.uniflow.core.flow.onIO
 import kotlinx.coroutines.channels.actor
 
@@ -29,11 +28,11 @@ import kotlinx.coroutines.channels.actor
  */
 abstract class AndroidActorFlow : AndroidDataFlow() {
 
-    override fun onAction(action: Action) {
+    override fun onAction(action: StateAction) {
         flowActor.offer(action)
     }
 
-    private val flowActor = actor<Action>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    private val flowActor = actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             onIO {
                 proceedAction(action)

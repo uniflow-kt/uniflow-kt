@@ -38,34 +38,34 @@ interface DataFlow : CoroutineScope {
     }
 
     /**
-     * Make an Action to update the current state
+     * Make an StateAction to update the current state
      *
      * @param onStateUpdate - function to produce a new state, from the current state
      */
     fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction) {
-        onAction(Action(onStateUpdate, onActionError))
+        onAction(StateAction(onStateUpdate, onActionError))
     }
     fun setState(updateFunction: StateUpdateFunction) {
-        onAction(Action(updateFunction))
+        onAction(StateAction(updateFunction))
     }
 
     /**
-     * Make an Action that can update or not the current state
+     * Make an StateAction that can update or not the current state
      * More for side effects
      *
      * @param onStateAction - function run against the current state
      */
     fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction) {
-        onAction(Action(onStateAction, onActionError))
+        onAction(StateAction(onStateAction, onActionError))
     }
     fun withState(onStateAction: StateActionFunction) {
-        onAction(Action(onStateAction))
+        onAction(StateAction(onStateAction))
     }
 
     /**
      * An action that can trigger several state changes
      *
-     * stateFlowFunction allow to use the StateFlowPublisher.setState(...) function to set any new state
+     * stateFlowFunction allow to use the StateFlowAction.setState(...) function to set any new state
      *
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
@@ -83,11 +83,11 @@ interface DataFlow : CoroutineScope {
 
     suspend fun proceedStateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction? = null) {
         try {
-            val publisher = StateFlowPublisher(this, onActionError)
+            val publisher = StateFlowAction(this, onActionError)
             onStateFlow(publisher, getCurrentState())
         } catch (e: Exception) {
             if (onActionError != null) {
-                onActionError(Action(errorFunction = onActionError), e)
+                onActionError(StateAction(errorFunction = onActionError), e)
             } else {
                 onError(e)
             }
@@ -98,7 +98,7 @@ interface DataFlow : CoroutineScope {
      * Execute the action & catch any flowError
      * @param action
      */
-    fun onAction(action: Action) {
+    fun onAction(action: StateAction) {
         launchOnIO {
             proceedAction(action)
         }
@@ -107,7 +107,7 @@ interface DataFlow : CoroutineScope {
     /**
      * Execute action on coroutine
      */
-    suspend fun proceedAction(action: Action) {
+    suspend fun proceedAction(action: StateAction) {
         try {
             val result = action.stateFunction?.invoke(action, getCurrentState())
             if (result is UIState) {
@@ -125,7 +125,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      * @param error
      */
-    fun onActionError(action: Action, error: Exception) {
+    fun onActionError(action: StateAction, error: Exception) {
         launchOnIO {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction.let {

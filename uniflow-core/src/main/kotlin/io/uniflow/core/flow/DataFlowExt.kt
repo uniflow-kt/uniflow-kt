@@ -5,7 +5,7 @@ package io.uniflow.core.flow
  */
 inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: StateUpdateFunction, noinline errorFunction: ErrorFunction) {
     if (getCurrentState() is T) {
-        onAction(Action(onStateUpdate, errorFunction))
+        onAction(StateAction(onStateUpdate, errorFunction))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
@@ -13,7 +13,7 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: Stat
 
 inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: StateUpdateFunction) {
     if (getCurrentState() is T) {
-        onAction(Action(onStateUpdate))
+        onAction(StateAction(onStateUpdate))
     } else {
         withState { sendEvent(UIEvent.BadOrWrongState(getCurrentState())) }
     }
