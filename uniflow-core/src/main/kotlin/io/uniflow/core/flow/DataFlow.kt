@@ -112,8 +112,6 @@ interface DataFlow : CoroutineScope {
             val result = action.stateFunction?.invoke(action, getCurrentState())
             if (result is UIState) {
                 applyState(result)
-            } else {
-                //TODO do something when no update?
             }
         } catch (e: Exception) {
             onActionError(action, e)

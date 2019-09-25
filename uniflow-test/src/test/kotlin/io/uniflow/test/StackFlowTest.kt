@@ -1,8 +1,7 @@
-package io.uniflow.test.flow
+package io.uniflow.test
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.stateFlowFrom
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.TodoStackFlow

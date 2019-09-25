@@ -1,4 +1,4 @@
-package io.uniflow.test.actor
+package io.uniflow.test
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
