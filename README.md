@@ -1,5 +1,5 @@
 
-# UniFlow 🦄 - Unidirectional Data Flow for Android, using Kotlin coroutines
+# UniFlow 🦄 - A Simple Kotlin Unidrectional Kotlin Data Flow framework using Kotlin coroutines and open to functional programming
 
 ## Setup
 
