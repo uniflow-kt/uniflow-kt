@@ -1,6 +1,6 @@
 package io.uniflow.core.flow
 
-class StateFlowAction(val flow: DataFlow, val errorFunction: ErrorFunction? = null) {
+class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: StateFlowFunction, internal val errorFunction: ErrorFunction? = null) {
     suspend fun setState(state: UIState) {
         val action: StateAction = if (errorFunction != null) {
             StateAction({ state }, errorFunction)
@@ -17,37 +17,30 @@ class StateFlowAction(val flow: DataFlow, val errorFunction: ErrorFunction? = nu
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun setState(updateFunction: StateUpdateFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun withState(onStateAction: StateActionFunction, errorFunction: ErrorFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun withState(onStateAction: StateActionFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun applyState(state: UIState){
-        TODO("Wrong API usage")
+    fun applyState(state: UIState) {
     }
 
     @Deprecated("Can't use redeclare stateFlow", level = DeprecationLevel.ERROR)
     fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("Can't use redeclare stateFlow", level = DeprecationLevel.ERROR)
     fun stateFlow(onStateFlow: StateFlowFunction) {
-        TODO("Wrong API usage")
     }
 
     @Deprecated("Can't redeclare an action inside an action", level = DeprecationLevel.ERROR)

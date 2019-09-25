@@ -42,11 +42,18 @@ interface DataFlow : CoroutineScope {
      *
      * @param onStateUpdate - function to produce a new state, from the current state
      */
-    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction) {
-        onAction(StateAction(onStateUpdate, onActionError))
+    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction): StateAction {
+        return StateAction(onStateUpdate, onActionError).let {
+            onAction(it)
+            it
+        }
     }
-    fun setState(updateFunction: StateUpdateFunction) {
-        onAction(StateAction(updateFunction))
+
+    fun setState(onStateUpdate: StateUpdateFunction): StateAction {
+        return StateAction(onStateUpdate).let {
+            onAction(it)
+            it
+        }
     }
 
     /**
@@ -55,11 +62,18 @@ interface DataFlow : CoroutineScope {
      *
      * @param onStateAction - function run against the current state
      */
-    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction) {
-        onAction(StateAction(onStateAction, onActionError))
+    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction): StateAction {
+        return StateAction(onStateAction, onActionError).let {
+            onAction(it)
+            it
+        }
     }
-    fun withState(onStateAction: StateActionFunction) {
-        onAction(StateAction(onStateAction))
+
+    fun withState(onStateAction: StateActionFunction): StateAction {
+        return StateAction(onStateAction).let {
+            onAction(it)
+            it
+        }
     }
 
     /**
@@ -70,24 +84,32 @@ interface DataFlow : CoroutineScope {
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
      */
-    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
-        launchOnIO {
-            proceedStateFlow(onStateFlow, onActionError)
-        }
-    }
-    fun stateFlow(onStateFlow: StateFlowFunction) {
-        launchOnIO {
-            proceedStateFlow(onStateFlow)
+    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction): StateFlowAction {
+        return StateFlowAction(this, onStateFlow, onActionError).let {
+            onStateFlow(it)
+            it
         }
     }
 
-    suspend fun proceedStateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction? = null) {
+    fun stateFlow(onStateFlow: StateFlowFunction): StateFlowAction {
+        return StateFlowAction(this, onStateFlow).let {
+            onStateFlow(it)
+            it
+        }
+    }
+
+    fun onStateFlow(stateFlowAction: StateFlowAction) {
+        launchOnIO {
+            proceedStateFlow(stateFlowAction)
+        }
+    }
+
+    suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
         try {
-            val publisher = StateFlowAction(this, onActionError)
-            onStateFlow(publisher, getCurrentState())
+            stateFlowAction.onStateFlow(stateFlowAction, getCurrentState())
         } catch (e: Exception) {
-            if (onActionError != null) {
-                onActionError(StateAction(errorFunction = onActionError), e)
+            if (stateFlowAction.errorFunction != null) {
+                onActionError(StateAction(errorFunction = stateFlowAction.errorFunction), e)
             } else {
                 onError(e)
             }
