@@ -60,7 +60,7 @@ class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
     }
 
     fun childIOError() = withState {
-        onIO {
+        onIO<Unit> {
             error("Boom on IO")
         }
     }
