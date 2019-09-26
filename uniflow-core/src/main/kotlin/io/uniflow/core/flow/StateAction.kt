@@ -37,6 +37,7 @@ data class StateAction(internal val stateFunction: StateFunction<*>? = null, int
 }
 
 typealias StateFunction<T> = suspend StateAction.(UIState?) -> T
+typealias TypedUpdateFunction<T> = suspend StateAction.(T) -> UIState?
 typealias StateUpdateFunction = StateFunction<UIState?>
 typealias StateActionFunction = StateFunction<Unit>
 typealias ErrorFunction = suspend StateAction.(Exception) -> UIState?

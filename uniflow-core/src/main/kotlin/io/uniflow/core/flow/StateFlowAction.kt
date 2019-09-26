@@ -61,3 +61,4 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
 }
 
 typealias StateFlowFunction = suspend StateFlowAction.(UIState?) -> Unit
+typealias TypedFlowFunction<T> = suspend StateFlowAction.(T) -> Unit
