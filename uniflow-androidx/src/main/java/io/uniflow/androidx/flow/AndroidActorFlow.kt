@@ -20,7 +20,9 @@ import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.Action
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onIO
+import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.isActive
 
 /**
  * AndroidDataFlow
@@ -31,7 +33,12 @@ import kotlinx.coroutines.channels.actor
 abstract class AndroidActorFlow : AndroidDataFlow() {
 
     override fun onAction(action: Action<UIState?, *>) {
-        flowActor.offer(action)
+        UniFlowLogger.log("onAction -$action- coroutineScope.isActive:${coroutineScope.isActive}")
+        if (coroutineScope.isActive) {
+            flowActor.offer(action)
+        } else {
+            UniFlowLogger.logError("stateFlow cancelled - $this has been cancelled")
+        }
     }
 
     private val flowActor = viewModelScope.actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {

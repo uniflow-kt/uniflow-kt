@@ -2,6 +2,7 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 
 /**
  * Unidirectional Data Flow
@@ -69,13 +70,18 @@ interface DataFlow {
      * @param errorFunction - flowError function
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>, errorFunction: ErrorFunction) {
-        coroutineScope.launchOnIO {
-            try {
-                val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
-                stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Exception) {
-                errorFunction(e)?.let { applyState(it) }
+        UniFlowLogger.log("stateFlow -$stateFlowFunction- coroutineScope.isActive:${coroutineScope.isActive}")
+        if (coroutineScope.isActive) {
+            coroutineScope.launchOnIO {
+                try {
+                    val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
+                    stateFlowFunction(publisher, getCurrentState())
+                } catch (e: Exception) {
+                    errorFunction(e)?.let { applyState(it) }
+                }
             }
+        } else {
+            UniFlowLogger.logError("stateFlow cancelled - $this has been cancelled")
         }
     }
 
@@ -87,13 +93,18 @@ interface DataFlow {
      * @param stateFlowFunction - flow state
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>) {
-        coroutineScope.launchOnIO {
-            try {
-                val publisher = StateFlowPublisher(this@DataFlow)
-                stateFlowFunction(publisher, getCurrentState())
-            } catch (e: Exception) {
-                onError(e)
+        UniFlowLogger.log("stateFlow -$stateFlowFunction- coroutineScope.isActive:${coroutineScope.isActive}")
+        if (coroutineScope.isActive) {
+            coroutineScope.launchOnIO {
+                try {
+                    val publisher = StateFlowPublisher(this@DataFlow)
+                    stateFlowFunction(publisher, getCurrentState())
+                } catch (e: Exception) {
+                    onError(e)
+                }
             }
+        } else {
+            UniFlowLogger.logError("stateFlow cancelled - $this has been cancelled")
         }
     }
 
@@ -111,8 +122,13 @@ interface DataFlow {
      * @param action
      */
     fun onAction(action: Action<UIState?, *>) {
-        coroutineScope.launchOnIO {
-            proceedAction(action)
+        UniFlowLogger.log("onAction -$action- coroutineScope.isActive:${coroutineScope.isActive}")
+        if (coroutineScope.isActive) {
+            coroutineScope.launchOnIO {
+                proceedAction(action)
+            }
+        } else {
+            UniFlowLogger.logError("onAction cancelled - $this has been cancelled")
         }
     }
 
@@ -136,13 +152,17 @@ interface DataFlow {
      * @param error
      */
     fun onError(action: Action<*, *>, error: Exception) {
-        coroutineScope.launchOnIO {
-            if (action.errorFunction != null) {
-                val failState = action.errorFunction.let {
-                    it.invoke(error)
-                }
-                failState?.let { applyState(failState) }
-            } else onError(error)
+        if (coroutineScope.isActive) {
+            coroutineScope.launchOnIO {
+                if (action.errorFunction != null) {
+                    val failState = action.errorFunction.let {
+                        it.invoke(error)
+                    }
+                    failState?.let { applyState(failState) }
+                } else onError(error)
+            }
+        } else {
+            UniFlowLogger.logError("onError cancelled - $this has been cancelled")
         }
     }
 }
