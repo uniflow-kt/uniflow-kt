@@ -15,11 +15,11 @@
  */
 package io.uniflow.androidx.flow
 
+import androidx.lifecycle.viewModelScope
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.Action
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onIO
-import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.channels.actor
 
 /**
@@ -34,20 +34,11 @@ abstract class AndroidActorFlow : AndroidDataFlow() {
         flowActor.offer(action)
     }
 
-    private val flowActor = actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    private val flowActor = viewModelScope.actor<Action<UIState?, *>>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             onIO {
                 proceedAction(action)
             }
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        try {
-            flowActor.close()
-        } catch (e: Exception) {
-            UniFlowLogger.logError("AndroidActorFlow cancel error",e)
         }
     }
 }

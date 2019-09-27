@@ -5,14 +5,15 @@ import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onMain
 import io.uniflow.core.logger.UniFlowLogger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.cancel
 
 abstract class StackFlow : DataFlow {
 
-    private val viewModelJob = SupervisorJob()
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
+    private val supervisorJob = SupervisorJob()
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
     val states = arrayListOf<UIState>()
     val events = arrayListOf<UIEvent>()
@@ -37,6 +38,6 @@ abstract class StackFlow : DataFlow {
     }
 
     open fun cancel() {
-        viewModelJob.cancel()
+        coroutineScope.cancel()
     }
 }

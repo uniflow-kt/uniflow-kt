@@ -5,7 +5,6 @@ import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.onIO
 import io.uniflow.core.flow.stateFlowFrom
 import io.uniflow.core.sample.StackFlow
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
 class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
@@ -65,16 +64,16 @@ class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
         }
     }
 
-    fun asyncChildError() = withState {
-        async {
-            delay(200)
-            error("child boom")
-        }
-        async {
-            delay(1000)
-            repository.add("LongTodo")
-        }.await()
-    }
+//    fun asyncChildError() = withState {
+//        async {
+//            delay(200)
+//            error("child boom")
+//        }
+//        async {
+//            delay(1000)
+//            repository.add("LongTodo")
+//        }.await()
+//    }
 
     fun longWait() = setState {
         delay(1000)

@@ -20,15 +20,14 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlin.coroutines.CoroutineContext
 
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
-    private val viewModelJob = SupervisorJob()
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
+    private val supervisorJob = SupervisorJob()
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>
@@ -58,7 +57,7 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
     override fun onCleared() {
         super.onCleared()
         try {
-            viewModelJob.cancel()
+            supervisorJob.cancel()
         } catch (e: Exception) {
             UniFlowLogger.logError("AndroidDataFlow cancel error", e)
         }

@@ -176,19 +176,19 @@ class StackFlowTest {
         assertTrue(dataFlow.events.size == 0)
     }
 
-    @Test
-    fun `child action error`() = runBlocking {
-        dataFlow.getAll()
-        dataFlow.asyncChildError()
-        delay(500)
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertTrue(dataFlow.states.last() is UIState.Failed)
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.size == 0)
-    }
+//    @Test
+//    fun `child action error`() = runBlocking {
+//        dataFlow.getAll()
+//        dataFlow.asyncChildError()
+//        delay(500)
+//
+//        assertEquals(UIState.Empty, dataFlow.states[0])
+//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+//        assertTrue(dataFlow.states.last() is UIState.Failed)
+//
+//        assertTrue(dataFlow.states.size == 3)
+//        assertTrue(dataFlow.events.size == 0)
+//    }
 
     @Test
     fun `stateflow test`() = runBlocking {

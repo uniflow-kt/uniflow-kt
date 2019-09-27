@@ -58,18 +58,18 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
         }
     }
 
-    fun asyncChildError() = withState({
-        setState({
-            delay(200)
-            error("child boom")
-        }, { error -> UIState.Failed(error = error) })
-
-        setState {
-            delay(1000)
-            repository.add("LongTodo")
-            repository.getAllTodo().mapToTodoListState()
-        }
-    }, { error -> UIState.Failed(error = error) })
+//    fun asyncChildError() = withState({
+//        setState({
+//            delay(200)
+//            error("child boom")
+//        }, { error -> UIState.Failed(error = error) })
+//
+//        setState {
+//            delay(1000)
+//            repository.add("LongTodo")
+//            repository.getAllTodo().mapToTodoListState()
+//        }
+//    }, { error -> UIState.Failed(error = error) })
 
     fun longWait() = setState {
         delay(1000)

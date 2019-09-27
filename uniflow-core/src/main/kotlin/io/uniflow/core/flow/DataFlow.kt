@@ -8,7 +8,12 @@ import kotlinx.coroutines.CoroutineScope
  *
  *
  */
-interface DataFlow : CoroutineScope {
+interface DataFlow {
+
+    /**
+     * Current CoroutineScope
+     */
+    val coroutineScope: CoroutineScope
 
     /**
      * Send an event
@@ -64,7 +69,7 @@ interface DataFlow : CoroutineScope {
      * @param errorFunction - flowError function
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>, errorFunction: ErrorFunction) {
-        launchOnIO {
+        coroutineScope.launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow, errorFunction)
                 stateFlowFunction(publisher, getCurrentState())
@@ -82,7 +87,7 @@ interface DataFlow : CoroutineScope {
      * @param stateFlowFunction - flow state
      */
     fun stateFlow(stateFlowFunction: StateFlowFunction<UIState?>) {
-        launchOnIO {
+        coroutineScope.launchOnIO {
             try {
                 val publisher = StateFlowPublisher(this@DataFlow)
                 stateFlowFunction(publisher, getCurrentState())
@@ -106,7 +111,7 @@ interface DataFlow : CoroutineScope {
      * @param action
      */
     fun onAction(action: Action<UIState?, *>) {
-        launchOnIO {
+        coroutineScope.launchOnIO {
             proceedAction(action)
         }
     }
@@ -116,11 +121,9 @@ interface DataFlow : CoroutineScope {
      */
     suspend fun proceedAction(action: Action<UIState?, *>) {
         try {
-            val result = action.actionFunction.invoke(this, getCurrentState())
+            val result = action.actionFunction.invoke(getCurrentState())
             if (result is UIState) {
                 applyState(result)
-            } else {
-               //TODO do something when no update?
             }
         } catch (e: Exception) {
             onError(action, e)
@@ -133,10 +136,10 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     fun onError(action: Action<*, *>, error: Exception) {
-        launchOnIO {
+        coroutineScope.launchOnIO {
             if (action.errorFunction != null) {
                 val failState = action.errorFunction.let {
-                    it.invoke(this@DataFlow, error)
+                    it.invoke(error)
                 }
                 failState?.let { applyState(failState) }
             } else onError(error)
