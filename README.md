@@ -375,6 +375,8 @@ Here we have the following default builders:
 
 You can also make your own safe result builder, depending on your APIs 👍
 
+_NB_: this could be done also with `Try { }` expression wrapper directly
+
 ### Functional operators
 
 You can then build expression to combine unsafe IO calls. Here we use `networkCall` to wrap Retrofit expression:
