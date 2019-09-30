@@ -20,15 +20,14 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlin.coroutines.CoroutineContext
 
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     private val viewModelJob = SupervisorJob()
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + viewModelJob
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>

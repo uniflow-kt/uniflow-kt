@@ -16,9 +16,12 @@
 package io.uniflow.android.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
+import io.uniflow.core.flow.ActorFlow
 import io.uniflow.core.flow.StateAction
 import io.uniflow.core.flow.onIO
+import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.isActive
 
 /**
  * AndroidDataFlow
@@ -26,22 +29,23 @@ import kotlinx.coroutines.channels.actor
  *
  * @author Arnaud Giuliani
  */
-abstract class AndroidActorFlow : AndroidDataFlow() {
+abstract class AndroidActorFlow : AndroidDataFlow(), ActorFlow {
 
-    override fun onAction(action: StateAction) {
-        flowActor.offer(action)
-    }
-
-    private val flowActor = actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
-            onIO {
-                proceedAction(action)
+            if (coroutineScope.isActive) {
+                UniFlowLogger.log("AndroidActorFlow run action $action")
+                onIO {
+                    proceedAction(action)
+                }
+            } else {
+                UniFlowLogger.log("AndroidActorFlow action cancelled")
             }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        flowActor.close()
+        actorFlow.close()
     }
 }

@@ -21,12 +21,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
-import kotlinx.coroutines.cancel
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
 
 abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
-    override val coroutineContext: CoroutineContext = viewModelScope.coroutineContext
+    override val coroutineScope: CoroutineScope = viewModelScope
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>
@@ -52,9 +51,4 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
     }
 
     override fun getCurrentState(): UIState? = _states.value
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.cancel()
-    }
 }

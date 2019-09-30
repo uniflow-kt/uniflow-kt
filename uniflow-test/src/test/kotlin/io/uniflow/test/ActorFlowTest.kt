@@ -177,20 +177,6 @@ class ActorFlowTest {
         assertTrue(dataFlow.events.size == 0)
     }
 
-//    @Test
-//    fun `child action error`() = runBlocking {
-//        dataFlow.getAll()
-//        dataFlow.asyncChildError()
-//        delay(500)
-//
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//        assertTrue(dataFlow.states[2] is UIState.Failed)
-//
-//        assertTrue(dataFlow.states.size == 3)
-//        assertTrue(dataFlow.events.size == 0)
-//    }
-
     @Test
     fun `stateflow test`() = runBlocking {
         dataFlow.flow()
@@ -210,6 +196,19 @@ class ActorFlowTest {
         dataFlow.longWait()
         delay(300)
         dataFlow.cancel()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+
+        assertTrue(dataFlow.states.size == 2)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `cancel before test`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.cancel()
+        dataFlow.longWait()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])

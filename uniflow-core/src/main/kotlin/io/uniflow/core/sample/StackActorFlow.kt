@@ -1,26 +1,30 @@
 package io.uniflow.core.sample
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
+import io.uniflow.core.flow.ActorFlow
 import io.uniflow.core.flow.StateAction
 import io.uniflow.core.flow.onIO
+import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.isActive
 
-abstract class StackActorFlow : StackFlow() {
+abstract class StackActorFlow : StackFlow(), ActorFlow {
 
-    override fun onAction(action: StateAction) {
-        flowActor.offer(action)
-    }
-
-    private val flowActor = actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
-            onIO {
-                proceedAction(action)
+            if (coroutineScope.isActive) {
+                UniFlowLogger.log("StackActorFlow run action $action")
+                onIO {
+                    proceedAction(action)
+                }
+            } else {
+                UniFlowLogger.log("StackActorFlow action cancelled")
             }
         }
     }
 
     override fun cancel() {
         super.cancel()
-        flowActor.close()
+        actorFlow.close()
     }
 }

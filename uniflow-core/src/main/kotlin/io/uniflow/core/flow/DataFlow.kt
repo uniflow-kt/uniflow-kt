@@ -2,13 +2,19 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 
 /**
  * Unidirectional Data Flow
  *
  *
  */
-interface DataFlow : CoroutineScope {
+interface DataFlow {
+
+    /**
+     * Current used coroutine scope
+     */
+    val coroutineScope: CoroutineScope
 
     /**
      * Send an event
@@ -99,8 +105,12 @@ interface DataFlow : CoroutineScope {
     }
 
     fun onStateFlow(stateFlowAction: StateFlowAction) {
-        launchOnIO {
-            proceedStateFlow(stateFlowAction)
+        coroutineScope.apply {
+            if (isActive) {
+                launchOnIO {
+                    proceedStateFlow(stateFlowAction)
+                }
+            }
         }
     }
 
@@ -121,8 +131,15 @@ interface DataFlow : CoroutineScope {
      * @param action
      */
     fun onAction(action: StateAction) {
-        launchOnIO {
-            proceedAction(action)
+        coroutineScope.apply {
+            if (isActive) {
+                UniFlowLogger.log("DataFlow.onAction run $action")
+                launchOnIO {
+                    proceedAction(action)
+                }
+            } else {
+                UniFlowLogger.log("DataFlow.onAction action cancelled")
+            }
         }
     }
 
@@ -146,13 +163,20 @@ interface DataFlow : CoroutineScope {
      * @param error
      */
     fun onActionError(action: StateAction, error: Exception) {
-        launchOnIO {
-            if (action.errorFunction != null) {
-                val failState = action.errorFunction.let {
-                    it.invoke(action, error)
+        coroutineScope.apply {
+            if (isActive) {
+                UniFlowLogger.log("DataFlow.onActionError run $action for $error")
+                launchOnIO {
+                    if (action.errorFunction != null) {
+                        val failState = action.errorFunction.let {
+                            it.invoke(action, error)
+                        }
+                        failState?.let { applyState(failState) }
+                    } else onError(error)
                 }
-                failState?.let { applyState(failState) }
-            } else onError(error)
+            } else {
+                UniFlowLogger.log("DataFlow.onActionError cancelled for $error")
+            }
         }
     }
 }

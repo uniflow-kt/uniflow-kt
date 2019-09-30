@@ -65,17 +65,6 @@ class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {
         }
     }
 
-    fun asyncChildError() = withState {
-        async {
-            delay(200)
-            error("child boom")
-        }
-        async {
-            delay(1000)
-            repository.add("LongTodo")
-        }.await()
-    }
-
     fun longWait() = setState {
         delay(1000)
         repository.add("LongTodo")
