@@ -1,9 +1,9 @@
 
-# UniFlow 🦄 - A Simple Kotlin Unidrectional Kotlin Data Flow framework for Android, using Kotlin coroutines and open to functional programming
+# Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
 
 ## Setup
 
-#### Current version is `0.8.1`
+#### Current version is `0.8.3`
 
 Choose one of the following dependency:
 
@@ -330,77 +330,76 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 
 ## Functional Coroutines, to safely make states & events 🌈
 
-One way to handle properly exceptions, is to do it with a functional approach.
+One way to handle properly dangerous calls & exceptions, is to do it with a functional approach.
 
-### SafeResult, your safe result wrapper!
+### Safely wrapping results with Try type
 
-`SafeResult` is the Success/Error functional wrapper type of uniflow. It will help you write your state flow in a functional way.
+[`Try`](https://arrow-kt.io/docs/arrow/core/try/) is the Success/Failure functional wrapper type of Arrow. It will help you write your state flow in a functional way.
 
-You can wrap any value like that:
+You can wrap any `Try.Success` value like that:
 
 ```kotlin
 val myData : Any ...
 
-// wrap it as SafeResult
-safeResult(myData) or myData.asSafeResult()
+// wrap it as Success
+Try.just(myData) or myData.success()
 ```
 
-Concerning errors, you can wrap a SaferResult error like follow:
+Concerning errors, you can wrap a `Try.Failure` error like follow:
 
 ```kotlin
 val myError : Exception ...
 
-// wrap it as SafeResult
-errorResult(myError)
+// wrap it as Failure
+Try.raiseError(myError) or myError.failure()
 ```
 
-### Wrapping unsafe code
+### Wrapping unsafe expression
 
-To help you deal with expression that can raise exceptions, we provide lazy SafeResult builder, that will catch any error for you. Use the `safeCall` function to wrap an expression as SafeResult:
+To help you deal with expression that can raise exceptions, we provide a result wrapper that will catch any error for you. Use the `safeValue` uniflow function to wrap an expression as `Try`:
 
 ```kotlin
 // Will transform result as SafeResult.Success and any error to SafeResult.Error
 
 fun myDangerousCall() : MyData
 
-// will produce SafeResult<MyData>
-safeCall { myDangerousCall() }
-
+// will produce Try<MyData>
+val safeResult : Try<MyData> = safeValue { myDangerousCall() }
 ```
 
-Here we have the following SafeResult builders:
+Here we have the following default builders:
 
-- `safeCall { } ` - wrap SafeResult (data or exception)
-- `networkCall { } ` - wrap SafeResult, catch exception and wap it in a `NetworkException` object
-- `databaseCall { } `- wrap SafeResult, catch exception and wap it in a `DatabaseException` object
+- `safeCall { } ` - wrap Try result (data or exception)
+- `networkCall { } ` - wrap Try result, catch exception and wap it in a `NetworkException` object
+- `databaseCall { } `- wrap Try result, catch exception and wap it in a `DatabaseException` object
 
-You can also make your own SafeResult builder, depending on your APIs 👍
+You can also make your own safe result builder, depending on your APIs 👍
+
+_NB_: this could be done also with `Try { }` expression wrapper directly
 
 ### Functional operators
 
-You can then build expression to combine unsafe IO calls (here we use `networkCall` to wrap Retrofit expression):
+You can then build expression to combine unsafe IO calls. Here we use `networkCall` to wrap Retrofit expression:
 
 ```kotlin
 networkCall { weatherDatasource.geocode(targetLocation).await() }
 	    .map { it.mapToLocation() ?: error("Can't map to location: $it") }
 	    .flatMap { (lat, lng) -> networkCall { weatherDatasource.weather(lat, lng).await() } }
 	    .map { it.mapToWeatherEntities(targetLocation) }
-	    .onValue { weatherCache.addAll(it) }
+	    .onSuccess { weatherCache.addAll(it) }
 ```
 
-SafeResult offers some classic operators:
-- `map` - map value of a SafeResult
-- `flatMap` - transform a SafeResult value into another
-- `onValue` - do something on existing value
-- `onError` - do something on existing error
+Amoung the classical `Try` functional operators, we add some more:  
 - `get` - get the existing value or throw current error's exception
 - `getOrNull` - get the existing value or null
+- `onSuccess` - do something on existing value
+- `onFailure` - do something on existing error
 
 `get` & `getOrNull` are terminal operators, they give you the final result of your functional flow.
 
-### Making states & events
+### Making safe states & events
 
-In your DataFlow ViewModel class, you will operators concerning UIState:
+In your DataFlow ViewModel class, you will make sequence of operation to result in UIState(s):
 
 ```kotlin
 fun loadNewLocation(location: String) = fromState<WeatherListState> {
@@ -410,17 +409,17 @@ fun loadNewLocation(location: String) = fromState<WeatherListState> {
 ```
 
 - `mapState` - map current value to a UIState value
-- `toState` - get & map current value to a UIState (can specify success & error state)
-- `toStateOrNull` - get & map current value to UIState if only it's a success
+- `toState` - get & map current value to a UIState (can specify Success & Failure state mapping)
+- `toStateOrNull` - get & map current Success value to UIState else return null
 
 `toState` & `toStateOrNull` are terminal operators
 
-To send any event, use the `onValue` or `onError` operator, to send a it:
+To send any event, use the `onSuccess` or `onFailure` operator, to send a it:
 
 ```kotlin
 fun loadNewLocation(location: String) = fromState<WeatherListState> {
         getWeatherForLocation(location)
-                .onError { error -> sendEvent(WeatherListUIEvent.ProceedLocationFailed(location, error)) }
+                .onFailure { error -> sendEvent(WeatherListUIEvent.ProceedLocationFailed(location, error)) }
                 .toStateOrNull { it.mapToWeatherListState() }
     }
 ```
