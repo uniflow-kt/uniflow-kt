@@ -1,7 +1,8 @@
-package io.uniflow.core.flow
+package io.uniflow.core.threading
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -24,7 +25,10 @@ fun CoroutineScope.launchOnIO(block: suspend CoroutineScope.() -> Unit) = launch
 /**
  * Switch current execution context to Main thread
  */
-suspend fun <T> onMain(block: suspend CoroutineScope.() -> T) = withContext(UniFlowDispatcher.dispatcher.main(), block = block)
+suspend fun <T> onMain(immediate: Boolean = false, block: suspend CoroutineScope.() -> T) = withContext(getMainOrImmediateDispatcher(immediate), block = block)
+
+private fun getMainOrImmediateDispatcher(immediate: Boolean) =
+        if (immediate && UniFlowDispatcher.dispatcher.main() is MainCoroutineDispatcher) (UniFlowDispatcher.dispatcher.main() as MainCoroutineDispatcher).immediate else UniFlowDispatcher.dispatcher.main()
 
 /**
  * Switch current execution context to Default Thread

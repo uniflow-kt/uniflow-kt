@@ -3,8 +3,8 @@ package io.uniflow.core.sample
 import io.uniflow.core.flow.DataFlow
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.onMain
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

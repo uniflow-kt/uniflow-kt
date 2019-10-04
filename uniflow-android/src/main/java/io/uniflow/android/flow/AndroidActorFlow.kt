@@ -18,8 +18,8 @@ package io.uniflow.android.flow
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.ActorFlow
 import io.uniflow.core.flow.StateAction
-import io.uniflow.core.flow.onIO
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
 

@@ -18,8 +18,12 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.uniflow.core.flow.*
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.Event
+import io.uniflow.core.flow.UIEvent
+import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,7 +42,7 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
         get() = _events
 
     override suspend fun sendEvent(event: UIEvent): UIState? {
-        onMain {
+        onMain(immediate = true) {
             UniFlowLogger.logEvent(event)
             _events.value = Event(event)
         }
@@ -46,7 +50,7 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
     }
 
     override suspend fun applyState(state: UIState) {
-        onMain {
+        onMain(immediate = true) {
             UniFlowLogger.logState(state)
             _states.value = state
         }

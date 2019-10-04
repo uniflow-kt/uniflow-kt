@@ -2,10 +2,9 @@ package io.uniflow.test.data
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.onIO
 import io.uniflow.core.flow.stateFlowFrom
 import io.uniflow.core.sample.StackFlow
-import kotlinx.coroutines.async
+import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.delay
 
 class TodoStackFlow(private val repository: TodoRepository) : StackFlow() {

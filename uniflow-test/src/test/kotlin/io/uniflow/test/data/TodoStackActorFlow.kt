@@ -3,8 +3,8 @@ package io.uniflow.test.data
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.fromState
-import io.uniflow.core.flow.onIO
 import io.uniflow.core.sample.StackActorFlow
+import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.delay
 
 class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlow() {
