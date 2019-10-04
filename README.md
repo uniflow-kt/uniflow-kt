@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.8.3`
+#### Current version is `0.8.4`
 
 Choose one of the following dependency:
 
