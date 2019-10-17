@@ -25,9 +25,18 @@ testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 
 this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
 
-## Full documentation
+## Web Article 🎉
 
-Documentation can be found [here](./Documentation.md)
+- [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
+
+## Full documentation 📖
+
+- Documentation can be found [here](./Documentation.md)
+- Sample app: https://github.com/arnaudgiuliani/weatherapp-uniflow
+
+## Chat on Slack 💬
+
+Come talk on Kotlin Slack @ [#uniflow channel](https://kotlinlang.slack.com/?redir=%2Fmessages%2Funiflow)
 
 ## Quick intro 🚸
 
