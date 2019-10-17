@@ -18,7 +18,6 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 
 /**

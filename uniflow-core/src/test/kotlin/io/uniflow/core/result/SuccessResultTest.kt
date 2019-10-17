@@ -1,6 +1,7 @@
 package io.uniflow.core.result
 
-import arrow.core.success
+import arrow.core.flatMap
+import arrow.core.right
 import io.uniflow.core.flow.UIState
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
@@ -12,17 +13,17 @@ class SuccessResultTest {
 
     @Test
     fun `create result`() {
-        val result = value.success()
+        val result = value.right()
         assertTrue(result.get() == value)
 
-        assertTrue(result.isSuccess())
-        assertTrue(!result.isFailure())
+        assertTrue(result.isRight())
+        assertTrue(!result.isLeft())
     }
 
     @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
-        val result = value.success()
+        val result = value.right()
                 .map { value -> value + sndValue }
         assertTrue(result.get() == value + sndValue)
     }
@@ -30,16 +31,15 @@ class SuccessResultTest {
     @Test
     fun `flatmap result`() = runBlocking {
         val sndValue = 42
-        val result = value.success()
-                .flatMap { value -> sndValue.success() }
+        val result = value.right()
+                .flatMap { value -> sndValue.right() }
         assertTrue(result.get() == sndValue)
     }
 
     @Test
     fun `onValue`() = runBlocking {
         var writtenValue = ""
-        value.success()
-                .onSuccess { writtenValue = "$it" }
+        value.right().onSuccess { writtenValue = "$it" }
 
         assertTrue(writtenValue == value)
     }
@@ -47,15 +47,14 @@ class SuccessResultTest {
     @Test
     fun `onError`() = runBlocking {
         var writtenValue = ""
-        value.success()
-                .onFailure { writtenValue = "$it" }
+        value.right().onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
     }
 
     @Test
     fun `map State`() = runBlocking {
-        val result = value.success()
+        val result = value.right()
                 .map { UIState.Success }
 
         assertTrue(result.get() == UIState.Success)
@@ -63,7 +62,7 @@ class SuccessResultTest {
 
     @Test
     fun `to State or null`() = runBlocking {
-        val result = value.success()
+        val result = value.right()
                 .toStateOrNull { UIState.Success }
 
         assertTrue(result == UIState.Success)

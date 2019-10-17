@@ -1,32 +1,32 @@
 package io.uniflow.core.result
 
-import arrow.core.Try
+import arrow.core.Either
 
-suspend fun <T> safeValue(expr: suspend () -> T): Try<T> {
+suspend fun <T> safeValue(expr: suspend () -> T): Either<Throwable, T> {
     return try {
-        Try.Success(expr())
+        Either.right(expr())
     } catch (exception: Throwable) {
-        Try.Failure(exception)
+        Either.left(exception)
     }
 }
 
-suspend fun <T> safeValue(expr: suspend () -> T, onError: (Throwable) -> Throwable): Try<T> {
+suspend fun <T> safeValue(expr: suspend () -> T, onError: (Throwable) -> Throwable): Either<Throwable, T> {
     return try {
-        Try.Success(expr())
+        Either.right(expr())
     } catch (exception: Throwable) {
-        Try.Failure(onError(exception))
+        Either.left(onError(exception))
     }
 }
 
-suspend fun <T> safeCall(expr: suspend () -> Try<T>): Try<T> {
+suspend fun <T> safeCall(expr: suspend () -> Either<Throwable, T>): Either<Throwable, T> {
     return try {
         expr()
     } catch (exception: Throwable) {
-        Try.Failure(exception)
+        Either.left(exception)
     }
 }
 
-suspend fun <T> safeCall(expr: suspend () -> Try<T>, onError: (Throwable) -> Try<T>): Try<T> {
+suspend fun <T> safeCall(expr: suspend () -> Either<Throwable, T>, onError: (Throwable) -> Either<Throwable, T>): Either<Throwable, T> {
     return try {
         expr()
     } catch (exception: Throwable) {
@@ -34,13 +34,13 @@ suspend fun <T> safeCall(expr: suspend () -> Try<T>, onError: (Throwable) -> Try
     }
 }
 
-suspend fun <T> networkCall(expr: suspend () -> T): Try<T> {
+suspend fun <T> networkCall(expr: suspend () -> T): Either<Throwable, T> {
     return safeValue(expr) { error ->
         NetworkException(error = error)
     }
 }
 
-suspend fun <T> databaseCall(expr: suspend () -> T): Try<T> {
+suspend fun <T> databaseCall(expr: suspend () -> T): Either<Throwable, T> {
     return safeValue(expr) { error ->
         DatabaseException(error = error)
     }

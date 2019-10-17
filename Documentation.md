@@ -192,50 +192,50 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 
 One way to handle properly dangerous calls & exceptions, is to do it with a functional approach.
 
-### Safely wrapping results with Try type
+### Safely wrapping results with Either type
 
-[`Try`](https://arrow-kt.io/docs/arrow/core/try/) is the Success/Failure functional wrapper type of Arrow. It will help you write your state flow in a functional way.
+[`Either`](https://arrow-kt.io/docs/arrow/core/either/) is the Right/Left functional wrapper type of Arrow. It will help you write your state flow in a functional way.
 
-You can wrap any `Try.Success` value like that:
+You can wrap any `Either.Right` value like that:
 
 ```kotlin
 val myData : Any ...
 
 // wrap it as Success
-Try.just(myData) or myData.success()
+Either.right(myData) or myData.right()
 ```
 
-Concerning errors, you can wrap a `Try.Failure` error like follow:
+Concerning errors, you can wrap a `Either.left` error like follow:
 
 ```kotlin
 val myError : Exception ...
 
 // wrap it as Failure
-Try.raiseError(myError) or myError.failure()
+Either.left(myError) or myError.left()
 ```
 
 ### Wrapping unsafe expression
 
-To help you deal with expression that can raise exceptions, we provide a result wrapper that will catch any error for you. Use the `safeValue` uniflow function to wrap an expression as `Try`:
+To help you deal with expression that can raise exceptions, we provide a result wrapper that will catch any error for you. Use the `safeValue` uniflow function to wrap an expression as `Either`:
 
 ```kotlin
 // Will transform result as SafeResult.Success and any error to SafeResult.Error
 
 fun myDangerousCall() : MyData
 
-// will produce Try<MyData>
-val safeResult : Try<MyData> = safeValue { myDangerousCall() }
+// will produce Either<Throwable,MyData>
+val safeResult : Either<Throwable,MyData> = safeValue { myDangerousCall() }
 ```
 
 Here we have the following default builders:
 
-- `safeCall { } ` - wrap Try result (data or exception)
-- `networkCall { } ` - wrap Try result, catch exception and wap it in a `NetworkException` object
-- `databaseCall { } `- wrap Try result, catch exception and wap it in a `DatabaseException` object
+- `safeCall { } ` - wrap Either result (data or exception)
+- `networkCall { } ` - wrap Either result, catch exception and wap it in a `NetworkException` object
+- `databaseCall { } `- wrap Either result, catch exception and wap it in a `DatabaseException` object
 
 You can also make your own safe result builder, depending on your APIs 👍
 
-_NB_: this could be done also with `Try { }` expression wrapper directly
+_NB_: this could be done also with `Either.catch { }` expression wrapper directly
 
 ### Functional operators
 
@@ -249,7 +249,7 @@ networkCall { weatherDatasource.geocode(targetLocation).await() }
 	    .onSuccess { weatherCache.addAll(it) }
 ```
 
-Amoung the classical `Try` functional operators, we add some more:  
+Amoung the classical `Either` functional operators, we add some more:  
 - `get` - get the existing value or throw current error's exception
 - `getOrNull` - get the existing value or null
 - `onSuccess` - do something on existing value
