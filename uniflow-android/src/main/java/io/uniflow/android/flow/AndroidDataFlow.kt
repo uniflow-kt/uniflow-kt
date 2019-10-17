@@ -18,17 +18,18 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.dispatcher.UniFlowDispatcher
+import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.threading.onIO
 import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.isActive
 
-abstract class AndroidDataFlow : ViewModel(), DataFlow {
+abstract class AndroidDataFlow : ViewModel(), ActorFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
@@ -58,8 +59,26 @@ abstract class AndroidDataFlow : ViewModel(), DataFlow {
 
     override fun getCurrentState(): UIState? = _states.value
 
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = CAPACITY) {
+        for (action in channel) {
+            if (coroutineScope.isActive) {
+                UniFlowLogger.log("AndroidActorFlow run action $action")
+                onIO {
+                    proceedAction(action)
+                }
+            } else {
+                UniFlowLogger.log("AndroidActorFlow action cancelled")
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+        actorFlow.close()
+    }
+
+    companion object {
+        var CAPACITY = 10
     }
 }

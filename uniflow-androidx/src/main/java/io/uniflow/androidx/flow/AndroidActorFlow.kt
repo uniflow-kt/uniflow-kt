@@ -15,13 +15,7 @@
  */
 package io.uniflow.androidx.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.ActorFlow
-import io.uniflow.core.flow.StateAction
-import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.onIO
-import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.isActive
 
 /**
  * AndroidDataFlow
@@ -29,18 +23,5 @@ import kotlinx.coroutines.isActive
  *
  * @author Arnaud Giuliani
  */
-abstract class AndroidActorFlow : AndroidDataFlow(), ActorFlow {
-
-    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
-        for (action in channel) {
-            if (coroutineScope.isActive) {
-                UniFlowLogger.log("AndroidActorFlow run action $action")
-                onIO {
-                    proceedAction(action)
-                }
-            } else {
-                UniFlowLogger.log("AndroidActorFlow action cancelled")
-            }
-        }
-    }
-}
+@Deprecated("AndroidActorFlow has been merged into AndroidDataFlow", level = DeprecationLevel.ERROR)
+abstract class AndroidActorFlow : AndroidDataFlow(), ActorFlow
