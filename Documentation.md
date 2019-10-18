@@ -190,6 +190,9 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
+For each action builder, you can provide a error handling function like below
+
+
 - override the `onError` function to receive any uncaught exception:
 
 ```kotlin
@@ -200,6 +203,20 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
         // get error here
     }
 }
+```
+
+For a `stateFlow`, you can provide a protection like above. It will be called if one of the `setState` failed, or if the block code failed:
+
+```kotlin
+// push state updates
+fun getWeather() = stateFlow({
+	// Set loading state
+	setState { UIState.Loading }
+	// return directly your state object
+	setState { WeatherState(...) }
+},
+// If any error
+{ error -> UIState.Failed("Got error :(",error) }
 ```
 
 ## Functional Coroutines, to safely make states & events 🌈
