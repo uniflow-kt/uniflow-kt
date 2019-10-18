@@ -217,7 +217,7 @@ fun getWeather() = stateFlow({
 	setState { WeatherState(...) }
 },
 // If any error
-{ error -> UIState.Failed(error = error) }
+{ error, failedState -> UIState.Failed("Got error :(",error,failedState) }
 ```
 
 ## Functional Coroutines, to safely make states & events 🌈
