@@ -46,7 +46,7 @@ interface DataFlow {
      * @param error
      */
     suspend fun onError(error: Exception, currentState: UIState?) {
-        UniFlowLogger.logError("Got Flow Error", error)
+        UniFlowLogger.logError("Got error '${error.message}' on state '$currentState'", error)
         throw error
     }
 
@@ -167,7 +167,9 @@ interface DataFlow {
                 UniFlowLogger.log("DataFlow.onActionError run $action for $error")
                 launchOnIO {
                     if (action.errorFunction != null) {
-                        val failState = action.errorFunction.invoke(action, error, getCurrentState())
+                        val failState = action.errorFunction.let {
+                            it.invoke(action, error, getCurrentState())
+                        }
                         failState?.let { applyState(failState) }
                     } else onError(error, getCurrentState())
                 }

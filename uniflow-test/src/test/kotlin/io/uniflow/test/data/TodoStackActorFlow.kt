@@ -78,19 +78,19 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackFlow() {
         setState { UIState.Loading }
         error("boom")
         setState { UIState.Success }
-    }, { error, _ -> UIState.Failed(error = error) })
+    }, { error,_ -> UIState.Failed(error = error) })
 
     fun makeOnError() = withState(
             {
                 error("boom")
             },
-            { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
+            { error,_ -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
     fun makeOnStateError() = setState(
             {
                 error("boom")
             },
-            { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
+            { error,_ -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
 
     fun makeGlobalError() = withState {
