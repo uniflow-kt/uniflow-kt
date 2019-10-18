@@ -29,7 +29,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
 
-abstract class AndroidDataFlow : ViewModel(), ActorFlow {
+abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
@@ -59,7 +59,7 @@ abstract class AndroidDataFlow : ViewModel(), ActorFlow {
 
     override fun getCurrentState(): UIState? = _states.value
 
-    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = CAPACITY) {
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 UniFlowLogger.log("AndroidActorFlow run action $action")
@@ -76,9 +76,5 @@ abstract class AndroidDataFlow : ViewModel(), ActorFlow {
         super.onCleared()
         viewModelJob.cancel()
         actorFlow.close()
-    }
-
-    companion object {
-        var CAPACITY = 10
     }
 }

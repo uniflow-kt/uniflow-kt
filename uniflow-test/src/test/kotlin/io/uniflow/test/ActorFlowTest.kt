@@ -1,11 +1,11 @@
 package io.uniflow.test
 
+import TodoListState
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.Todo
-import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule
@@ -119,6 +119,18 @@ class ActorFlowTest {
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events[0] is UIEvent.Fail)
         assertTrue(dataFlow.events.size == 1)
+    }
+
+    @Test
+    fun `flow error`() {
+        dataFlow.flowError()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Loading, dataFlow.states[1])
+
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.states[2] is UIState.Failed)
+        assertTrue(dataFlow.events.size == 0)
     }
 
     @Test

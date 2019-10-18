@@ -28,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
 
-abstract class AndroidDataFlow : ViewModel(), ActorFlow {
+abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlow {
 
     override val coroutineScope: CoroutineScope = viewModelScope
 
@@ -57,7 +57,7 @@ abstract class AndroidDataFlow : ViewModel(), ActorFlow {
 
     override fun getCurrentState(): UIState? = _states.value
 
-    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = CAPACITY) {
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 UniFlowLogger.log("AndroidActorFlow run action $action")
@@ -68,9 +68,5 @@ abstract class AndroidDataFlow : ViewModel(), ActorFlow {
                 UniFlowLogger.log("AndroidActorFlow action cancelled")
             }
         }
-    }
-
-    companion object {
-        var CAPACITY = 10
     }
 }
