@@ -15,7 +15,7 @@
  */
 package io.uniflow.android.flow
 
-import io.uniflow.core.flow.ActorFlow
+import io.uniflow.core.flow.DataFlow
 
 /**
  * AndroidDataFlow
@@ -24,4 +24,4 @@ import io.uniflow.core.flow.ActorFlow
  * @author Arnaud Giuliani
  */
 @Deprecated("AndroidActorFlow has been merged into AndroidDataFlow", level = DeprecationLevel.ERROR)
-abstract class AndroidActorFlow : AndroidDataFlow(), ActorFlow
+abstract class AndroidActorFlow : AndroidDataFlow(), DataFlow

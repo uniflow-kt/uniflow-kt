@@ -1,13 +1,15 @@
 package io.uniflow.test.data
 
+import TodoListState
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.fromState
-import io.uniflow.core.sample.StackActorFlow
+import io.uniflow.core.sample.StackFlow
 import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.delay
+import mapToTodoListState
 
-class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlow() {
+class TodoStackActorFlow(private val repository: TodoRepository) : StackFlow() {
 
     init {
         setState { UIState.Empty }
@@ -67,10 +69,16 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackActorFlo
     }
 
     fun flow() = stateFlow {
-        setState(UIState.Empty)
-        setState(UIState.Loading)
-        setState(UIState.Success)
+        setState { UIState.Empty }
+        setState { UIState.Loading }
+        setState { UIState.Success }
     }
+
+    fun flowError() = stateFlow({
+        setState { UIState.Loading }
+        error("boom")
+        setState { UIState.Success }
+    }, { error -> UIState.Failed(error = error) })
 
     fun makeOnError() = withState(
             {

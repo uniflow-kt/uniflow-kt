@@ -3,6 +3,7 @@ package io.uniflow.core.flow
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.launchOnIO
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.isActive
 
 /**
@@ -16,6 +17,11 @@ interface DataFlow {
      * Current used coroutine scope
      */
     val coroutineScope: CoroutineScope
+
+    /**
+     * Actor to buffer incoming actions
+     */
+    val actorFlow: SendChannel<StateAction>
 
     /**
      * Send an event
@@ -49,18 +55,12 @@ interface DataFlow {
      *
      * @param onStateUpdate - function to produce a new state, from the current state
      */
-    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction): StateAction {
-        return StateAction(onStateUpdate, onActionError).let {
-            onAction(it)
-            it
-        }
+    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction) {
+        onAction(StateAction(onStateUpdate, onActionError))
     }
 
-    fun setState(onStateUpdate: StateUpdateFunction): StateAction {
-        return StateAction(onStateUpdate).let {
-            onAction(it)
-            it
-        }
+    fun setState(onStateUpdate: StateUpdateFunction) {
+        onAction(StateAction(onStateUpdate))
     }
 
     /**
@@ -69,18 +69,12 @@ interface DataFlow {
      *
      * @param onStateAction - function run against the current state
      */
-    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction): StateAction {
-        return StateAction(onStateAction, onActionError).let {
-            onAction(it)
-            it
-        }
+    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction) {
+        onAction(StateAction(onStateAction, onActionError))
     }
 
-    fun withState(onStateAction: StateActionFunction): StateAction {
-        return StateAction(onStateAction).let {
-            onAction(it)
-            it
-        }
+    fun withState(onStateAction: StateActionFunction) {
+        onAction(StateAction(onStateAction))
     }
 
     /**
@@ -91,18 +85,12 @@ interface DataFlow {
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
      */
-    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction): StateFlowAction {
-        return StateFlowAction(this, onStateFlow, onActionError).let {
-            onStateFlow(it)
-            it
-        }
+    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
+        onStateFlow(StateFlowAction(this, onStateFlow, onActionError))
     }
 
-    fun stateFlow(onStateFlow: StateFlowFunction): StateFlowAction {
-        return StateFlowAction(this, onStateFlow).let {
-            onStateFlow(it)
-            it
-        }
+    fun stateFlow(onStateFlow: StateFlowFunction) {
+        onStateFlow(StateFlowAction(this, onStateFlow))
     }
 
     fun onStateFlow(stateFlowAction: StateFlowAction) {
@@ -131,15 +119,25 @@ interface DataFlow {
      * Execute the action & catch any flowError
      * @param action
      */
+//    fun onAction(action: StateAction) {
+//        coroutineScope.apply {
+//            if (isActive) {
+//                UniFlowLogger.log("DataFlow.onAction run $action")
+//                launchOnIO {
+//                    proceedAction(action)
+//                }
+//            } else {
+//                UniFlowLogger.log("DataFlow.onAction action cancelled")
+//            }
+//        }
+//    }
     fun onAction(action: StateAction) {
         coroutineScope.apply {
             if (isActive) {
-                UniFlowLogger.log("DataFlow.onAction run $action")
-                launchOnIO {
-                    proceedAction(action)
-                }
+                UniFlowLogger.log("DataFlow.onAction offer action $action")
+                actorFlow.offer(action)
             } else {
-                UniFlowLogger.log("DataFlow.onAction action cancelled")
+                UniFlowLogger.log("DataFlow.onAction offer action cancelled")
             }
         }
     }

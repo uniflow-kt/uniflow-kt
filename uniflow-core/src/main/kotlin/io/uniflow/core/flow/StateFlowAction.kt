@@ -1,26 +1,21 @@
 package io.uniflow.core.flow
 
 class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: StateFlowFunction, internal val errorFunction: ErrorFunction? = null) {
-    suspend fun setState(state: UIState) {
-        val action: StateAction = if (errorFunction != null) {
-            StateAction({ state }, errorFunction)
-        } else StateAction({ state })
-        flow.proceedAction(action)
+
+    suspend fun setState(state: suspend () -> UIState) {
+        if (errorFunction != null) {
+            flow.setState({ state() }, errorFunction)
+        } else flow.setState { state() }
     }
 
-    suspend fun setState(state: () -> UIState) {
-        val action: StateAction = if (errorFunction != null) {
-            StateAction({ state() }, errorFunction)
-        } else StateAction({ state() })
-        flow.proceedAction(action)
+    fun setState(state: UIState) {
+        if (errorFunction != null) {
+            flow.setState({ state }, errorFunction)
+        } else flow.setState { state }
     }
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
-    }
-
-    @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun setState(updateFunction: StateUpdateFunction) {
     }
 
     @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
