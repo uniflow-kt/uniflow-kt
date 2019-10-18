@@ -79,10 +79,24 @@ When you need to publish several states from one action function, then you can't
 // push state updates
 fun getWeather() = stateFlow {
 	// Set loading state
-	setState(UIState.Loading)
+	setState { UIState.Loading }
 	// return directly your state object
-	setState(WeatherState(...))
+	setState { WeatherState(...) }
 }
+```
+
+A `StateFlow` can handle error for the multiple state update. It will be called if one of the `setState` failed, or if the block code failed:
+
+```kotlin
+// push state updates
+fun getWeather() = stateFlow({
+	// Set loading state
+	setState { UIState.Loading }
+	// return directly your state object
+	setState { WeatherState(...) }
+},
+// If any error
+{ error -> UIState.Failed(error = error) }
 ```
 
 ### Side effects & Events
