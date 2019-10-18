@@ -171,6 +171,7 @@ And if you need to launch a job on different thread, use:
 
 _note_: we simplify here the wirting of such threading operator, as we also make an asbtaction around the used dispatcher to help further testing. See testing section below.
 
+
 ### Error handling out of the box
 
 Each action is surrounded by a `try/catch` block for you under the hood. It avoids you to use `try/catch` block every where around your code. Then you can catch errors in 2 ways: 
@@ -185,10 +186,13 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
         val weather = repo.getWeatherForToday().await()
         // return a new state
         WeatherState(weather.day, weather.temperature)
-    }, { error -> // get error here })
+    }, { error, state -> // get error here })
     
 }
 ```
+
+For each action builder, you can provide a error handling function like below
+
 
 - override the `onError` function to receive any uncaught exception:
 
@@ -196,10 +200,24 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 class WeatherDataFlow(...) : AndroidDataFlow() {
 
     // Unhandled errors here
-    override suspend fun onError(error: Throwable){
+    override suspend fun onError(error: Throwable), currentState : UIState?){
         // get error here
     }
 }
+```
+
+For a `stateFlow`, you can provide a protection like above. It will be called if one of the `setState` failed, or if the block code failed:
+
+```kotlin
+// push state updates
+fun getWeather() = stateFlow({
+	// Set loading state
+	setState { UIState.Loading }
+	// return directly your state object
+	setState { WeatherState(...) }
+},
+// If any error
+{ error -> UIState.Failed(error = error) }
 ```
 
 ## Functional Coroutines, to safely make states & events 🌈

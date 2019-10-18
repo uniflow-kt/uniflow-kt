@@ -1,6 +1,6 @@
 package io.uniflow.core.flow
 
-class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: StateFlowFunction, internal val errorFunction: ErrorFunction? = null) {
+class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: StateFlowFunction, internal val errorFunction: StateErrorFunction? = null) {
 
     suspend fun setState(state: suspend () -> UIState) {
         if (errorFunction != null) {
@@ -15,11 +15,11 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     }
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
+    fun setState(onStateUpdate: StateUpdateFunction, onError: StateErrorFunction) {
     }
 
     @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun withState(onStateAction: StateActionFunction, errorFunction: ErrorFunction) {
+    fun withState(onStateAction: StateActionFunction, errorFunction: StateErrorFunction) {
     }
 
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
@@ -31,7 +31,7 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     }
 
     @Deprecated("Can't use redeclare stateFlow", level = DeprecationLevel.ERROR)
-    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
+    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: StateErrorFunction) {
     }
 
     @Deprecated("Can't use redeclare stateFlow", level = DeprecationLevel.ERROR)
@@ -39,7 +39,7 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     }
 
     @Deprecated("Can't redeclare an action inside an action", level = DeprecationLevel.ERROR)
-    inline fun <reified T : UIState> fromState(noinline onStateUpdate: StateUpdateFunction, noinline errorFunction: ErrorFunction) {
+    inline fun <reified T : UIState> fromState(noinline onStateUpdate: StateUpdateFunction, noinline errorFunction: ErrorFunction<T>) {
     }
 
     @Deprecated("Can't redeclare an action inside an action", level = DeprecationLevel.ERROR)
@@ -47,7 +47,7 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     }
 
     @Deprecated("Can't use stateFlow inside an action", level = DeprecationLevel.ERROR)
-    inline fun <reified T : UIState?> stateFlowFrom(noinline stateFlow: StateFlowFunction, noinline errorFunction: ErrorFunction) {
+    inline fun <reified T : UIState?> stateFlowFrom(noinline stateFlow: StateFlowFunction, noinline errorFunction: ErrorFunction<T>) {
     }
 
     @Deprecated("Can't use stateFlow inside an action", level = DeprecationLevel.ERROR)
