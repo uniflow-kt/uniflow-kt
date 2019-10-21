@@ -2,7 +2,7 @@ package io.uniflow.test
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.stateAs
+import io.uniflow.core.flow.stateOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.Todo
@@ -52,7 +52,7 @@ class ActorFlowTest {
     @Test
     fun `get all - get state`() {
         dataFlow.getAll()
-        val state = dataFlow.stateAs<TodoListState>()
+        val state = dataFlow.stateOrNull<TodoListState>()
         assertEquals(TodoListState(emptyList()), state)
     }
 

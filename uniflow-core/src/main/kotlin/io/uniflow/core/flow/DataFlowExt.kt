@@ -21,7 +21,13 @@ package io.uniflow.core.flow
  * Return current State if is type T
  * @return state or null
  */
-inline fun <reified T> DataFlow.stateAs(): T? = state?.let { if (it is T) it else null }
+inline fun <reified T> DataFlow.stateOrNull(): T? = state?.let { if (it is T) it else null }
+
+/**
+ * Return current State if is type T else throw error
+ * @return state
+ */
+inline fun <reified T> DataFlow.stateAs(): T = stateOrNull() ?: error("current state is not ${T::class}")
 
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
