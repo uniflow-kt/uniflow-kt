@@ -21,22 +21,22 @@ package io.uniflow.core.flow
  * Return current State if is type T
  * @return state or null
  */
-inline fun <reified T> DataFlow.stateOrNull(): T? = state?.let { if (it is T) it else null }
+inline fun <reified T> DataFlow.getStateAsOrNull(): T? = currentState?.let { if (it is T) it else null }
 
 /**
  * Return current State if is type T else throw error
  * @return state
  */
-inline fun <reified T> DataFlow.stateAs(): T = stateOrNull() ?: error("current state is not ${T::class}")
+inline fun <reified T> DataFlow.getStateAs(): T = getStateAsOrNull() ?: error("current state is not ${T::class}")
 
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
 inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>, noinline errorFunction: ErrorFunction) {
-    if (state is T) {
+    if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction, errorFunction)
     } else {
-        withState { sendEvent(UIEvent.BadOrWrongState(state)) }
+        withState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
 
@@ -44,10 +44,10 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: Type
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
 inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>) {
-    if (state is T) {
+    if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction)
     } else {
-        withState { sendEvent(UIEvent.BadOrWrongState(state)) }
+        withState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
 
@@ -55,10 +55,10 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: Typ
  * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
  */
 inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>, noinline errorFunction: ErrorFunction) {
-    if (state is T) {
+    if (currentState is T) {
         stateFlow(stateFlow as StateFlowFunction, errorFunction)
     } else {
-        stateFlow { sendEvent(UIEvent.BadOrWrongState(state)) }
+        stateFlow { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
 
@@ -66,9 +66,9 @@ inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: Typ
  * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
  */
 inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>) {
-    if (state is T) {
+    if (currentState is T) {
         stateFlow(stateFlow as StateFlowFunction)
     } else {
-        stateFlow { sendEvent(UIEvent.BadOrWrongState(state)) }
+        stateFlow { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }

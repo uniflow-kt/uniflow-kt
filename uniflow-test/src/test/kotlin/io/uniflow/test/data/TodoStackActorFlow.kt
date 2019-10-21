@@ -41,7 +41,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
                 sendEvent(UIEvent.Fail("Can't make done '$title'"))
             }
         } else {
-            sendEvent(UIEvent.BadOrWrongState(state))
+            sendEvent(UIEvent.BadOrWrongState(this@TodoStackActorFlow.currentState))
         }
     }
 

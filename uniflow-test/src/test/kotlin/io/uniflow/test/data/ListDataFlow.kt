@@ -34,7 +34,7 @@ abstract class ListDataFlow : DataFlow {
         }
     }
 
-    override val state: UIState?
+    override val currentState: UIState?
         get() = states.lastOrNull()
 
     open fun cancel() {

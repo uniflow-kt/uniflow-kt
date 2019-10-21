@@ -48,7 +48,7 @@ interface DataFlow {
      * Return current State if any
      * @return state
      */
-    val state: UIState?
+    val currentState: UIState?
 
     /**
      * Apply new state to current state
@@ -61,7 +61,7 @@ interface DataFlow {
      * @param error
      */
     suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("Got error '${error.message}' on state '$state'", error)
+        UniFlowLogger.logError("Got error '${error.message}' on state '$currentState'", error)
         throw error
     }
 
@@ -120,7 +120,7 @@ interface DataFlow {
 
     suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
         try {
-            stateFlowAction.onStateFlow(stateFlowAction, state)
+            stateFlowAction.onStateFlow(stateFlowAction, currentState)
         } catch (e: Exception) {
             if (stateFlowAction.errorFunction != null) {
                 onActionError(StateAction(errorFunction = stateFlowAction.errorFunction), e)
@@ -162,7 +162,7 @@ interface DataFlow {
      */
     suspend fun proceedAction(action: StateAction) {
         try {
-            val result = action.stateFunction?.invoke(action, state)
+            val result = action.stateFunction?.invoke(action, currentState)
             if (result is UIState) {
                 applyState(result)
             }
