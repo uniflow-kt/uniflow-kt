@@ -1,4 +1,4 @@
-package io.uniflow.core.result
+package io.uniflow.arrow
 
 import io.uniflow.core.flow.UIState
 import kotlinx.coroutines.runBlocking

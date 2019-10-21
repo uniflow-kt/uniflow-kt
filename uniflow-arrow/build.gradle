@@ -1,11 +1,19 @@
 apply plugin: 'kotlin'
 
-archivesBaseName = 'uniflow-core'
+archivesBaseName = 'uniflow-arrow'
 description = 'UniFlow a Kotlin unidrectional data flow framework'
 
 dependencies {
+    api project(":uniflow-saferesult")
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+
+    implementation ("io.arrow-kt:arrow-core-data:$arrow_version"){
+        exclude group:"org.jetbrains.kotlin"
+    }
+    implementation ("io.arrow-kt:arrow-core-extensions:$arrow_version"){
+        exclude group:"org.jetbrains.kotlin"
+    }
 
     testImplementation "junit:junit:$junit_version"
 }

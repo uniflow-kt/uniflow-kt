@@ -1,4 +1,4 @@
-package io.uniflow.core.result
+package io.uniflow.arrow
 
 import arrow.core.success
 import io.uniflow.core.flow.UIState

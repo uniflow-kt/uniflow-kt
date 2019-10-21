@@ -61,12 +61,12 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlo
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                UniFlowLogger.log("AndroidActorFlow run action $action")
+                UniFlowLogger.log("AndroidActorFlow run $action")
                 onIO {
                     proceedAction(action)
                 }
             } else {
-                UniFlowLogger.log("AndroidActorFlow action cancelled")
+                UniFlowLogger.log("AndroidActorFlow $action cancelled")
             }
         }
     }

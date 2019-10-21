@@ -20,6 +20,8 @@ android {
 dependencies {
     api project(":uniflow-core")
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
     testImplementation "io.mockk:mockk:$mockk_version"
 
     implementation "com.android.support:appcompat-v7:$support_lib_version"

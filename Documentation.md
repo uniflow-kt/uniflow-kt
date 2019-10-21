@@ -25,17 +25,43 @@ The state mutation operator are the following:
 - `withState { current -> ... }` - from current state, do a side effect
 
 
-### Writing states as immutable data
+### States as immutable data
 
-To describe your data flow states, inherit from `UIState` class directly or use a sealed class as follow:
+To describe your data flow states, extends the `UIState` class directly or use it as a sealed class as follow:
 
 ```kotlin
 class WeatherStates : UIState(){
 	object LoadingWeather : WeatherStates()
 	data class WeatherState(val day : String, val temperature : String) : WeatherStates()
 }
-
 ```
+
+## Getting current state
+
+From your `ViewModel` you can have access to the current state with the `state` property:
+
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
+
+    fun getWeather() = setState {
+        // Get current state
+        val currentState : UIState? = state
+    }
+}
+```
+
+You can also project it against a given State type with `stateAs<>()` operator:
+
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
+
+    fun getWeather() = setState {
+        // Get current state as WeatherState
+        val currentState : WeatherState? = stateAs<WeatherState>()
+    }
+}
+```
+
 
 ### Updating the current state
 
@@ -49,7 +75,7 @@ fun getWeather() = setState{
 }
 ```
 
-Don't forget to listen to states from your Activity/Fragment with `onStates`:
+Listen to states from your Activity/Fragment with `onStates`:
 
 ```kotlin
 // Observe incoming states
@@ -61,7 +87,7 @@ onStates(weatherFlow) { state ->
 }
 ```
 
-The `FromState<T>` operator, help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
+The `FromState<T>` operator help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
 
 ```kotlin
 // Execute loadNewLocation action only if current state is in WeatherListState
@@ -73,7 +99,7 @@ fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
 
 ### StateFlow: multiple state updates from one action
 
-When you need to publish several states from one action function, then you can't use one of the function above. Use the `stateFlow` action builder to let you publish states when needed, with `setState()` function:
+When you need to publish several states from one action function, you can't use one of the previous action builder. Use `stateFlow` to publish states when needed, with `setState` function:
 
 ```kotlin
 // push state updates
@@ -99,9 +125,9 @@ fun getWeather() = stateFlow({
 { error -> UIState.Failed(error = error) }
 ```
 
-### Side effects & Events
+### Side effects with Events
 
-For side effects actions, you can use `UIEvent` and avoid update the current state with `withState`:
+For side effects actions, you can avoid to update the current state with `withState`:
 
 ```kotlin
 fun getWeather() = withState {
@@ -120,7 +146,7 @@ sealed class WeatherEvent : UIEvent() {
 }
 ```
 
-From your VIewModel, simply trigger an event with `sendEvent()` function:
+From your VIewModel, simply send an event with `sendEvent()` function:
 
 ```kotlin
 	fun getWeather() = withState {
@@ -145,7 +171,7 @@ onEvents(viewModel) { event ->
 }
 ```
 
-On an event, you can either `take()` or `peek()` its data:
+_Warning_: On an event, you can either `take()` or `peek()` its data:
 
 - `take` - consume the event data, can't be taken by other event consumer
 - `peek` - peek the event's data, even if the data has been consumed
@@ -190,7 +216,20 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-For each action builder, you can provide a error handling function like below
+For each action builder, you can provide a error handling function like below.
+
+_Note_: Can be interesting when catching exception, you can set the current state of you DataFlow:
+
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
+
+    fun getWeather() = setState({
+        //...
+
+    }, { error -> UIState.Failed("Got failure :(",error,state) })
+
+}
+```
 
 
 - override the `onError` function to receive any uncaught exception:
@@ -216,7 +255,7 @@ fun getWeather() = stateFlow({
 	setState { WeatherState(...) }
 },
 // If any error
-{ error -> UIState.Failed("Got error :(",error) }
+{ error -> UIState.Failed("Got error :(",error,state) }
 ```
 
 ## Functional Coroutines, to safely make states & events 🌈
