@@ -34,9 +34,8 @@ abstract class StackFlow : DataFlow {
         }
     }
 
-    override fun getCurrentState(): UIState? {
-        return states.lastOrNull()
-    }
+    override val state: UIState?
+        get() = states.lastOrNull()
 
     open fun cancel() {
         coroutineScope.cancel()

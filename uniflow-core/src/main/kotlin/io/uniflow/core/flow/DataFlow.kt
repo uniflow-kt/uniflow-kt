@@ -33,7 +33,7 @@ interface DataFlow {
      * Return current State if any
      * @return state
      */
-    fun getCurrentState(): UIState?
+    val state: UIState?
 
     /**
      * Apply new state to current state
@@ -105,7 +105,7 @@ interface DataFlow {
 
     suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
         try {
-            stateFlowAction.onStateFlow(stateFlowAction, getCurrentState())
+            stateFlowAction.onStateFlow(stateFlowAction, state)
         } catch (e: Exception) {
             if (stateFlowAction.errorFunction != null) {
                 onActionError(StateAction(errorFunction = stateFlowAction.errorFunction), e)
@@ -147,7 +147,7 @@ interface DataFlow {
      */
     suspend fun proceedAction(action: StateAction) {
         try {
-            val result = action.stateFunction?.invoke(action, getCurrentState())
+            val result = action.stateFunction?.invoke(action, state)
             if (result is UIState) {
                 applyState(result)
             }

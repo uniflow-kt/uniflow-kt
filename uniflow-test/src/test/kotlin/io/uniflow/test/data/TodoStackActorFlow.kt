@@ -1,13 +1,11 @@
 package io.uniflow.test.data
 
-import TodoListState
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.fromState
 import io.uniflow.core.sample.StackFlow
 import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.delay
-import mapToTodoListState
 
 class TodoStackActorFlow(private val repository: TodoRepository) : StackFlow() {
 
@@ -44,7 +42,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : StackFlow() {
                 sendEvent(UIEvent.Fail("Can't make done '$title'"))
             }
         } else {
-            sendEvent(UIEvent.BadOrWrongState(getCurrentState()))
+            sendEvent(UIEvent.BadOrWrongState(state))
         }
     }
 

@@ -55,7 +55,8 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlo
         }
     }
 
-    override fun getCurrentState(): UIState? = _states.value
+    override val state: UIState?
+        get() = _states.value
 
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {

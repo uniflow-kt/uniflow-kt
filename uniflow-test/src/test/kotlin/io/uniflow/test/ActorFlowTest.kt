@@ -1,11 +1,12 @@
 package io.uniflow.test
 
-import TodoListState
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.stateAs
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.Todo
+import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule
@@ -46,6 +47,13 @@ class ActorFlowTest {
         dataFlow.getAll()
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+    }
+
+    @Test
+    fun `get all - get state`() {
+        dataFlow.getAll()
+        val state = dataFlow.stateAs<TodoListState>()
+        assertEquals(TodoListState(emptyList()), state)
     }
 
     @Test
