@@ -1,3 +1,18 @@
+/*
+ * Copyright 2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed launchOn an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.uniflow.core.flow
 
 import io.uniflow.core.logger.UniFlowLogger
@@ -9,7 +24,7 @@ import kotlinx.coroutines.isActive
 /**
  * Unidirectional Data Flow
  *
- *
+ * @author Arnaud Giuliani
  */
 interface DataFlow {
 
@@ -33,7 +48,7 @@ interface DataFlow {
      * Return current State if any
      * @return state
      */
-    fun getCurrentState(): UIState?
+    val currentState: UIState?
 
     /**
      * Apply new state to current state
@@ -46,7 +61,7 @@ interface DataFlow {
      * @param error
      */
     suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("Got Flow Error", error)
+        UniFlowLogger.logError("Got error '${error.message}' on state '$currentState'", error)
         throw error
     }
 
@@ -105,7 +120,7 @@ interface DataFlow {
 
     suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
         try {
-            stateFlowAction.onStateFlow(stateFlowAction, getCurrentState())
+            stateFlowAction.onStateFlow(stateFlowAction, currentState)
         } catch (e: Exception) {
             if (stateFlowAction.errorFunction != null) {
                 onActionError(StateAction(errorFunction = stateFlowAction.errorFunction), e)
@@ -115,10 +130,6 @@ interface DataFlow {
         }
     }
 
-    /**
-     * Execute the action & catch any flowError
-     * @param action
-     */
 //    fun onAction(action: StateAction) {
 //        coroutineScope.apply {
 //            if (isActive) {
@@ -131,13 +142,17 @@ interface DataFlow {
 //            }
 //        }
 //    }
+    /**
+     * Execute the action & catch any flowError
+     * @param action
+     */
     fun onAction(action: StateAction) {
         coroutineScope.apply {
             if (isActive) {
-                UniFlowLogger.log("DataFlow.onAction offer action $action")
+                UniFlowLogger.log("DataFlow onAction $action")
                 actorFlow.offer(action)
             } else {
-                UniFlowLogger.log("DataFlow.onAction offer action cancelled")
+                UniFlowLogger.log("DataFlow onAction $action cancelled")
             }
         }
     }
@@ -147,7 +162,7 @@ interface DataFlow {
      */
     suspend fun proceedAction(action: StateAction) {
         try {
-            val result = action.stateFunction?.invoke(action, getCurrentState())
+            val result = action.stateFunction?.invoke(action, currentState)
             if (result is UIState) {
                 applyState(result)
             }
@@ -164,7 +179,7 @@ interface DataFlow {
     fun onActionError(action: StateAction, error: Exception) {
         coroutineScope.apply {
             if (isActive) {
-                UniFlowLogger.log("DataFlow.onActionError run $action for $error")
+                UniFlowLogger.log("DataFlow onActionError '${error.message}' for action $action ")
                 launchOnIO {
                     if (action.errorFunction != null) {
                         val failState = action.errorFunction.let {
@@ -174,7 +189,7 @@ interface DataFlow {
                     } else onError(error)
                 }
             } else {
-                UniFlowLogger.log("DataFlow.onActionError cancelled for $error")
+                UniFlowLogger.log("DataFlow onActionError cancelled for action $action")
             }
         }
     }

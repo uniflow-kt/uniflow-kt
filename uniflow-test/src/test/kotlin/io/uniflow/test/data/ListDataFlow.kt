@@ -1,4 +1,4 @@
-package io.uniflow.core.sample
+package io.uniflow.test.data
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.DataFlow
@@ -11,7 +11,7 @@ import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 
-abstract class StackFlow : DataFlow {
+abstract class ListDataFlow : DataFlow {
 
     private val supervisorJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
@@ -34,9 +34,8 @@ abstract class StackFlow : DataFlow {
         }
     }
 
-    override fun getCurrentState(): UIState? {
-        return states.lastOrNull()
-    }
+    override val currentState: UIState?
+        get() = states.lastOrNull()
 
     open fun cancel() {
         coroutineScope.cancel()
@@ -46,12 +45,12 @@ abstract class StackFlow : DataFlow {
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                UniFlowLogger.log("StackActorFlow run action $action")
+                UniFlowLogger.log("ListDataFlow run action $action")
                 onIO {
                     proceedAction(action)
                 }
             } else {
-                UniFlowLogger.log("StackActorFlow action cancelled")
+                UniFlowLogger.log("ListDataFlow action cancelled")
             }
         }
     }

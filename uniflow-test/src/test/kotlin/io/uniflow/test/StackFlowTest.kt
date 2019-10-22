@@ -1,11 +1,11 @@
 package io.uniflow.test
 
-import TodoListState
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.Todo
+import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule

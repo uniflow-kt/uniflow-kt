@@ -1,7 +1,11 @@
-package io.uniflow.core.result
+package io.uniflow.arrow
 
 import arrow.core.success
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.result.get
+import io.uniflow.core.result.onFailure
+import io.uniflow.core.result.onSuccess
+import io.uniflow.core.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test

@@ -6,6 +6,9 @@ import io.uniflow.core.dispatcher.UniFlowDispatcher
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
+/**
+ * Setup Test Configuration Dispatcher
+ */
 class TestDispatchersRule : TestWatcher() {
 
     override fun starting(description: Description?) {

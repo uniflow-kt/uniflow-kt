@@ -19,6 +19,7 @@ android {
 
 dependencies {
     api project(":uniflow-core")
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     implementation "androidx.appcompat:appcompat:$androidx_lib_version"
     implementation("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {

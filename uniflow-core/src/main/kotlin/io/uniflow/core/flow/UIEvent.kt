@@ -23,9 +23,6 @@ package io.uniflow.core.flow
 open class UIEvent {
     object Pending : UIEvent()
     object Success : UIEvent()
-    data class Fail(val message: String? = null, val error: Exception? = null) : UIEvent()
+    data class Fail(val message: String? = null, val error: Throwable? = null, val state : UIState? = null) : UIEvent()
     data class BadOrWrongState(val currentState: UIState? = null) : UIEvent()
-
-    data class DatabaseRequestFailure(val error: Exception) : UIEvent()
-    data class NetworkRequestFailure(val error: Exception) : UIEvent()
 }
