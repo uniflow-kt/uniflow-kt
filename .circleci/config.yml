@@ -49,12 +49,3 @@ workflows:
           filters:
             tags:
               only: /.*/
-
-      - publish:
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-          requires:
-          - test_build
