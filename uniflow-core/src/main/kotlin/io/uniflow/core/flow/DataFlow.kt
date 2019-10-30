@@ -16,10 +16,11 @@
 package io.uniflow.core.flow
 
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.launchOnIO
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Unidirectional Data Flow
@@ -34,21 +35,32 @@ interface DataFlow {
     val coroutineScope: CoroutineScope
 
     /**
+     * Default Coroutine dispatcher
+     */
+    val defaultDispatcher: CoroutineDispatcher
+
+    /**
      * Actor to buffer incoming actions
      */
     val actorFlow: SendChannel<StateAction>
-
-    /**
-     * Send an event
-     * @param event
-     */
-    suspend fun sendEvent(event: UIEvent): UIState?
 
     /**
      * Return current State if any
      * @return state
      */
     val currentState: UIState?
+
+    /**
+     * Send an event
+     * @param event
+     * @param nothing
+     */
+    suspend fun sendEvent(event: UIEvent): UIState?
+
+    /**
+     *
+     */
+    suspend fun notifyUpdate(newState: UIState, notificationEvent: UIEvent): UIState?
 
     /**
      * Apply new state to current state
@@ -111,7 +123,7 @@ interface DataFlow {
     fun onStateFlow(stateFlowAction: StateFlowAction) {
         coroutineScope.apply {
             if (isActive) {
-                launchOnIO {
+                launch(defaultDispatcher) {
                     proceedStateFlow(stateFlowAction)
                 }
             }
@@ -130,18 +142,6 @@ interface DataFlow {
         }
     }
 
-//    fun onAction(action: StateAction) {
-//        coroutineScope.apply {
-//            if (isActive) {
-//                UniFlowLogger.log("DataFlow.onAction run $action")
-//                launchOnIO {
-//                    proceedAction(action)
-//                }
-//            } else {
-//                UniFlowLogger.log("DataFlow.onAction action cancelled")
-//            }
-//        }
-//    }
     /**
      * Execute the action & catch any flowError
      * @param action
@@ -180,7 +180,7 @@ interface DataFlow {
         coroutineScope.apply {
             if (isActive) {
                 UniFlowLogger.log("DataFlow onActionError '${error.message}' for action $action ")
-                launchOnIO {
+                launch(defaultDispatcher) {
                     if (action.errorFunction != null) {
                         val failState = action.errorFunction.let {
                             it.invoke(action, error)

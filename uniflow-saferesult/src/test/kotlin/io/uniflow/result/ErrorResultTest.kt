@@ -1,8 +1,7 @@
-package io.uniflow.arrow
+package io.uniflow.result
 
-import arrow.core.*
 import io.uniflow.core.flow.UIState
-import io.uniflow.result.*
+import io.uniflow.result.SafeResult.Companion.safeResult
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -23,7 +22,7 @@ class ErrorResultTest {
     @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
-        val result = Failure(error)
+        val result = SafeResult.Failure(error)
                 .map { sndValue }
         assertTrue(result.getOrNull() == null)
     }
@@ -32,7 +31,7 @@ class ErrorResultTest {
     fun `orElse result`() = runBlocking {
         val sndValue = " #2"
         val result =
-                Try<String> { throw error }
+                safeResult<String> { throw error }
                         .orElse { sndValue.success() }
         assertTrue(result.get() == sndValue)
     }
@@ -40,7 +39,7 @@ class ErrorResultTest {
     @Test
     fun `flatmap result`() = runBlocking {
         val sndValue = 42
-        val result = Failure(error)
+        val result = SafeResult.Failure(error)
                 .flatMap { value -> sndValue.success() }
         assertTrue(result.getOrNull() == null)
     }
@@ -48,7 +47,7 @@ class ErrorResultTest {
     @Test
     fun `onValue`() = runBlocking {
         var writtenValue = ""
-        Failure(error)
+        SafeResult.Failure(error)
                 .onSuccess { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
@@ -57,7 +56,7 @@ class ErrorResultTest {
     @Test
     fun `onError`() = runBlocking {
         var writtenValue = ""
-        Failure(error)
+        SafeResult.Failure(error)
                 .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "$error")
@@ -81,7 +80,7 @@ class ErrorResultTest {
 
     @Test
     fun `to State null`() = runBlocking {
-        val result = Failure(error)
+        val result = SafeResult.Failure(error)
                 .toStateOrNull { UIState.Success }
 
         assertTrue(result == null)

@@ -2,7 +2,17 @@ package io.uniflow.result
 
 import io.uniflow.core.flow.UIState
 
-sealed class SafeResult<out T> : Result<T> {
+sealed class SafeResult<out T> {
+
+    abstract suspend fun <R> map(result: suspend (T) -> R): SafeResult<R>
+    abstract suspend fun <R> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R>
+    abstract fun get(): T
+    abstract fun getOrNull(): T?
+    abstract suspend fun onFailure(block: suspend (Exception) -> Unit): SafeResult<T>
+    abstract suspend fun onSuccess(block: suspend (T) -> Unit): SafeResult<T>
+    abstract fun isSuccess(): Boolean
+    abstract fun isFailure(): Boolean
+
     override fun toString(): String {
         return when (this) {
             is Success<*> -> "Success[$value]"
@@ -32,19 +42,19 @@ sealed class SafeResult<out T> : Result<T> {
                 }
             }
 
-    override suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R): R =
+    suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R): R =
             when (this) {
                 is Success -> onSuccess(value)
                 is Failure -> throw exception
             }
 
-    override suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R? =
+    suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R? =
             when (this) {
                 is Success -> onSuccess(value)
                 is Failure -> null
             }
 
-    override suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R): R =
+    suspend fun <R : UIState> toState(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R): R =
             when (this) {
                 is Success -> onSuccess(value)
                 is Failure -> onError(exception)
@@ -106,9 +116,17 @@ sealed class SafeResult<out T> : Result<T> {
 
     companion object {
         fun <A> success(a: A): SafeResult<A> = Success(a)
+
+        suspend fun <A> safeResult(code: suspend () -> A): SafeResult<A> = try {
+            success(code())
+        } catch (e: Exception) {
+            failure(e)
+        }
+
         fun failure(a: Exception): SafeResult<Nothing> = Failure(a)
     }
 }
 
-
+fun <A : Any> A.success(): SafeResult<A> = SafeResult.success(this)
+fun <A : Exception> A.failure(): SafeResult<A> = SafeResult.failure(this)
 

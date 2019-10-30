@@ -21,15 +21,11 @@ import android.arch.lifecycle.ViewModel
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.onIO
 import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.isActive
 
-abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlow {
+abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()) : ViewModel(), DataFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
@@ -50,21 +46,34 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlo
         return null
     }
 
+    override suspend fun notifyUpdate(newState: UIState, notificationEvent: UIEvent): UIState? {
+        onMain(immediate = true) {
+            UniFlowLogger.logState(newState)
+            _internalState = newState
+            UniFlowLogger.logEvent(notificationEvent)
+            _events.value = Event(notificationEvent)
+        }
+        return null
+    }
+
     override suspend fun applyState(state: UIState) {
         onMain(immediate = true) {
             UniFlowLogger.logState(state)
+            _internalState = state
             _states.value = state
         }
     }
 
+    private var _internalState: UIState? = null
+
     override val currentState: UIState?
-        get() = _states.value
+        get() = _internalState
 
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 UniFlowLogger.log("AndroidActorFlow action $action")
-                onIO {
+                withContext(defaultDispatcher) {
                     proceedAction(action)
                 }
             } else {

@@ -1,4 +1,4 @@
-package io.uniflow.core.result
+package io.uniflow.result
 
 import arrow.core.Success
 import arrow.core.Try

@@ -1,4 +1,4 @@
-package io.uniflow.result
+package io.uniflow.core.error
 
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState

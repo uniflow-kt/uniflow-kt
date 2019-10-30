@@ -94,6 +94,12 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
         error("global boom")
     }
 
+    fun notifyUpdate() = fromState<TodoListState> { state ->
+        val t = Todo("t2")
+        val list = state.todos + t
+        notifyUpdate(TodoListState(list), TodoListUpdate(t))
+    }
+
     override suspend fun onError(error: Exception) {
         setState { UIState.Failed("Failed state", error) }
     }

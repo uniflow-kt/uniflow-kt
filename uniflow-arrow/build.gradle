@@ -4,7 +4,7 @@ archivesBaseName = 'uniflow-arrow'
 description = 'UniFlow a Kotlin unidrectional data flow framework'
 
 dependencies {
-    api project(":uniflow-saferesult")
+    api project(":uniflow-core")
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 

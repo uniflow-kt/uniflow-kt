@@ -22,13 +22,14 @@ import androidx.lifecycle.viewModelScope
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.onIO
 import io.uniflow.core.threading.onMain
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 
-abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlow {
+abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()) : ViewModel(), DataFlow {
 
     override val coroutineScope: CoroutineScope = viewModelScope
 
@@ -51,18 +52,31 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10) : ViewModel(), DataFlo
     override suspend fun applyState(state: UIState) {
         onMain(immediate = true) {
             UniFlowLogger.logState(state)
+            _internalState = state
             _states.value = state
         }
     }
 
+    override suspend fun notifyUpdate(newState: UIState, notificationEvent: UIEvent): UIState? {
+        onMain(immediate = true) {
+            UniFlowLogger.logState(newState)
+            _internalState = newState
+            UniFlowLogger.logEvent(notificationEvent)
+            _events.value = Event(notificationEvent)
+        }
+        return null
+    }
+
+    private var _internalState: UIState? = null
+
     override val currentState: UIState?
-        get() = _states.value
+        get() = _internalState
 
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 UniFlowLogger.log("AndroidActorFlow run $action")
-                onIO {
+                withContext(defaultDispatcher) {
                     proceedAction(action)
                 }
             } else {

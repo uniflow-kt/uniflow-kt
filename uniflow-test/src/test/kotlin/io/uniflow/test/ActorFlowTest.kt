@@ -5,10 +5,7 @@ import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.getStateAsOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.test.data.Todo
-import io.uniflow.test.data.TodoListState
-import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.data.TodoStackActorFlow
+import io.uniflow.test.data.*
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -222,6 +219,17 @@ class ActorFlowTest {
 
         assertTrue(dataFlow.states.size == 2)
         assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `test chunk update`() {
+        dataFlow.getAll()
+        dataFlow.notifyUpdate()
+
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.states.last() is TodoListState)
+        assertTrue(dataFlow.events.size == 1)
+        assertTrue(dataFlow.events.last() is TodoListUpdate)
     }
 
     @Test
