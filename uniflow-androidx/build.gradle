@@ -19,14 +19,14 @@ android {
 
 dependencies {
     api project(":uniflow-core")
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation "androidx.appcompat:appcompat:$androidx_lib_version"
-    implementation("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {
+    api "androidx.appcompat:appcompat:$androidx_lib_version"
+    api("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {
         exclude group: "core-runtime"
     }
     // Architecture ViewModel
-    implementation("androidx.lifecycle:lifecycle-extensions:$androidx_arch_version") {
+    api("androidx.lifecycle:lifecycle-extensions:$androidx_arch_version") {
         exclude module: "lifecycle-livedata"
         exclude module: "lifecycle-service"
         exclude module: "lifecycle-process"
@@ -34,7 +34,7 @@ dependencies {
         exclude group: "androidx.legacy"
     }
 
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_arch_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_arch_version"
 }
 
 apply from: '../gradle/publish-android.gradle'

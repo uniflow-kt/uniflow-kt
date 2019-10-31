@@ -20,13 +20,13 @@ android {
 dependencies {
     api project(":uniflow-core")
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     testImplementation "io.mockk:mockk:$mockk_version"
 
-    implementation "com.android.support:appcompat-v7:$support_lib_version"
-    implementation("android.arch.lifecycle:common:$android_arch_version")
-    implementation("android.arch.lifecycle:extensions:$android_arch_version") {
+    api "com.android.support:appcompat-v7:$support_lib_version"
+    api("android.arch.lifecycle:common:$android_arch_version")
+    api("android.arch.lifecycle:extensions:$android_arch_version") {
         exclude module: "livedata"
         exclude module: "runtime"
     }
