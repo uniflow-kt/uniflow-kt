@@ -123,10 +123,22 @@ sealed class SafeResult<out T> {
             failure(e)
         }
 
+        suspend fun <A> safeResult(code: suspend () -> A, onError: suspend (Exception) -> Exception): SafeResult<A> = try {
+            success(code())
+        } catch (e: Exception) {
+            failure(onError(e))
+        }
+
+        suspend fun <A> onSafeResult(code: suspend () -> SafeResult<A>, onError: suspend (Exception) -> SafeResult<Nothing>): SafeResult<A> = try {
+            code()
+        } catch (e: Exception) {
+            onError(e)
+        }
+
         fun failure(a: Exception): SafeResult<Nothing> = Failure(a)
     }
 }
 
 fun <A : Any> A.success(): SafeResult<A> = SafeResult.success(this)
-fun <A : Exception> A.failure(): SafeResult<A> = SafeResult.failure(this)
+fun <A : Exception> A.failure(): SafeResult<Nothing> = SafeResult.failure(this)
 
