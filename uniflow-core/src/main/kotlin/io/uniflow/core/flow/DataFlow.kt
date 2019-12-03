@@ -91,20 +91,6 @@ interface DataFlow {
     }
 
     /**
-     * Make an StateAction that can update or not the current state
-     * More for side effects
-     *
-     * @param onStateAction - function run against the current state
-     */
-    fun withState(onStateAction: StateActionFunction, onActionError: ErrorFunction) {
-        onAction(StateAction(onStateAction, onActionError))
-    }
-
-    fun withState(onStateAction: StateActionFunction) {
-        onAction(StateAction(onStateAction))
-    }
-
-    /**
      * An action that can trigger several state changes
      *
      * stateFlowFunction allow to use the StateFlowAction.setState(...) function to set any new state
@@ -175,7 +161,7 @@ interface DataFlow {
     }
 
     /**
-     * Handle flowError catch for given withState
+     * Handle flowError catch
      * @param action
      * @param error
      */
@@ -189,7 +175,10 @@ interface DataFlow {
                             it.invoke(action, error)
                         }
                         failState?.let { setState { failState } }
-                    } else withState { onError(error) }
+                    } else setState {
+                        onError(error)
+                        null
+                    }
                 }
             } else {
                 UniFlowLogger.log("DataFlow onActionError cancelled for action $action")

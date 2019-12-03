@@ -21,9 +21,6 @@ The state mutation operator are the following:
 
 - `setState { current -> ... newState}` - from current state, udpate the current state
 - `fromState<T> { current as T -> newState }` - from current state <T>, udpate the current state
-- `stateFlow { setState() ... }` - allow several state updates from same flow/job
-- `withState { current -> ... }` - from current state, do a side effect
-
 
 ### States as immutable data
 
@@ -97,40 +94,12 @@ fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
 }
 ```
 
-### StateFlow: multiple state updates from one action
-
-When you need to publish several states from one action function, you can't use one of the previous action builder. Use `stateFlow` to publish states when needed, with `setState` function:
-
-```kotlin
-// push state updates
-fun getWeather() = stateFlow {
-	// Set loading state
-	setState { UIState.Loading }
-	// return directly your state object
-	setState { WeatherState(...) }
-}
-```
-
-A `StateFlow` can handle error for the multiple state update. It will be called if one of the `setState` failed, or if the block code failed:
-
-```kotlin
-// push state updates
-fun getWeather() = stateFlow({
-	// Set loading state
-	setState { UIState.Loading }
-	// return directly your state object
-	setState { WeatherState(...) }
-},
-// If any error
-{ error -> UIState.Failed(error = error) }
-```
-
 ### Side effects with Events
 
-For side effects actions, you can avoid to update the current state with `withState`:
+For side effects actions:
 
 ```kotlin
-fun getWeather() = withState {
+fun getWeather() = setState {
     sendEvent(...)
     // won't update the current state
 }
@@ -149,7 +118,7 @@ sealed class WeatherEvent : UIEvent() {
 From your VIewModel, simply send an event with `sendEvent()` function:
 
 ```kotlin
-	fun getWeather() = withState {
+	fun getWeather() = setState {
 	    // send event
 	    sendEvent(WeatherEvent.Success(location))
 	}
@@ -242,20 +211,6 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
         // get error here
     }
 }
-```
-
-For a `stateFlow`, you can provide a protection like above. It will be called if one of the `setState` failed, or if the block code failed:
-
-```kotlin
-// push state updates
-fun getWeather() = stateFlow({
-	// Set loading state
-	setState { UIState.Loading }
-	// return directly your state object
-	setState { WeatherState(...) }
-},
-// If any error
-{ error -> UIState.Failed("Got error :(",error,state) }
 ```
 
 ## Functional Coroutines, to safely make states & events 🌈

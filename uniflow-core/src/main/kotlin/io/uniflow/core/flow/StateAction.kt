@@ -9,12 +9,6 @@ data class StateAction(internal val stateFunction: StateFunction<*>? = null, int
     fun setState(updateFunction: StateUpdateFunction) {}
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    fun withState(onStateAction: StateActionFunction, errorFunction: ErrorFunction) {}
-
-    @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    fun withState(onStateAction: StateActionFunction) {}
-
-    @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
     fun applyState(state: UIState) {}
 
     @Deprecated("Can't redeclare stateFlow inside an stateFlow", level = DeprecationLevel.ERROR)

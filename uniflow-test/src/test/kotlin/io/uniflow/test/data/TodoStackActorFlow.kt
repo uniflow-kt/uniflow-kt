@@ -53,7 +53,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
         }
     }
 
-    fun childIOError() = withState {
+    fun childIOError() = setState {
         onIO {
             error("Boom on IO")
         }
@@ -65,19 +65,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
         repository.getAllTodo().mapToTodoListState()
     }
 
-    fun flow() = stateFlow {
-        setState { UIState.Empty }
-        setState { UIState.Loading }
-        setState { UIState.Success }
-    }
-
-    fun flowError() = stateFlow({
-        setState { UIState.Loading }
-        error("boom")
-        setState { UIState.Success }
-    }, { error -> UIState.Failed(error = error) })
-
-    fun makeOnError() = withState(
+    fun makeOnError() = setState(
             {
                 error("boom")
             },
@@ -90,7 +78,7 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
             { error -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
 
-    fun makeGlobalError() = withState {
+    fun makeGlobalError() = setState {
         error("global boom")
     }
 

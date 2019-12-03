@@ -21,14 +21,6 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
     }
 
-    @Deprecated("CCan't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun withState(onStateAction: StateActionFunction, errorFunction: ErrorFunction) {
-    }
-
-    @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
-    fun withState(onStateAction: StateActionFunction) {
-    }
-
     @Deprecated("Can't redeclare an action inside a stateFlow", level = DeprecationLevel.ERROR)
     fun applyState(state: UIState) {
     }

@@ -36,7 +36,7 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: Type
     if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction, errorFunction)
     } else {
-        withState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
+        setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
 
@@ -47,7 +47,7 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: Typ
     if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction)
     } else {
-        withState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
+        setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
 
