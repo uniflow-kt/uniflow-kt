@@ -112,14 +112,17 @@ interface DataFlow {
      * @param stateFlowFunction - flow state
      * @param errorFunction - flowError function
      */
+    @Deprecated("Use setState,WithState or FromState instead")
     fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
         onStateFlow(StateFlowAction(this, onStateFlow, onActionError))
     }
 
+    @Deprecated("Use setState,WithState or FromState instead")
     fun stateFlow(onStateFlow: StateFlowFunction) {
         onStateFlow(StateFlowAction(this, onStateFlow))
     }
 
+    @Deprecated("Use setState,WithState or FromState instead")
     fun onStateFlow(stateFlowAction: StateFlowAction) {
         coroutineScope.apply {
             if (isActive) {
@@ -130,6 +133,7 @@ interface DataFlow {
         }
     }
 
+    @Deprecated("Use setState,WithState or FromState instead")
     suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
         try {
             stateFlowAction.onStateFlow(stateFlowAction, currentState)
@@ -185,8 +189,8 @@ interface DataFlow {
                         val failState = action.errorFunction.let {
                             it.invoke(action, error)
                         }
-                        failState?.let { applyState(failState) }
-                    } else onError(error)
+                        failState?.let { setState { failState } }
+                    } else withState { onError(error) }
                 }
             } else {
                 UniFlowLogger.log("DataFlow onActionError cancelled for action $action")

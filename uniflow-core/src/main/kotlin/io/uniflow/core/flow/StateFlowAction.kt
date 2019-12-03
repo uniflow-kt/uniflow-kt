@@ -1,13 +1,16 @@
 package io.uniflow.core.flow
 
+@Deprecated("Use setState,WithState or FromState instead")
 class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: StateFlowFunction, internal val errorFunction: ErrorFunction? = null) {
 
+    @Deprecated("Use setState,WithState or FromState instead")
     suspend fun setState(state: suspend () -> UIState) {
         if (errorFunction != null) {
             flow.setState({ state() }, errorFunction)
         } else flow.setState { state() }
     }
 
+    @Deprecated("Use setState,WithState or FromState instead")
     fun setState(state: UIState) {
         if (errorFunction != null) {
             flow.setState({ state }, errorFunction)
@@ -55,5 +58,7 @@ class StateFlowAction(private val flow: DataFlow, internal val onStateFlow: Stat
     }
 }
 
+@Deprecated("Use setState,WithState or FromState instead")
 typealias StateFlowFunction = suspend StateFlowAction.(UIState?) -> Unit
+@Deprecated("Use setState,WithState or FromState instead")
 typealias TypedFlowFunction<T> = suspend StateFlowAction.(T) -> Unit

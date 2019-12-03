@@ -127,18 +127,6 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow error`() {
-        dataFlow.flowError()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(UIState.Loading, dataFlow.states[1])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.states[2] is UIState.Failed)
-        assertTrue(dataFlow.events.size == 0)
-    }
-
-    @Test
     fun `action state error`() {
         dataFlow.getAll()
         dataFlow.add("first")
@@ -189,19 +177,6 @@ class ActorFlowTest {
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
         assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
         assertEquals(TodoListState(listOf(Todo("first"), Todo("LongTodo"))), dataFlow.states[3])
-
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.events.size == 0)
-    }
-
-    @Test
-    fun `stateflow test`() = runBlocking {
-        dataFlow.flow()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(UIState.Empty, dataFlow.states[1])
-        assertEquals(UIState.Loading, dataFlow.states[2])
-        assertEquals(UIState.Success, dataFlow.states[3])
 
         assertTrue(dataFlow.states.size == 4)
         assertTrue(dataFlow.events.size == 0)

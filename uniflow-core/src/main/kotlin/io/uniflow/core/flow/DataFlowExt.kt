@@ -54,6 +54,7 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: Typ
 /**
  * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
  */
+@Deprecated("Use setState,WithState or FromState instead")
 inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>, noinline errorFunction: ErrorFunction) {
     if (currentState is T) {
         stateFlow(stateFlow as StateFlowFunction, errorFunction)
@@ -65,6 +66,7 @@ inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: Typ
 /**
  * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
  */
+@Deprecated("Use setState,WithState or FromState instead")
 inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>) {
     if (currentState is T) {
         stateFlow(stateFlow as StateFlowFunction)
