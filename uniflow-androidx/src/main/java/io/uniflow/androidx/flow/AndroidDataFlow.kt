@@ -75,7 +75,6 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDi
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                UniFlowLogger.log("AndroidActorFlow run $action")
                 withContext(defaultDispatcher) {
                     proceedAction(action)
                 }

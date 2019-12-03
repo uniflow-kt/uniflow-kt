@@ -73,7 +73,7 @@ interface DataFlow {
      * @param error
      */
     suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("Got error '${error.message}' on state '$currentState'", error)
+        UniFlowLogger.logError("default onError catching - '${error.message}' on state '$currentState'", error)
         throw error
     }
 
@@ -153,7 +153,6 @@ interface DataFlow {
     fun onAction(action: StateAction) {
         coroutineScope.apply {
             if (isActive) {
-                UniFlowLogger.log("DataFlow onAction $action")
                 actorFlow.offer(action)
             } else {
                 UniFlowLogger.log("DataFlow onAction $action cancelled")
@@ -183,7 +182,7 @@ interface DataFlow {
     fun onActionError(action: StateAction, error: Exception) {
         coroutineScope.apply {
             if (isActive) {
-                UniFlowLogger.log("DataFlow onActionError '${error.message}' for action $action ")
+                UniFlowLogger.log("action error - '${error.message}'")
                 launch(defaultDispatcher) {
                     if (action.errorFunction != null) {
                         val failState = action.errorFunction.let {

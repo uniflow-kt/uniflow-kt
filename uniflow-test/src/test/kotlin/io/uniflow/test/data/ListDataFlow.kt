@@ -55,7 +55,6 @@ abstract class ListDataFlow : DataFlow {
     override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                UniFlowLogger.log("ListDataFlow run action $action")
                 withContext(defaultDispatcher) {
                     proceedAction(action)
                 }
