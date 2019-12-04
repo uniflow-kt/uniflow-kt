@@ -1,7 +1,9 @@
 
 # Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
 
-## Actions, States & Events 🔄
+<br>
+
+## Writing an Action
 
 Your ViewModel class, aka your DataFlow, will provide `actions` that will trigger states and events.
 
@@ -22,7 +24,7 @@ The state mutation operator are the following:
 - `setState { current -> ... newState}` - from current state, udpate the current state
 - `fromState<T> { current as T -> newState }` - from current state <T>, udpate the current state
 
-### States as immutable data
+## States as immutable data
 
 To describe your data flow states, extends the `UIState` class directly or use it as a sealed class as follow:
 
@@ -33,7 +35,7 @@ class WeatherStates : UIState(){
 }
 ```
 
-## Getting current state
+## Getting the current state
 
 From your `ViewModel` you can have access to the current state with the `state` property:
 
@@ -60,7 +62,7 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 ```
 
 
-### Updating the current state
+## Updating the current state
 
 `SetState` is an action builder to simply set a new state:
 
@@ -94,9 +96,9 @@ fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
 }
 ```
 
-### Side effects with Events
+## Applying side effects with Events
 
-For side effects actions:
+When you don't want to update the current state, you can use an event:
 
 ```kotlin
 fun getWeather() = setState {
@@ -126,10 +128,8 @@ From your VIewModel, simply send an event with `sendEvent()` function:
 
 ```
 
-_note_: sendEvent() can be used in any state mutation operator
 
-
-To observe events from your Activity/Fragment view class, use the  `onEvent` fucntion with your ViewModel instance:
+To observe events from your Activity/Fragment view class, use the  `onEvent` function with your ViewModel instance:
 
 ```kotlin
 onEvents(viewModel) { event ->
@@ -166,7 +166,7 @@ And if you need to launch a job on different thread, use:
 
 _note_: we simplify here the wirting of such threading operator, as we also make an asbtaction around the used dispatcher to help further testing. See testing section below.
 
-### Error handling out of the box
+### Error handling
 
 Each action is surrounded by a `try/catch` block for you under the hood. It avoids you to use `try/catch` block every where around your code. Then you can catch errors in 2 ways: 
 
@@ -217,26 +217,26 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 
 One way to handle properly dangerous calls & exceptions, is to do it with a functional approach.
 
-### Safely wrapping results with Try type
+### Safely wrapping results with `SafeResult` type
 
-[`Try`](https://arrow-kt.io/docs/arrow/core/try/) is the Success/Failure functional wrapper type of Arrow. It will help you write your state flow in a functional way.
+It will help you write your state flow in a functional way.
 
-You can wrap any `Try.Success` value like that:
+You can wrap any `SafeResult.Success` value like that:
 
 ```kotlin
 val myData : Any ...
 
 // wrap it as Success
-Try.just(myData) or myData.success()
+success(myData) or myData.success()
 ```
 
-Concerning errors, you can wrap a `Try.Failure` error like follow:
+Concerning errors, you can wrap a `SafeResult.Failure` error like follow:
 
 ```kotlin
 val myError : Exception ...
 
 // wrap it as Failure
-Try.raiseError(myError) or myError.failure()
+SafeResult.raiseError(myError) or myError.failure()
 ```
 
 ### Wrapping unsafe expression
@@ -248,8 +248,8 @@ To help you deal with expression that can raise exceptions, we provide a result 
 
 fun myDangerousCall() : MyData
 
-// will produce Try<MyData>
-val safeResult : Try<MyData> = safeValue { myDangerousCall() }
+// will produce SafeResult<MyData>
+val safeResult : SafeResult<MyData> = safeValue { myDangerousCall() }
 ```
 
 Here we have the following default builders:
@@ -259,8 +259,6 @@ Here we have the following default builders:
 - `databaseCall { } `- wrap Try result, catch exception and wap it in a `DatabaseException` object
 
 You can also make your own safe result builder, depending on your APIs 👍
-
-_NB_: this could be done also with `Try { }` expression wrapper directly
 
 ### Functional operators
 
@@ -282,7 +280,7 @@ Amoung the classical `Try` functional operators, we add some more:
 
 `get` & `getOrNull` are terminal operators, they give you the final result of your functional flow.
 
-### Making safe states & events
+### Building states safely
 
 In your DataFlow ViewModel class, you will make sequence of operation to result in UIState(s):
 
@@ -308,8 +306,6 @@ fun loadNewLocation(location: String) = fromState<WeatherListState> {
                 .toStateOrNull { it.mapToWeatherListState() }
     }
 ```
-
-## More tools for test
 
 ### Scheduling & Testing
 
