@@ -8,8 +8,12 @@ sealed class SafeResult<out T> {
     abstract suspend fun <R> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R>
     abstract fun get(): T
     abstract fun getOrNull(): T?
+
     abstract suspend fun onFailure(block: suspend (Exception) -> Unit): SafeResult<T>
+    abstract suspend fun onFailed(block: (Exception) -> Unit): SafeResult<T>
     abstract suspend fun onSuccess(block: suspend (T) -> Unit): SafeResult<T>
+    abstract suspend fun onValue(block: (T) -> Unit): SafeResult<T>
+
     abstract fun isSuccess(): Boolean
     abstract fun isFailure(): Boolean
 
@@ -89,6 +93,13 @@ sealed class SafeResult<out T> {
             return this
         }
 
+        override suspend fun onFailed(block: (Exception) -> Unit): SafeResult<T> = this
+
+        override suspend fun onValue(block: (T) -> Unit): SafeResult<T> {
+            block(value)
+            return this
+        }
+
         override fun isSuccess(): Boolean = true
         override fun isFailure(): Boolean = false
     }
@@ -110,6 +121,13 @@ sealed class SafeResult<out T> {
 
         override suspend fun onSuccess(block: suspend (Nothing) -> Unit): SafeResult<Nothing> = this
 
+        override suspend fun onFailed(block: (Exception) -> Unit): SafeResult<Nothing> {
+            block(exception)
+            return this
+        }
+
+        override suspend fun onValue(block: (Nothing) -> Unit): SafeResult<Nothing> = this
+
         override fun isSuccess(): Boolean = false
         override fun isFailure(): Boolean = true
     }
@@ -123,7 +141,19 @@ sealed class SafeResult<out T> {
             failure(e)
         }
 
+        suspend fun <A> safeValue(code: () -> A): SafeResult<A> = try {
+            success(code())
+        } catch (e: Exception) {
+            failure(e)
+        }
+
         suspend fun <A> safeResult(code: suspend () -> A, onError: suspend (Exception) -> Exception): SafeResult<A> = try {
+            success(code())
+        } catch (e: Exception) {
+            failure(onError(e))
+        }
+
+        suspend fun <A> safeValue(code: () -> A, onError: (Exception) -> Exception): SafeResult<A> = try {
             success(code())
         } catch (e: Exception) {
             failure(onError(e))

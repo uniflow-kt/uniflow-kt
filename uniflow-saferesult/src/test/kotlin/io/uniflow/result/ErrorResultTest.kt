@@ -62,22 +62,6 @@ class ErrorResultTest {
         assertTrue(writtenValue == "$error")
     }
 
-//    @Test
-//    fun `map State`() = runBlocking {
-//        val result = errorResult(error)
-//                .mapState({ UIState.Success }, { UIState.Failed(error = it) })
-//
-//        assertTrue(result.get() == UIState.Failed(error = error))
-//    }
-//
-//    @Test
-//    fun `map State null`() = runBlocking {
-//        val result = errorResult(error)
-//                .mapState({ UIState.Success }, { null })
-//
-//        assertTrue(result.getOrNull() == null)
-//    }
-
     @Test
     fun `to State null`() = runBlocking {
         val result = SafeResult.Failure(error)
@@ -85,12 +69,4 @@ class ErrorResultTest {
 
         assertTrue(result == null)
     }
-
-//    @Test
-//    fun `to State`() = runBlocking {
-//        val result = errorResult(error)
-//                .toState({ UIState.Success }, { UIState.Failed(error = it) })
-//
-//        assertTrue(result == UIState.Failed(error = error))
-//    }
 }

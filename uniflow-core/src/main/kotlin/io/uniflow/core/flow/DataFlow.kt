@@ -82,54 +82,16 @@ interface DataFlow {
      *
      * @param onStateUpdate - function to produce a new state, from the current state
      */
-    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction) {
-        onAction(StateAction(onStateUpdate, onActionError))
+    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction): StateAction {
+        val action = StateAction(onStateUpdate, onActionError)
+        onAction(action)
+        return action
     }
 
-    fun setState(onStateUpdate: StateUpdateFunction) {
-        onAction(StateAction(onStateUpdate))
-    }
-
-    /**
-     * An action that can trigger several state changes
-     *
-     * stateFlowFunction allow to use the StateFlowAction.setState(...) function to set any new state
-     *
-     * @param stateFlowFunction - flow state
-     * @param errorFunction - flowError function
-     */
-    @Deprecated("Use setState,WithState or FromState instead")
-    fun stateFlow(onStateFlow: StateFlowFunction, onActionError: ErrorFunction) {
-        onStateFlow(StateFlowAction(this, onStateFlow, onActionError))
-    }
-
-    @Deprecated("Use setState,WithState or FromState instead")
-    fun stateFlow(onStateFlow: StateFlowFunction) {
-        onStateFlow(StateFlowAction(this, onStateFlow))
-    }
-
-    @Deprecated("Use setState,WithState or FromState instead")
-    fun onStateFlow(stateFlowAction: StateFlowAction) {
-        coroutineScope.apply {
-            if (isActive) {
-                launch(defaultDispatcher) {
-                    proceedStateFlow(stateFlowAction)
-                }
-            }
-        }
-    }
-
-    @Deprecated("Use setState,WithState or FromState instead")
-    suspend fun proceedStateFlow(stateFlowAction: StateFlowAction) {
-        try {
-            stateFlowAction.onStateFlow(stateFlowAction, currentState)
-        } catch (e: Exception) {
-            if (stateFlowAction.errorFunction != null) {
-                onActionError(StateAction(errorFunction = stateFlowAction.errorFunction), e)
-            } else {
-                onError(e)
-            }
-        }
+    fun setState(onStateUpdate: StateUpdateFunction): StateAction {
+        val action = StateAction(onStateUpdate)
+        onAction(action)
+        return action
     }
 
     /**

@@ -32,8 +32,8 @@ inline fun <reified T> DataFlow.getStateAs(): T = getStateAsOrNull() ?: error("c
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>, noinline errorFunction: ErrorFunction) {
-    if (currentState is T) {
+inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>, noinline errorFunction: ErrorFunction): StateAction {
+    return if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction, errorFunction)
     } else {
         setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
@@ -43,34 +43,10 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: Type
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>) {
-    if (currentState is T) {
+inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>): StateAction {
+    return if (currentState is T) {
         setState(onStateUpdate as StateUpdateFunction)
     } else {
         setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
-    }
-}
-
-/**
- * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
- */
-@Deprecated("Use setState,WithState or FromState instead")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>, noinline errorFunction: ErrorFunction) {
-    if (currentState is T) {
-        stateFlow(stateFlow as StateFlowFunction, errorFunction)
-    } else {
-        stateFlow { sendEvent(UIEvent.BadOrWrongState(currentState)) }
-    }
-}
-
-/**
- * Execute stateflow from the given T state else send UIEvent.BadOrWrongState with current state
- */
-@Deprecated("Use setState,WithState or FromState instead")
-inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFlow: TypedFlowFunction<T>) {
-    if (currentState is T) {
-        stateFlow(stateFlow as StateFlowFunction)
-    } else {
-        stateFlow { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
