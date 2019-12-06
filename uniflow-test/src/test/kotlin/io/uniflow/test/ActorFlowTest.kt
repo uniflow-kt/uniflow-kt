@@ -7,6 +7,7 @@ import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.*
 import io.uniflow.test.rule.TestDispatchersRule
+import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -33,6 +34,12 @@ class ActorFlowTest {
     fun before() {
         dataFlow = TodoStackActorFlow(repository)
     }
+
+    @Test
+    fun `is valid`() {
+        validate<TodoStackActorFlow>()
+    }
+
 
     @Test
     fun `empty state`() {
