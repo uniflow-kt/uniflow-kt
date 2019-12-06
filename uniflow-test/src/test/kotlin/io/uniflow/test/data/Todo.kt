@@ -8,7 +8,7 @@ data class Todo(val title: String, val done: Boolean = false)
 class TodoRepository {
 
     private val allTodo = ConcurrentLinkedDeque<Todo>()
-    private val max = 10
+    private val max = 150
 
     fun getAllTodo() = allTodo.toList()
 

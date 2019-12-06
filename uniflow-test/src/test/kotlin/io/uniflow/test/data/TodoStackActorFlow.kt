@@ -88,6 +88,18 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
         notifyUpdate(TodoListState(list), TodoListUpdate(t))
     }
 
+    fun testFlow() = stateFlow {
+        emit(UIState.Loading)
+        delay(10)
+        emit(UIState.Success)
+    }
+
+    fun testBoomFlow() = stateFlow({
+        emit(UIState.Loading)
+        error("boom")
+        emit(UIState.Success)
+    }, { e -> UIState.Failed("flow boom",e) })
+
     override suspend fun onError(error: Exception) {
         setState { UIState.Failed("Failed state", error) }
     }

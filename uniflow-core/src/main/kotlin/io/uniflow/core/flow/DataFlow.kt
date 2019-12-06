@@ -19,6 +19,8 @@ import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -95,6 +97,30 @@ interface DataFlow {
     }
 
     /**
+     * Create a state action that is listening for ActionFlow to emit/complete
+     */
+    fun stateFlow(stateFlowAction: ActionFlow, onActionError: ErrorFunction): StateAction {
+        return runActionFlow(stateFlowAction, onActionError)
+    }
+
+    fun stateFlow(stateFlowAction: ActionFlow): StateAction {
+        return runActionFlow(stateFlowAction)
+    }
+
+    fun runActionFlow(stateFlowAction: ActionFlow, onActionError: ErrorFunction? = null): StateAction {
+        return onActionError?.let {
+            setState({ runFlow(stateFlowAction) }, onActionError)
+        } ?: setState { runFlow(stateFlowAction) }
+    }
+
+    suspend fun runFlow(stateFlowAction: ActionFlow): UIState? {
+        flow(stateFlowAction).collect { newState ->
+            applyState(newState)
+        }
+        return null
+    }
+
+    /**
      * Execute the action & catch any flowError
      * @param action
      */
@@ -113,7 +139,7 @@ interface DataFlow {
      */
     suspend fun proceedAction(action: StateAction) {
         try {
-            val result = action.stateFunction?.invoke(action, currentState)
+            val result = action.stateFunction?.invoke(currentState)
             if (result is UIState) {
                 applyState(result)
             }
@@ -134,7 +160,7 @@ interface DataFlow {
                 launch(defaultDispatcher) {
                     if (action.errorFunction != null) {
                         val failState = action.errorFunction.let {
-                            it.invoke(action, error)
+                            it.invoke(error)
                         }
                         failState?.let { setState { failState } }
                     } else setState {

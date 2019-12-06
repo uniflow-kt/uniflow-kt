@@ -52,7 +52,7 @@ abstract class ListDataFlow : DataFlow {
         actorFlow.close()
     }
 
-    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 10) {
+    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = 100) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 withContext(defaultDispatcher) {

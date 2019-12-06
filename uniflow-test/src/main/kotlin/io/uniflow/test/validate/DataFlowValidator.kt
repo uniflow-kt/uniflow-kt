@@ -44,4 +44,4 @@ fun KFunction<*>.validate(): Boolean {
     }
 }
 
-val exclusion = listOf("applyState", "cancel", "equals", "hashCode", "notifyUpdate", "onAction", "onActionError", "onError", "proceedAction", "sendEvent", "setState", "toString")
+val exclusion = listOf("applyState", "cancel", "equals", "hashCode", "notifyUpdate", "onAction", "onActionError", "onError", "proceedAction", "sendEvent", "setState", "toString","runFlow")

@@ -227,4 +227,46 @@ class ActorFlowTest {
         assertTrue(dataFlow.events.size == 0)
     }
 
+    @Test
+    fun `flow test`() = runBlocking {
+        dataFlow.testFlow()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Loading, dataFlow.states[1])
+        assertEquals(UIState.Success, dataFlow.states[2])
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `flow order test`() = runBlocking {
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        dataFlow.states.clear()
+
+        val max = 20
+        (1..max).forEach {
+            dataFlow.testFlow()
+        }
+        delay(max.toLong() * 20)
+        assertTrue(dataFlow.states.size == max * 2)
+        assertTrue(dataFlow.events.size == 0)
+
+        dataFlow.states.filterIndexed { index, _ -> index % 2 == 0 }.all { state -> state == UIState.Loading }
+        dataFlow.states.filterIndexed { index, _ -> index % 2 != 0 }.all { state -> state == UIState.Success }
+        Unit
+    }
+
+    @Test
+    fun `flow boom test`() = runBlocking {
+        val boom = IllegalStateException("boom")
+        dataFlow.testBoomFlow()
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Loading, dataFlow.states[1])
+        assertTrue(dataFlow.states[2] is UIState.Failed)
+        assertTrue((dataFlow.states[2] as UIState.Failed).error == boom)
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
 }
