@@ -75,7 +75,7 @@ interface DataFlow {
      * @param error
      */
     suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("default onError catching - '${error.message}' on state '$currentState'", error)
+        UniFlowLogger.logError("Uncaught error - '${error.message}' on state '$currentState'", error)
         throw error
     }
 
@@ -129,7 +129,7 @@ interface DataFlow {
             if (isActive) {
                 actorFlow.offer(action)
             } else {
-                UniFlowLogger.log("DataFlow onAction $action cancelled")
+                UniFlowLogger.log("action $action cancelled")
             }
         }
     }
@@ -169,7 +169,7 @@ interface DataFlow {
                     }
                 }
             } else {
-                UniFlowLogger.log("DataFlow onActionError cancelled for action $action")
+                UniFlowLogger.log("error action cancelled - $action")
             }
         }
     }

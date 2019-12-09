@@ -76,7 +76,7 @@ abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDi
                     proceedAction(action)
                 }
             } else {
-                UniFlowLogger.log("AndroidActorFlow action $action cancelled")
+                UniFlowLogger.log("actor $action cancelled")
             }
         }
     }
