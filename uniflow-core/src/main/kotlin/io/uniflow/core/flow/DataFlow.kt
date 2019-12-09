@@ -84,13 +84,13 @@ interface DataFlow {
      *
      * @param onStateUpdate - function to produce a new state, from the current state
      */
-    fun setState(onStateUpdate: StateUpdateFunction, onActionError: ErrorFunction): StateAction {
+    fun setState(onStateUpdate: StateFunction, onActionError: ErrorFunction): StateAction {
         val action = StateAction(onStateUpdate, onActionError)
         onAction(action)
         return action
     }
 
-    fun setState(onStateUpdate: StateUpdateFunction): StateAction {
+    fun setState(onStateUpdate: StateFunction): StateAction {
         val action = StateAction(onStateUpdate)
         onAction(action)
         return action
@@ -99,21 +99,21 @@ interface DataFlow {
     /**
      * Create a state action that is listening for ActionFlow to emit/complete
      */
-    fun stateFlow(stateFlowAction: ActionFlow, onActionError: ErrorFunction): StateAction {
+    fun stateFlow(stateFlowAction: StateFunctionFlow, onActionError: ErrorFunction): StateAction {
         return runActionFlow(stateFlowAction, onActionError)
     }
 
-    fun stateFlow(stateFlowAction: ActionFlow): StateAction {
+    fun stateFlow(stateFlowAction: StateFunctionFlow): StateAction {
         return runActionFlow(stateFlowAction)
     }
 
-    fun runActionFlow(stateFlowAction: ActionFlow, onActionError: ErrorFunction? = null): StateAction {
+    fun runActionFlow(stateFlowAction: StateFunctionFlow, onActionError: ErrorFunction? = null): StateAction {
         return onActionError?.let {
             setState({ runFlow(stateFlowAction) }, onActionError)
         } ?: setState { runFlow(stateFlowAction) }
     }
 
-    suspend fun runFlow(stateFlowAction: ActionFlow): UIState? {
+    suspend fun runFlow(stateFlowAction: StateFunctionFlow): UIState? {
         flow(stateFlowAction).collect { newState ->
             applyState(newState)
         }

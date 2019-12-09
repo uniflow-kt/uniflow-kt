@@ -230,6 +230,20 @@ class ActorFlowTest {
     @Test
     fun `flow test`() = runBlocking {
         dataFlow.testFlow()
+        delay(20)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIState.Loading, dataFlow.states[1])
+        assertEquals(UIState.Success, dataFlow.states[2])
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+
+    @Test
+    fun `flow setState test`() = runBlocking {
+        dataFlow.testFlowWithState()
+        delay(20)
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(UIState.Loading, dataFlow.states[1])
@@ -258,13 +272,11 @@ class ActorFlowTest {
 
     @Test
     fun `flow boom test`() = runBlocking {
-        val boom = IllegalStateException("boom")
         dataFlow.testBoomFlow()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(UIState.Loading, dataFlow.states[1])
         assertTrue(dataFlow.states[2] is UIState.Failed)
-        assertTrue((dataFlow.states[2] as UIState.Failed).error == boom)
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)
     }

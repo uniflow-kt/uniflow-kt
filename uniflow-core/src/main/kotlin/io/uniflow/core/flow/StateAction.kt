@@ -1,15 +1,13 @@
 package io.uniflow.core.flow
 
-import kotlinx.coroutines.flow.FlowCollector
-
-data class StateAction(internal val stateFunction: StateFunction<*>? = null, internal val errorFunction: ErrorFunction? = null) {
+data class StateAction(internal val stateFunction: StateFunction? = null, internal val errorFunction: ErrorFunction? = null) {
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    fun setState(onStateUpdate: StateUpdateFunction, onError: ErrorFunction) {
+    fun setState(onStateUpdate: StateFunction, onError: ErrorFunction) {
     }
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    fun setState(updateFunction: StateUpdateFunction) {
+    fun setState(updateFunction: StateFunction) {
     }
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
@@ -17,16 +15,14 @@ data class StateAction(internal val stateFunction: StateFunction<*>? = null, int
     }
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    inline fun <reified T : UIState> fromState(noinline onStateUpdate: StateUpdateFunction, noinline errorFunction: ErrorFunction) {
+    inline fun <reified T : UIState> fromState(noinline onStateUpdate: StateFunction, noinline errorFunction: ErrorFunction) {
     }
 
     @Deprecated("Can't redeclare an action inside an stateFlow", level = DeprecationLevel.ERROR)
-    inline fun <reified T : UIState?> fromState(noinline onStateUpdate: StateUpdateFunction) {
+    inline fun <reified T : UIState?> fromState(noinline onStateUpdate: StateFunction) {
     }
 }
 
-typealias StateFunction<T> = suspend (UIState?) -> T
-typealias TypedUpdateFunction<T> = suspend (T) -> UIState?
-typealias StateUpdateFunction = StateFunction<UIState?>
+typealias StateFunction = suspend (UIState?) -> UIState?
+typealias TypedStateFunction<T> = suspend (T) -> UIState?
 typealias ErrorFunction = suspend (Exception) -> UIState?
-typealias ActionFlow = suspend FlowCollector<UIState>.() -> Unit

@@ -32,9 +32,9 @@ inline fun <reified T> DataFlow.getStateAs(): T = getStateAsOrNull() ?: error("c
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>, noinline errorFunction: ErrorFunction): StateAction {
+inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: TypedStateFunction<T>, noinline errorFunction: ErrorFunction): StateAction {
     return if (currentState is T) {
-        setState(onStateUpdate as StateUpdateFunction, errorFunction)
+        setState(onStateUpdate as StateFunction, errorFunction)
     } else {
         setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
@@ -43,9 +43,9 @@ inline fun <reified T : UIState> DataFlow.fromState(noinline onStateUpdate: Type
 /**
  * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
  */
-inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: TypedUpdateFunction<T>): StateAction {
+inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: TypedStateFunction<T>): StateAction {
     return if (currentState is T) {
-        setState(onStateUpdate as StateUpdateFunction)
+        setState(onStateUpdate as StateFunction)
     } else {
         setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
