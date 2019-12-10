@@ -239,19 +239,6 @@ class ActorFlowTest {
         assertTrue(dataFlow.events.size == 0)
     }
 
-
-    @Test
-    fun `flow setState test`() = runBlocking {
-        dataFlow.testFlowWithState()
-        delay(20)
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(UIState.Loading, dataFlow.states[1])
-        assertEquals(UIState.Success, dataFlow.states[2])
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.size == 0)
-    }
-
     @Test
     fun `flow order test`() = runBlocking {
         assertEquals(UIState.Empty, dataFlow.states[0])
