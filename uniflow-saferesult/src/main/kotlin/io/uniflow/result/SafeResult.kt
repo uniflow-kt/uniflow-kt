@@ -10,7 +10,6 @@ sealed class SafeResult<out T> {
     abstract fun getOrNull(): T?
 
     abstract suspend fun onFailure(block: suspend (Exception) -> Unit): SafeResult<T>
-    abstract suspend fun onFailed(block: (Exception) -> Unit): SafeResult<T>
     abstract suspend fun onSuccess(block: suspend (T) -> Unit): SafeResult<T>
     abstract suspend fun onValue(block: (T) -> Unit): SafeResult<T>
 
@@ -93,8 +92,6 @@ sealed class SafeResult<out T> {
             return this
         }
 
-        override suspend fun onFailed(block: (Exception) -> Unit): SafeResult<T> = this
-
         override suspend fun onValue(block: (T) -> Unit): SafeResult<T> {
             block(value)
             return this
@@ -120,11 +117,6 @@ sealed class SafeResult<out T> {
         }
 
         override suspend fun onSuccess(block: suspend (Nothing) -> Unit): SafeResult<Nothing> = this
-
-        override suspend fun onFailed(block: (Exception) -> Unit): SafeResult<Nothing> {
-            block(exception)
-            return this
-        }
 
         override suspend fun onValue(block: (Nothing) -> Unit): SafeResult<Nothing> = this
 
