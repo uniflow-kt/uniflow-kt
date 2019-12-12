@@ -127,7 +127,10 @@ interface DataFlow {
     fun onAction(action: StateAction) {
         coroutineScope.apply {
             if (isActive) {
-                actorFlow.offer(action)
+                val offered = actorFlow.offer(action)
+                if (!offered) {
+                    UniFlowLogger.logError("couldn't offer action: $action")
+                }
             } else {
                 UniFlowLogger.log("action $action cancelled")
             }
@@ -139,7 +142,7 @@ interface DataFlow {
      */
     suspend fun proceedAction(action: StateAction) {
         try {
-            val result = action.stateFunction?.invoke(currentState)
+            val result = action.stateFunction?.invoke(action, currentState)
             if (result is UIState) {
                 applyState(result)
             }
@@ -160,7 +163,7 @@ interface DataFlow {
                 launch(defaultDispatcher) {
                     if (action.errorFunction != null) {
                         val failState = action.errorFunction.let {
-                            it.invoke(error)
+                            it.invoke(action, error)
                         }
                         failState?.let { setState { failState } }
                     } else setState {

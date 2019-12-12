@@ -23,6 +23,6 @@ data class StateAction(internal val stateFunction: StateFunction? = null, intern
     }
 }
 
-typealias StateFunction = suspend (UIState?) -> UIState?
-typealias TypedStateFunction<T> = suspend (T) -> UIState?
-typealias ErrorFunction = suspend (Exception) -> UIState?
+typealias StateFunction = suspend StateAction.(UIState?) -> UIState?
+typealias TypedStateFunction<T> = suspend StateAction.(T) -> UIState?
+typealias ErrorFunction = suspend StateAction.(Exception) -> UIState?

@@ -244,7 +244,7 @@ class ActorFlowTest {
         assertEquals(UIState.Empty, dataFlow.states[0])
         dataFlow.states.clear()
 
-        val max = 20
+        val max = 50
         (1..max).forEach {
             dataFlow.testFlow()
         }
