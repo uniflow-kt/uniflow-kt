@@ -51,6 +51,12 @@ sealed class SafeResult<out T> {
                 is Failure -> throw exception
             }
 
+    suspend fun <R : UIState> toStateNullable(onSuccess: suspend (T) -> R): R? =
+        when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> throw exception
+        }
+
     suspend fun <R : UIState> toStateOrNull(onSuccess: suspend (T) -> R?): R? =
             when (this) {
                 is Success -> onSuccess(value)
@@ -62,6 +68,12 @@ sealed class SafeResult<out T> {
                 is Success -> onSuccess(value)
                 is Failure -> onError(exception)
             }
+
+    suspend fun <R : UIState> toStateNullable(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R): R? =
+        when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> onError(exception)
+        }
 
     data class Success<out T>(internal val value: T) : SafeResult<T>() {
 
