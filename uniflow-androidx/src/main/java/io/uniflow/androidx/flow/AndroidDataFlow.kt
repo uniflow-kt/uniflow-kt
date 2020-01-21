@@ -29,7 +29,11 @@ import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 
-abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()) : ViewModel(), DataFlow {
+abstract class AndroidDataFlow(
+    defaultCapacity: Int = 10,
+    override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+) : ViewModel(),
+    DataFlow {
 
     override val coroutineScope: CoroutineScope = viewModelScope
 

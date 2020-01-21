@@ -25,7 +25,11 @@ import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 
-abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()) : ViewModel(), DataFlow {
+abstract class AndroidDataFlow(
+    defaultCapacity: Int = 10,
+    override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+) : ViewModel(),
+    DataFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
