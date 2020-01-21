@@ -23,13 +23,25 @@ import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
 
+/**
+ * Android implementation of [DataFlow].
+ * This is also a [ViewModel].
+ * Its [coroutineScope] equals [viewModelScope].
+ *
+ * @param defaultCapacity
+ * The default capacity of this `DataFlow`.
+ * If [setState] or [sendEvent] are called in quick
+ * succession, faster than the observers can be notified, then the buffer will be used.
+ * Any `setState` or `sendEvent` calls will be added to the buffer unless it's full.
+ * Defaults to [Channel.BUFFERED].
+ *
+ * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
+ * Defaults to [Dispatchers.IO].
+ */
 abstract class AndroidDataFlow(
     defaultCapacity: Int = Channel.BUFFERED,
     override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()

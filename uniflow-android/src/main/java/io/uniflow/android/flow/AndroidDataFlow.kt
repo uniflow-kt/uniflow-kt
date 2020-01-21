@@ -26,6 +26,22 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 
+/**
+ * Android implementation of [DataFlow].
+ * This is also a [ViewModel].
+ * Its [coroutineScope] uses [Dispatchers.Main] and is automatically cancelled if the `ViewModel`
+ * is cleared.
+ *
+ * @param defaultCapacity
+ * The default capacity of this `DataFlow`.
+ * If [setState] or [sendEvent] are called in quick
+ * succession, faster than the observers can be notified, then the buffer will be used.
+ * Any `setState` or `sendEvent` calls will be added to the buffer unless it's full.
+ * Defaults to [Channel.BUFFERED].
+ *
+ * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
+ * Defaults to [Dispatchers.IO].
+ */
 abstract class AndroidDataFlow(
     defaultCapacity: Int = Channel.BUFFERED,
     override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
