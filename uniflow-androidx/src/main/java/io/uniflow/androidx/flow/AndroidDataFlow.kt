@@ -25,12 +25,13 @@ import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 
 abstract class AndroidDataFlow(
-    defaultCapacity: Int = 10,
+    defaultCapacity: Int = Channel.BUFFERED,
     override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(),
     DataFlow {
