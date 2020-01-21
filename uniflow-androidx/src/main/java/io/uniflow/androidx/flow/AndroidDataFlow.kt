@@ -34,9 +34,7 @@ import kotlinx.coroutines.channels.actor
  *
  * @param defaultCapacity
  * The default capacity of this `DataFlow`.
- * If [setState] or [sendEvent] are called in quick
- * succession, faster than the observers can be notified, then the buffer will be used.
- * Any state actions dispatched using `setState` will be added to the buffer unless it's full.
+ * Any state actions dispatched using [setState] will be added to the buffer unless it's full.
  * Defaults to [Channel.BUFFERED].
  *
  * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
