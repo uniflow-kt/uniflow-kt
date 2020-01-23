@@ -3,6 +3,7 @@ package io.uniflow.test.data
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.fromState
+import io.uniflow.core.flow.stateFlowFrom
 import io.uniflow.core.threading.onIO
 import kotlinx.coroutines.delay
 
@@ -89,6 +90,12 @@ class TodoStackActorFlow(private val repository: TodoRepository) : ListDataFlow(
     }
 
     fun testFlow() = stateFlow {
+        emit(UIState.Loading)
+        delay(10)
+        emit(UIState.Success)
+    }
+
+    fun notifyFlowFromState() = stateFlowFrom<TodoListState> {
         emit(UIState.Loading)
         delay(10)
         emit(UIState.Success)
