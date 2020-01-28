@@ -25,11 +25,7 @@ import io.uniflow.core.flow.UIState
  */
 object UniFlowLogger : Logger {
 
-    private var logger: Logger = SimpleMessageLogger()
-
-    fun init(logger: Logger) {
-        this.logger = logger
-    }
+    var logger: Logger = SimpleMessageLogger()
 
     override fun log(message: String) = logger.log(message)
 
