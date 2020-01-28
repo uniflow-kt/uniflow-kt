@@ -50,3 +50,25 @@ inline fun <reified T : UIState?> DataFlow.fromState(noinline onStateUpdate: Typ
         setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
     }
 }
+
+/**
+ * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
+ */
+inline fun <reified T : UIState?> DataFlow.stateFlowFrom(noinline stateFunctionFlow: StateFunctionFlow): StateAction {
+    return if (currentState is T) {
+        stateFlow(stateFunctionFlow)
+    } else {
+        setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
+    }
+}
+
+/**
+ * Execute update action from the given T state else send UIEvent.BadOrWrongState with current state
+ */
+inline fun <reified T : UIState> DataFlow.stateFlowFrom(noinline stateFunctionFlow: StateFunctionFlow, noinline errorFunction: ErrorFunction): StateAction {
+    return if (currentState is T) {
+        stateFlow(stateFunctionFlow, errorFunction)
+    } else {
+        setState { sendEvent(UIEvent.BadOrWrongState(currentState)) }
+    }
+}

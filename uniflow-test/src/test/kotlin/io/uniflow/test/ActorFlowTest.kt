@@ -240,6 +240,33 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `test flow from state`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.notifyFlowFromState()
+        delay(20)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `test flow from state exception`() = runBlocking {
+        dataFlow.notifyFlowFromState()
+        delay(20)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIEvent.BadOrWrongState(UIState.Empty), dataFlow.events[0])
+
+        assertTrue(dataFlow.states.size == 1)
+        assertTrue(dataFlow.events.size == 1)
+    }
+
+    @Test
     fun `flow order test`() = runBlocking {
         assertEquals(UIState.Empty, dataFlow.states[0])
         dataFlow.states.clear()
