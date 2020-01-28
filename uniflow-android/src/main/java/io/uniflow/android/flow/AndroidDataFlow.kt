@@ -23,9 +23,28 @@ import io.uniflow.core.flow.*
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 
-abstract class AndroidDataFlow(defaultCapacity: Int = 10, override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()) : ViewModel(), DataFlow {
+/**
+ * Android implementation of [DataFlow].
+ * This is also a [ViewModel].
+ * Its [coroutineScope] uses [Dispatchers.Main] and is automatically cancelled if the `ViewModel`
+ * is cleared.
+ *
+ * @param defaultCapacity
+ * The default capacity of this `DataFlow`.
+ * Any state actions dispatched using [setState] will be added to the buffer unless it's full.
+ * Defaults to [Channel.BUFFERED].
+ *
+ * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
+ * Defaults to [Dispatchers.IO].
+ */
+abstract class AndroidDataFlow(
+    defaultCapacity: Int = Channel.BUFFERED,
+    override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+) : ViewModel(),
+    DataFlow {
 
     private val viewModelJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
