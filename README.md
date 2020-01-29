@@ -1,9 +1,9 @@
 
-# Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
+# Uniflow 🦄- Simple Unidirectional Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
 
 ## Setup
 
-#### Current version is `0.9.4`
+#### Current version is `0.9.5`
 
 Choose one of the following dependency:
 
