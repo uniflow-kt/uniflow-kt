@@ -61,13 +61,26 @@ class UniFlowLoggerTest {
     }
 
     @Test
-    fun `Given UniFlowLogger with a custom Logger, When default() is called, Then the default logger is used`() {
+    fun `Given UniFlowLogger with a custom Logger, When default() is called, Then Logger calls are delegated to SimpleMessageLogger`() {
         UniFlowLogger.init(testLoggerMock)
 
-        UniFlowLogger.default()
-        UniFlowLogger.log(expectedMessage)
+        with(UniFlowLogger) {
+            default()
 
-        verify { anyConstructed<SimpleMessageLogger>().log(expectedMessage) }
+            log(expectedMessage)
+            logState(expectedUIState)
+            logEvent(expectedUIEvent)
+            logError(expectedMessage, expectedException)
+        }
+
+        verifySequence {
+            with(anyConstructed<SimpleMessageLogger>()) {
+                log(expectedMessage)
+                logState(expectedUIState)
+                logEvent(expectedUIEvent)
+                logError(expectedMessage, expectedException)
+            }
+        }
     }
 
     @Test
