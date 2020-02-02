@@ -27,6 +27,10 @@ object UniFlowLogger : Logger {
     private val defaultLogger: Logger = SimpleMessageLogger()
     private var logger = defaultLogger
 
+    /**
+     * Set a [Logger] as the UniFlow event logger.
+     * Reset this using [default].
+     */
     fun init(logger: Logger) {
         this.logger = logger
     }
