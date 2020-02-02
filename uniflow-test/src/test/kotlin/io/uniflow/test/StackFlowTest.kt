@@ -11,6 +11,7 @@ import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -18,9 +19,14 @@ import org.junit.Rule
 import org.junit.Test
 
 class StackFlowTest {
+    companion object {
+        init {
+            UniFlowLogger.init(DebugMessageLogger())
+        }
 
-    init {
-        UniFlowLogger.init(DebugMessageLogger())
+        @JvmStatic
+        @AfterClass
+        fun `after class`() = UniFlowLogger.default()
     }
 
     @get:Rule
