@@ -31,6 +31,13 @@ object UniFlowLogger : Logger {
         this.logger = logger
     }
 
+    /**
+     * Set the default [Logger] as the UniFlow event logger.
+     */
+    fun default() {
+        logger = defaultLogger
+    }
+
     override fun log(message: String) = logger.log(message)
 
     override fun logState(state: UIState) = logger.logState(state)
