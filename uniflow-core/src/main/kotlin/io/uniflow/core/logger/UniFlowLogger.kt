@@ -24,8 +24,8 @@ import io.uniflow.core.flow.UIState
  * @author Arnaud Giuliani
  */
 object UniFlowLogger : Logger {
-
-    private var logger: Logger = SimpleMessageLogger()
+    private val defaultLogger: Logger = SimpleMessageLogger()
+    private var logger = defaultLogger
 
     fun init(logger: Logger) {
         this.logger = logger
