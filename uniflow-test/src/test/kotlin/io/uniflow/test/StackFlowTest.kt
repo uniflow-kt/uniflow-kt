@@ -4,6 +4,7 @@ import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
@@ -11,10 +12,10 @@ import io.uniflow.test.data.TodoStackActorFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,8 +26,8 @@ class StackFlowTest {
         }
 
         @JvmStatic
-        @AfterClass
-        fun `after class`() = UniFlowLogger.default()
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
     @get:Rule

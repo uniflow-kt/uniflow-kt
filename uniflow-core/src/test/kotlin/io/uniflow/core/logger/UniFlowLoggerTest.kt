@@ -3,6 +3,8 @@ package io.uniflow.core.logger
 import io.mockk.*
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
+import io.uniflow.core.rule.MockkTestClassRule
+import io.uniflow.core.rule.MockkTestRule
 import org.junit.*
 
 class UniFlowLoggerTest {
@@ -15,16 +17,19 @@ class UniFlowLoggerTest {
         private val expectedException = Exception("expected exception")
 
         @JvmStatic
-        @BeforeClass
-        fun `before class`() = mockkConstructor(SimpleMessageLogger::class)
+        @get:ClassRule
+        val mockkTestClassRule = MockkTestClassRule()
 
         @JvmStatic
-        @AfterClass
-        fun `after class`() {
-            UniFlowLogger.default()
-            unmockkAll()
-        }
+        @BeforeClass
+        fun `before class`() = mockkConstructor(SimpleMessageLogger::class)
     }
+
+    @get:Rule
+    val mockkTestRule = MockkTestRule()
+
+    @get:Rule
+    val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
 
     @Before
     fun before() {
@@ -33,12 +38,6 @@ class UniFlowLoggerTest {
         every { anyConstructed<SimpleMessageLogger>().logState(any()) } just runs
         every { anyConstructed<SimpleMessageLogger>().logEvent(any()) } just runs
         every { anyConstructed<SimpleMessageLogger>().logError(any(), any()) } just runs
-    }
-
-    @After
-    fun after() {
-        UniFlowLogger.default()
-        clearAllMocks()
     }
 
     @Test

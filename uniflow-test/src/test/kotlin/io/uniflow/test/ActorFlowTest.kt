@@ -5,16 +5,17 @@ import io.uniflow.core.flow.UIState
 import io.uniflow.core.flow.getStateAsOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.*
 import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,8 +26,8 @@ class ActorFlowTest {
         }
 
         @JvmStatic
-        @AfterClass
-        fun `after class`() = UniFlowLogger.default()
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
     @ExperimentalCoroutinesApi
