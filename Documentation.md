@@ -316,7 +316,7 @@ First don't forget to use thr following rule:
 var rule = TestDispatchersRule()
 ```
 
-`TestDispatchersRule` allow you to dispatch with `Unconfined` thread by default, as we flatten all scheduling to help sequential running of all states & events.
+`TestDispatchersRule` allows you to test with the `Dispatchers.Unconfined` dispatcher by default, as it flattens all scheduling to help sequential processing of all states and events.
 Alternatively, you can specify a `UniFlowDispatcherConfiguration` in the `TestDispatchersRule` constructor to set custom dispatchers, e.g. a `TestCoroutineDispatcher`.
 
 You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
