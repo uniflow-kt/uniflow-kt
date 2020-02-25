@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.core.flow
+package io.uniflow.core.flow.data
 
 /**
- * Data Flow UI State
+ * Data Flow UI Event
  *
  * @author Arnaud Giuliani
  */
-open class UIState {
-    object Empty : UIState()
-    object Loading : UIState()
-    object Success : UIState()
-    data class Failed(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIState()
+open class UIEvent : UIData {
+    object Loading : UIEvent()
+    object Success : UIEvent()
+    data class Fail(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIEvent()
+    data class BadOrWrongState(val currentState: UIState) : UIEvent()
+    data class StateUpdate(val currentState: UIState) : UIEvent()
 }

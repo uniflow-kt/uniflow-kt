@@ -1,7 +1,7 @@
 package io.uniflow.arrow
 
 import arrow.core.success
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess

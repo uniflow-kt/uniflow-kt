@@ -2,7 +2,7 @@ package io.uniflow.result
 
 import arrow.core.Success
 import arrow.core.Try
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 
 fun <A> Try<A>.getOrNull(): A? =
         when (this) {

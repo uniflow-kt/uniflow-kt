@@ -19,12 +19,18 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.*
-import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.*
+import io.uniflow.core.flow.ActionFlowScheduler
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.UIDataManager
+import io.uniflow.core.flow.UIDataPublisher
+import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.actor
 
 /**
  * Android implementation of [DataFlow].
@@ -40,14 +46,16 @@ import kotlinx.coroutines.channels.actor
  * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
  * Defaults to [Dispatchers.IO].
  */
-abstract class AndroidDataFlow(
-    defaultCapacity: Int = Channel.BUFFERED,
-    override val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-) : ViewModel(),
-    DataFlow {
+abstract class AndroidDataFlow<S : UIState, E : UIEvent>(
+        defaultState: UIState,
+        defaultCapacity: Int = Channel.BUFFERED,
+        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+) : DataFlow<S, E>, UIDataPublisher, ViewModel() {
 
-    private val viewModelJob = SupervisorJob()
-    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+    private val supervisorJob = SupervisorJob()
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    private val uiDataManager = UIDataManager(this, defaultState)
+    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>
@@ -57,52 +65,13 @@ abstract class AndroidDataFlow(
     val events: LiveData<Event<UIEvent>>
         get() = _events
 
-    override suspend fun sendEvent(event: UIEvent): UIState? {
-        onMain(immediate = true) {
-            UniFlowLogger.logEvent(event)
-            _events.value = Event(event)
-        }
-        return null
-    }
-
-    override suspend fun notifyUpdate(newState: UIState, notificationEvent: UIEvent): UIState? {
-        onMain(immediate = true) {
-            UniFlowLogger.logState(newState)
-            _internalState = newState
-            UniFlowLogger.logEvent(notificationEvent)
-            _events.value = Event(notificationEvent)
-        }
-        return null
-    }
-
-    override suspend fun applyState(state: UIState) {
-        onMain(immediate = true) {
-            UniFlowLogger.logState(state)
-            _internalState = state
-            _states.value = state
-        }
-    }
-
-    private var _internalState: UIState? = null
-
-    override val currentState: UIState?
-        get() = _internalState
-
-    override val actorFlow = coroutineScope.actor<StateAction>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
-        for (action in channel) {
-            if (coroutineScope.isActive) {
-                withContext(defaultDispatcher) {
-                    proceedAction(action)
-                }
-            } else {
-                UniFlowLogger.log("actor $action cancelled")
-            }
-        }
+    init {
+        action { setState { defaultState } }
     }
 
     override fun onCleared() {
         super.onCleared()
-        viewModelJob.cancel()
-        actorFlow.close()
+        supervisorJob.cancel()
+        scheduler.close()
     }
 }

@@ -22,7 +22,7 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 The state mutation operator are the following:
 
 - `setState { current -> ... newState}` - from current state, udpate the current state
-- `fromState<T> { current as T -> newState }` - from current state <T>, udpate the current state
+- `actionOn<T> { current as T -> newState }` - from current state <T>, udpate the current state
 
 ## States as immutable data
 
@@ -86,11 +86,11 @@ onStates(weatherFlow) { state ->
 }
 ```
 
-The `FromState<T>` operator help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
+The `actionOn<T>` operator help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
 
 ```kotlin
 // Execute loadNewLocation action only if current state is in WeatherListState
-fun loadNewLocation(location: String) = fromState<WeatherState>{ currentState ->
+fun loadNewLocation(location: String) = actionOn<WeatherState>{ currentState ->
     // currentState is WeatherListState
     // ...
 }
@@ -285,7 +285,7 @@ Amoung the classical `Try` functional operators, we add some more:
 In your DataFlow ViewModel class, you will make sequence of operation to result in UIState(s):
 
 ```kotlin
-fun loadNewLocation(location: String) = fromState<WeatherListState> {
+fun loadNewLocation(location: String) = actionOn<WeatherListState> {
         getWeatherForLocation(location)
                 .toState( { it.mapToWeatherListState() }, { error -> UIState.Failed(error = error) })
     }
@@ -300,7 +300,7 @@ fun loadNewLocation(location: String) = fromState<WeatherListState> {
 To send any event, use the `onSuccess` or `onFailure` operator, to send a it:
 
 ```kotlin
-fun loadNewLocation(location: String) = fromState<WeatherListState> {
+fun loadNewLocation(location: String) = actionOn<WeatherListState> {
         getWeatherForLocation(location)
                 .onFailure { error -> sendEvent(WeatherListUIEvent.ProceedLocationFailed(location, error)) }
                 .toStateOrNull { it.mapToWeatherListState() }

@@ -1,6 +1,6 @@
 package io.uniflow.result
 
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.SafeResult.Companion.safeResult
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue

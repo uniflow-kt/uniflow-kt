@@ -1,6 +1,6 @@
 package io.uniflow.result
 
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -13,6 +13,15 @@ class SuccessResultTest {
     fun `create result`() {
         val result = value.success()
         assertTrue(result.get() == value)
+
+        assertTrue(result.isSuccess())
+        assertTrue(!result.isFailure())
+    }
+
+    @Test
+    fun `create mapped result`() {
+        val result = value.success()
+        assertTrue(result.get { "" } == "")
 
         assertTrue(result.isSuccess())
         assertTrue(!result.isFailure())

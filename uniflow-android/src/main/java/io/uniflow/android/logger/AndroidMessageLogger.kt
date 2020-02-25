@@ -16,11 +16,10 @@
 package io.uniflow.android.logger
 
 import android.util.Log
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.Logger
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.logger.UniFlowLogger.TAG
 
 /**
  * Android Logger
