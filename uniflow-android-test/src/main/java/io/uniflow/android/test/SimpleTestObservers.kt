@@ -25,7 +25,7 @@ data class TestViewObserver(private val states: TestObserver<UIState>, private v
     fun lastEvent(): UIEvent? = events.elements[events.elements.lastIndex].take()
 }
 
-fun AndroidDataFlow<*, *>.createTestObserver(): TestViewObserver {
+fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val viewStates: TestObserver<UIState> = TestObserver()
     val viewEvents: TestObserver<Event<UIEvent>> = TestObserver()
     states.observeForever(viewStates)

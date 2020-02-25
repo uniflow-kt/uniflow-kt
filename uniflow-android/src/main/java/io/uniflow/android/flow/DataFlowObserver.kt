@@ -18,7 +18,6 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import io.uniflow.core.flow.data.Event
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 
 /**
@@ -27,10 +26,10 @@ import io.uniflow.core.flow.data.UIState
  * @author Arnaud Giuliani
  */
 
-fun LifecycleOwner.onStates(vm: AndroidDataFlow<UIState, UIEvent>, handleStates: (UIState) -> Unit) {
+fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     vm.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
 }
 
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow<UIState, UIEvent>, handleEvents: (Event<*>) -> Unit) {
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
     vm.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
 }

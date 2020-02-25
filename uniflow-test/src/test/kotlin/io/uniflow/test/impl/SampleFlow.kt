@@ -8,7 +8,7 @@ import io.uniflow.core.threading.onIO
 import io.uniflow.test.data.*
 import kotlinx.coroutines.delay
 
-class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow<UIState, UIEvent>(UIState.Empty) {
+class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
 
 
     fun getAll() = action {

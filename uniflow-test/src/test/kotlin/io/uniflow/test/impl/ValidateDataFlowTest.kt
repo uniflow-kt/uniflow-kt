@@ -1,6 +1,5 @@
 package io.uniflow.test.impl
 
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.test.validate.validate
 import org.junit.Assert.fail
@@ -25,14 +24,14 @@ class ValidateDataFlowTest {
 
 }
 
-class GoodDF : AbstractSampleFlow<UIState, UIEvent>(UIState.Empty) {
+class GoodDF : AbstractSampleFlow(UIState.Empty) {
 
     fun goodAction() = action {
         setState { UIState.Success }
     }
 }
 
-class BadDF : AbstractSampleFlow<UIState, UIEvent>(UIState.Empty) {
+class BadDF : AbstractSampleFlow(UIState.Empty) {
 
     fun goodAction() = action {
         setState { UIState.Success }

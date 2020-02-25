@@ -6,7 +6,7 @@ import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.flow.FlowCollector
 
 
-typealias ActionFunction<S> = suspend ActionFlow.(S) -> (Unit)
+typealias ActionFunction<T> = suspend ActionFlow.(T) -> (Unit)
 typealias ActionErrorFunction = suspend ActionFlow.(Exception, UIState) -> (Unit)
 
 enum class UIDataUpdateType {

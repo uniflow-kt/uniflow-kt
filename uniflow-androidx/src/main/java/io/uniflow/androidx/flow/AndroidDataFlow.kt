@@ -27,6 +27,7 @@ import io.uniflow.core.flow.UIDataPublisher
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,11 +47,11 @@ import kotlinx.coroutines.channels.Channel
  * @param defaultDispatcher The default [CoroutineDispatcher] on which state actions are dispatched.
  * Defaults to [Dispatchers.IO].
  */
-abstract class AndroidDataFlow<S : UIState, E : UIEvent>(
+abstract class AndroidDataFlow(
         defaultState: UIState,
         defaultCapacity: Int = Channel.BUFFERED,
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-) : DataFlow<S, E>, UIDataPublisher, ViewModel() {
+) : DataFlow, UIDataPublisher, ViewModel() {
 
     private val coroutineScope: CoroutineScope = viewModelScope
     private val uiDataManager = UIDataManager(this, defaultState)
@@ -66,6 +67,20 @@ abstract class AndroidDataFlow<S : UIState, E : UIEvent>(
 
     init {
         action { setState { defaultState } }
+    }
+
+    override fun getCurrentState(): UIState = uiDataManager.currentState
+
+    override suspend fun publishState(state: UIState) {
+        onMain(immediate = true) {
+            _states.value = state
+        }
+    }
+
+    override suspend fun sendEvent(event: UIEvent) {
+        onMain(immediate = true) {
+            _events.value = Event(event)
+        }
     }
 
     override fun onCleared() {

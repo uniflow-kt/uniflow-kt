@@ -26,20 +26,20 @@ import io.uniflow.core.logger.UniFlowLogger
  *
  * @author Arnaud Giuliani
  */
-interface DataFlow<S : UIState, E : UIEvent> {
+interface DataFlow {
 
     val scheduler: ActionFlowScheduler
 
-    fun getCurrentState(): S
+    fun getCurrentState(): UIState
 
-    fun action(onAction: ActionFunction<S>): ActionFlow {
-        val action = ActionFlow(onAction as ActionFunction<UIState>) { error, state -> this@DataFlow.onError(error, state, this) }
+    fun action(onAction: ActionFunction<UIState>): ActionFlow {
+        val action = ActionFlow(onAction) { error, state -> this@DataFlow.onError(error, state, this) }
         scheduler.addAction(action)
         return action
     }
 
-    fun action(onAction: ActionFunction<S>, onError: ActionErrorFunction): ActionFlow {
-        val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
+    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow {
+        val action = ActionFlow(onAction, onError)
         scheduler.addAction(action)
         return action
     }
@@ -50,20 +50,18 @@ interface DataFlow<S : UIState, E : UIEvent> {
         UniFlowLogger.logError(errorMessage, error)
         throw error
     }
-
-    fun close()
 }
 
-inline fun <reified T : UIState> DataFlow<*, *>.getCurrentStateOrNull(): T? {
+inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
     val currentState = getCurrentState()
-    return if (currentState is T) currentState as T else null
+    return if (currentState is T) currentState else null
 }
 
-inline fun <reified T : UIState> DataFlow<*, *>.actionOn(noinline onAction: ActionFunction<T>): ActionFlow {
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow {
     return actionOn(onAction) { error, state -> onError(error, state) }
 }
 
-inline fun <reified T : UIState> DataFlow<*, *>.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow {
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow {
     val currentState = getCurrentState()
     return if (currentState is T) {
         val action = ActionFlow(onAction as ActionFunction<UIState>, onError)

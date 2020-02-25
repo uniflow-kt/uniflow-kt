@@ -10,7 +10,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.*
 
-abstract class AbstractSampleFlow<S : UIState, E : UIEvent>(defaultState: UIState) : DataFlow<S, E>, UIDataPublisher {
+abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPublisher {
 
     private val supervisorJob = SupervisorJob()
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
@@ -21,8 +21,8 @@ abstract class AbstractSampleFlow<S : UIState, E : UIEvent>(defaultState: UIStat
     val states = arrayListOf<UIState>()
     val events = arrayListOf<UIEvent>()
 
-    override fun getCurrentState(): S {
-        return uiDataManager.currentState as? S ?: error("can't get state - ${uiDataManager.currentState}")
+    override fun getCurrentState(): UIState {
+        return uiDataManager.currentState
     }
 
     init {
@@ -41,7 +41,7 @@ abstract class AbstractSampleFlow<S : UIState, E : UIEvent>(defaultState: UIStat
         }
     }
 
-    override fun close() {
+    fun close() {
         coroutineScope.cancel()
         scheduler.close()
     }

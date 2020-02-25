@@ -8,7 +8,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.functions
 
-fun <T : DataFlow<*, *>> KClass<T>.validate() {
+fun <T : DataFlow> KClass<T>.validate() {
     val publicFunctions = functions.filter { it.visibility == KVisibility.PUBLIC }
     val hasUnvalidActions = publicFunctions.map { function ->
         function.validate()
@@ -23,11 +23,11 @@ fun <T : DataFlow<*, *>> KClass<T>.validate() {
     }
 }
 
-inline fun <reified T : DataFlow<*, *>> validate() {
+inline fun <reified T : DataFlow> validate() {
     T::class.validate()
 }
 
-fun DataFlow<*, *>.validate() {
+fun DataFlow.validate() {
     this::class.validate()
 }
 
