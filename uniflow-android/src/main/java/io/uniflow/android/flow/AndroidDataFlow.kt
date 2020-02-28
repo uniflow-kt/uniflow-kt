@@ -54,7 +54,7 @@ abstract class AndroidDataFlow(
 ) : DataFlow, UIDataPublisher, ViewModel() {
 
     private val supervisorJob = SupervisorJob()
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
     private val uiDataManager = UIDataManager(this, defaultState)
     override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher,
         defaultCapacity)

@@ -53,7 +53,7 @@ abstract class AndroidDataFlow(
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : DataFlow, UIDataPublisher, ViewModel() {
 
-    private val coroutineScope: CoroutineScope = viewModelScope
+    override val coroutineScope: CoroutineScope = viewModelScope
     private val uiDataManager = UIDataManager(this, defaultState)
     override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 

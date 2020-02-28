@@ -3,16 +3,22 @@ package io.uniflow.core.flow
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 
 @UseExperimental(ObsoleteCoroutinesApi::class)
-class ActionFlowScheduler(private val uiDataManager: UIDataManager, private val coroutineScope: CoroutineScope, private val defaultDispatcher: CoroutineDispatcher, defaultCapacity: Int = Channel.BUFFERED) {
+class ActionFlowScheduler(private val uiDataManager: UIDataManager, private val coroutineScope: CoroutineScope,
+    private val defaultDispatcher: CoroutineDispatcher, defaultCapacity: Int = Channel.BUFFERED) {
 
-    private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
+    private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(),
+        capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 withContext(defaultDispatcher) {
@@ -24,10 +30,8 @@ class ActionFlowScheduler(private val uiDataManager: UIDataManager, private val 
         }
     }
 
-    fun addAction(action: ActionFlow): Boolean {
-        return if (coroutineScope.isActive) {
-            actor.offer(action)
-        } else false
+    suspend fun addAction(action: ActionFlow) {
+        actor.send(action)
     }
 
     private suspend fun runAction(action: ActionFlow) {

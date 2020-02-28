@@ -20,6 +20,8 @@ package io.uniflow.core.flow
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.threading.launchOnIO
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Unidirectional Data Flow
@@ -28,19 +30,24 @@ import io.uniflow.core.logger.UniFlowLogger
  */
 interface DataFlow {
 
+    val coroutineScope: CoroutineScope
     val scheduler: ActionFlowScheduler
 
     fun getCurrentState(): UIState
 
     fun action(onAction: ActionFunction<UIState>): ActionFlow {
         val action = ActionFlow(onAction) { error, state -> this@DataFlow.onError(error, state, this) }
-        scheduler.addAction(action)
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
+        }
         return action
     }
 
     fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow {
         val action = ActionFlow(onAction, onError)
-        scheduler.addAction(action)
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
+        }
         return action
     }
 
@@ -65,7 +72,9 @@ inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunc
     val currentState = getCurrentState()
     return if (currentState is T) {
         val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
-        scheduler.addAction(action)
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
+        }
         action
     } else {
         action { sendEvent { UIEvent.BadOrWrongState(currentState) } }

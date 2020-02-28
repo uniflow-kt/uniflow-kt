@@ -8,12 +8,16 @@ import io.uniflow.core.flow.UIDataPublisher
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
 abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPublisher {
 
     private val supervisorJob = SupervisorJob()
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
     private val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
     private val uiDataManager = UIDataManager(this, defaultState)
     override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher)
