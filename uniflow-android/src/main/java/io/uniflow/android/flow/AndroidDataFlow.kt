@@ -48,15 +48,16 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-        defaultState: UIState,
-        defaultCapacity: Int = Channel.BUFFERED,
-        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+    defaultState: UIState = UIState.Empty,
+    defaultCapacity: Int = Channel.BUFFERED,
+    defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : DataFlow, UIDataPublisher, ViewModel() {
 
     private val supervisorJob = SupervisorJob()
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
     private val uiDataManager = UIDataManager(this, defaultState)
-    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
+    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher,
+        defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>

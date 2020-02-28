@@ -48,7 +48,7 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-        defaultState: UIState,
+        defaultState: UIState = UIState.Empty,
         defaultCapacity: Int = Channel.BUFFERED,
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : DataFlow, UIDataPublisher, ViewModel() {

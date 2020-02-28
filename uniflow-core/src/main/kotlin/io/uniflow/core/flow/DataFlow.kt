@@ -46,7 +46,6 @@ interface DataFlow {
 
     suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
         val errorMessage = "Uncaught error: $error"
-        flow.setState { UIState.Failed(errorMessage, error) }
         UniFlowLogger.logError(errorMessage, error)
         throw error
     }
@@ -61,7 +60,8 @@ inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunc
     return actionOn(onAction) { error, state -> onError(error, state) }
 }
 
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow {
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>,
+    noinline onError: ActionErrorFunction): ActionFlow {
     val currentState = getCurrentState()
     return if (currentState is T) {
         val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
