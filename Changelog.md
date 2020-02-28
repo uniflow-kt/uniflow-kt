@@ -3,6 +3,9 @@
 
 ## Changelog
 
+### 0.10.2
+
+- `fixed` DataFlow is now adding new action with `send` on Actor, anwith a coroutine call on IO
 
 ### 0.10.1
 
