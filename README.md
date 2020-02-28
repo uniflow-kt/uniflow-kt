@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.9.5`
+#### Current version is `0.10.1`
 
 Choose one of the following dependency:
 
@@ -88,11 +88,11 @@ Publish state updates from your ViewModel:
 ```kotlin
 class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow() {
 
-    fun getWeather() = setState {
+    fun getWeather() = action {
         // call to get data
         val weather = repo.getWeatherForToday().await()
         // return a new state
-        WeatherState(weather.day, weather.temperature)
+        setState { WeatherState(weather.day, weather.temperature) }
     }
 }
 ```
