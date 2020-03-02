@@ -23,31 +23,35 @@ package io.uniflow.core.flow.data
  */
 data class Event<out T>(private val content: T) {
 
-    var hasBeenHandled = false
-        private set // Allow external read but not write
+    private val classHashCode = arrayListOf<Int>()
 
     /**
      * Returns the content and put the event has handled
      */
-    fun take(): T? {
-        return if (hasBeenHandled) {
+    fun take(clazz: Class<Any>): T? {
+        return if (classHashCode.contains(clazz.hashCode())) {
             null
         } else {
-            hasBeenHandled = true
+            classHashCode.add(clazz.hashCode())
             content
         }
     }
 
     /**
-     * Return and execute code on given value
-     * put the event has handled
+     * Returns the content, even if it's already been handled.
      */
-    fun take(code: (T) -> Unit) {
-        take()?.let { code(it) }
+    fun peek(clazz: Class<Any>): T {
+        if (!classHashCode.contains(clazz.hashCode())) {
+            classHashCode.add(clazz.hashCode())
+        }
+
+        return content
     }
 
     /**
-     * Returns the content, even if it's already been handled.
+     * Check if event was already consumed
      */
-    fun peek(): T = content
+    fun isConsumed(clazz: Class<Any>): Boolean {
+        return classHashCode.contains(clazz.hashCode())
+    }
 }
