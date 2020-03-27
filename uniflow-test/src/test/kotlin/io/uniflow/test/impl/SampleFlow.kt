@@ -72,12 +72,6 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
             },
             { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
 
-    fun makeOnStateError() = action(
-            {
-                error("boom")
-            },
-            { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
-
 
     fun makeGlobalError() = action {
         error("global boom")
