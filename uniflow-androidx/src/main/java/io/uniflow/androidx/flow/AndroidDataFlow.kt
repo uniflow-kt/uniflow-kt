@@ -51,7 +51,9 @@ abstract class AndroidDataFlow(
         defaultState: UIState = UIState.Empty,
         defaultCapacity: Int = Channel.BUFFERED,
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-) : DataFlow, UIDataPublisher, ViewModel() {
+) : ViewModel(),
+    DataFlow,
+    UIDataPublisher {
 
     override val coroutineScope: CoroutineScope = viewModelScope
     private val uiDataManager = UIDataManager(this, defaultState)
