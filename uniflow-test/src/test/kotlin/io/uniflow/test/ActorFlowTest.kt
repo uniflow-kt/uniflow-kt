@@ -148,21 +148,6 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `action state error`() {
-        dataFlow.getAll()
-        dataFlow.add("first")
-        dataFlow.makeOnStateError()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
-        assertTrue(dataFlow.events.size == 1)
-    }
-
-    @Test
     fun `global action error`() = runBlocking {
         dataFlow.makeGlobalError()
         delay(100)
