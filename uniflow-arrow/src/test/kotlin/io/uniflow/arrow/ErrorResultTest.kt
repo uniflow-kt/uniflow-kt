@@ -1,7 +1,7 @@
 package io.uniflow.arrow
 
 import arrow.core.*
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue

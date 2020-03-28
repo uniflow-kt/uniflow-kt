@@ -1,13 +1,13 @@
 package io.uniflow.test
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.data.TodoStackActorFlow
+import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -27,11 +27,11 @@ class StackFlowTest {
     var rule = TestDispatchersRule()
 
     val repository = TodoRepository()
-    lateinit var dataFlow: TodoStackActorFlow
+    lateinit var dataFlow: SampleFlow
 
     @Before
     fun before() {
-        dataFlow = TodoStackActorFlow(repository)
+        dataFlow = SampleFlow(repository)
     }
 
     @Test
@@ -195,7 +195,7 @@ class StackFlowTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
-        dataFlow.cancel()
+        dataFlow.close()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
@@ -207,7 +207,7 @@ class StackFlowTest {
     @Test
     fun `cancel before test`() = runBlocking {
         dataFlow.getAll()
-        dataFlow.cancel()
+        dataFlow.close()
         dataFlow.longWait()
 
         assertEquals(UIState.Empty, dataFlow.states[0])

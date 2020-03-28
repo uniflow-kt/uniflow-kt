@@ -1,7 +1,7 @@
 package io.uniflow.arrow
 
 import arrow.core.Try
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.onFailure
 import io.uniflow.result.toState
 import kotlinx.coroutines.runBlocking

@@ -1,7 +1,7 @@
 package io.uniflow.test.data
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 
 data class TodoListState(val todos: List<Todo>) : UIState()

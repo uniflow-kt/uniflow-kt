@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UNCHECKED_CAST")
+
 package io.uniflow.core.flow
 
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import kotlinx.coroutines.CoroutineDispatcher
+import io.uniflow.core.threading.launchOnIO
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 /**
  * Unidirectional Data Flow
@@ -31,149 +30,53 @@ import kotlinx.coroutines.launch
  */
 interface DataFlow {
 
-    /**
-     * Current used coroutine scope
-     */
     val coroutineScope: CoroutineScope
+    val scheduler: ActionFlowScheduler
 
-    /**
-     * Default Coroutine dispatcher
-     */
-    val defaultDispatcher: CoroutineDispatcher
+    fun getCurrentState(): UIState
 
-    /**
-     * Actor to buffer incoming actions
-     */
-    val actorFlow: SendChannel<StateAction>
+    fun action(onAction: ActionFunction<UIState>): ActionFlow {
+        val action = ActionFlow(onAction) { error, state -> this@DataFlow.onError(error, state, this) }
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
+        }
+        return action
+    }
 
-    /**
-     * Return current State if any
-     * @return state
-     */
-    val currentState: UIState?
+    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow {
+        val action = ActionFlow(onAction, onError)
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
+        }
+        return action
+    }
 
-    /**
-     * Send an event
-     * @param event
-     * @param nothing
-     */
-    suspend fun sendEvent(event: UIEvent): UIState?
-
-    /**
-     *
-     */
-    suspend fun notifyUpdate(newState: UIState, notificationEvent: UIEvent): UIState?
-
-    /**
-     * Apply new state to current state
-     * @param state
-     */
-    suspend fun applyState(state: UIState)
-
-    /**
-     * If any flowError occurs and is not caught, this function catch it
-     * @param error
-     */
-    suspend fun onError(error: Exception) {
-        UniFlowLogger.logError("Uncaught error - '${error.message}' on state '$currentState'", error)
+    suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
+        val errorMessage = "Uncaught error: $error"
+        UniFlowLogger.logError(errorMessage, error)
         throw error
     }
+}
 
-    /**
-     * Make an StateAction to update the current state
-     *
-     * @param onStateUpdate - function to produce a new state, from the current state
-     */
-    fun setState(onStateUpdate: StateFunction, onActionError: ErrorFunction): StateAction {
-        val action = StateAction(onStateUpdate, onActionError)
-        onAction(action)
-        return action
-    }
+inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
+    val currentState = getCurrentState()
+    return if (currentState is T) currentState else null
+}
 
-    fun setState(onStateUpdate: StateFunction): StateAction {
-        val action = StateAction(onStateUpdate)
-        onAction(action)
-        return action
-    }
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow {
+    return actionOn(onAction) { error, state -> onError(error, state) }
+}
 
-    /**
-     * Create a state action that is listening for ActionFlow to emit/complete
-     */
-    fun stateFlow(stateFlowAction: StateFunctionFlow, onActionError: ErrorFunction): StateAction {
-        return runActionFlow(stateFlowAction, onActionError)
-    }
-
-    fun stateFlow(stateFlowAction: StateFunctionFlow): StateAction {
-        return runActionFlow(stateFlowAction)
-    }
-
-    fun runActionFlow(stateFlowAction: StateFunctionFlow, onActionError: ErrorFunction? = null): StateAction {
-        return onActionError?.let {
-            setState({ runFlow(stateFlowAction) }, onActionError)
-        } ?: setState { runFlow(stateFlowAction) }
-    }
-
-    suspend fun runFlow(stateFlowAction: StateFunctionFlow): UIState? {
-        flow(stateFlowAction).collect { newState ->
-            applyState(newState)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>,
+    noinline onError: ActionErrorFunction): ActionFlow {
+    val currentState = getCurrentState()
+    return if (currentState is T) {
+        val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
+        coroutineScope.launchOnIO {
+            scheduler.addAction(action)
         }
-        return null
-    }
-
-    /**
-     * Execute the action & catch any flowError
-     * @param action
-     */
-    fun onAction(action: StateAction) {
-        coroutineScope.apply {
-            if (isActive) {
-                val offered = actorFlow.offer(action)
-                if (!offered) {
-                    UniFlowLogger.logError("couldn't offer action: $action")
-                }
-            } else {
-                UniFlowLogger.log("action $action cancelled")
-            }
-        }
-    }
-
-    /**
-     * Execute action on coroutine
-     */
-    suspend fun proceedAction(action: StateAction) {
-        try {
-            val result = action.stateFunction?.invoke(action, currentState)
-            if (result is UIState) {
-                applyState(result)
-            }
-        } catch (e: Exception) {
-            onActionError(action, e)
-        }
-    }
-
-    /**
-     * Handle flowError catch
-     * @param action
-     * @param error
-     */
-    fun onActionError(action: StateAction, error: Exception) {
-        coroutineScope.apply {
-            if (isActive) {
-                UniFlowLogger.log("action error - '${error.message}'")
-                launch(defaultDispatcher) {
-                    if (action.errorFunction != null) {
-                        val failState = action.errorFunction.let {
-                            it.invoke(action, error)
-                        }
-                        failState?.let { setState { failState } }
-                    } else setState {
-                        onError(error)
-                        null
-                    }
-                }
-            } else {
-                UniFlowLogger.log("error action cancelled - $action")
-            }
-        }
+        action
+    } else {
+        action { sendEvent { UIEvent.BadOrWrongState(currentState) } }
     }
 }

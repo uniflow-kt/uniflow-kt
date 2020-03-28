@@ -1,13 +1,14 @@
 package io.uniflow.result
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 sealed class SafeResult<out T> {
 
-    abstract suspend fun <R> map(result: suspend (T) -> R): SafeResult<R>
+    abstract suspend fun <R> map(result: (T) -> R): SafeResult<R>
     abstract suspend fun <R> flatMap(result: suspend (T) -> SafeResult<R>): SafeResult<R>
     abstract fun get(): T
+    abstract fun <R> get(result: (T) -> R): R
     abstract fun getOrNull(): T?
 
     abstract suspend fun onFailure(block: suspend (Exception) -> Unit): SafeResult<T>
@@ -65,26 +66,26 @@ sealed class SafeResult<out T> {
             }
 
     suspend fun <R : UIEvent> toEvent(onSuccess: suspend (T) -> R): R =
-        when (this) {
-            is Success -> onSuccess(value)
-            is Failure -> throw exception
-        }
+            when (this) {
+                is Success -> onSuccess(value)
+                is Failure -> throw exception
+            }
 
     suspend fun <R : UIEvent> toEvent(onSuccess: suspend (T) -> R, onError: suspend (Exception) -> R): R =
-        when (this) {
-            is Success -> onSuccess(value)
-            is Failure -> onError(exception)
-        }
+            when (this) {
+                is Success -> onSuccess(value)
+                is Failure -> onError(exception)
+            }
 
     suspend fun <R : UIEvent> toEventOrNull(onSuccess: suspend (T) -> R): R? =
-        when (this) {
-            is Success -> onSuccess(value)
-            is Failure -> null
-        }
+            when (this) {
+                is Success -> onSuccess(value)
+                is Failure -> null
+            }
 
     data class Success<out T>(internal val value: T) : SafeResult<T>() {
 
-        override suspend fun <R> map(result: suspend (T) -> R): SafeResult<R> =
+        override suspend fun <R> map(result: (T) -> R): SafeResult<R> =
                 try {
                     success(result(value))
                 } catch (e: Exception) {
@@ -101,6 +102,8 @@ sealed class SafeResult<out T> {
 
 
         override fun get(): T = value
+
+        override fun <R> get(result: (T) -> R): R = result(value)
 
         override fun getOrNull(): T? = value
 
@@ -122,11 +125,13 @@ sealed class SafeResult<out T> {
 
     open class Failure(val exception: Exception) : SafeResult<Nothing>() {
 
-        override suspend fun <R> map(result: suspend (Nothing) -> R): SafeResult<R> = this
+        override suspend fun <R> map(result: (Nothing) -> R): SafeResult<R> = this
 
         override suspend fun <R> flatMap(result: suspend (Nothing) -> SafeResult<R>): SafeResult<R> = this
 
         override fun get(): Nothing = throw exception
+
+        override fun <R> get(result: (Nothing) -> R): R = throw exception
 
         override fun getOrNull(): Nothing? = null
 

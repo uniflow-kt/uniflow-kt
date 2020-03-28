@@ -17,9 +17,8 @@ package io.uniflow.androidx.flow
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIState
 
 /**
  * DataFlow Observers for states & events

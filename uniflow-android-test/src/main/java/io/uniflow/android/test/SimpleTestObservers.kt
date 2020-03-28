@@ -2,9 +2,9 @@ package io.uniflow.android.test
 
 import android.arch.lifecycle.Observer
 import io.uniflow.android.flow.AndroidDataFlow
-import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 class TestObserver<T> : Observer<T> {
     val elements = arrayListOf<T>()
