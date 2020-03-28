@@ -27,6 +27,7 @@ this version is based on Kotlin `1.3.71` & Coroutines `1.3.2`
 
 ## Web Article 🎉
 
+- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
 
 ## Full documentation 📖
