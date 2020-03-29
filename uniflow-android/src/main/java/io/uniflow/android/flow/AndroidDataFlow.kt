@@ -64,12 +64,10 @@ abstract class AndroidDataFlow(
         ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()
-    val states: LiveData<UIState>
-        get() = _states
+    val states: LiveData<UIState> = _states
 
     private val _events = MutableLiveData<Event<UIEvent>>()
-    val events: LiveData<Event<UIEvent>>
-        get() = _events
+    val events: LiveData<Event<UIEvent>> = _events
 
     init {
         action { setState { defaultState } }
