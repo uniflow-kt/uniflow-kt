@@ -1,6 +1,7 @@
 package io.uniflow.test.impl
 
 import io.uniflow.core.flow.ActionFlow
+import io.uniflow.core.flow.action
 import io.uniflow.core.flow.actionOn
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState

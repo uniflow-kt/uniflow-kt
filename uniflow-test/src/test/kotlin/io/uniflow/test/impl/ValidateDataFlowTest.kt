@@ -1,5 +1,6 @@
 package io.uniflow.test.impl
 
+import io.uniflow.core.flow.action
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.test.validate.validate
 import org.junit.Assert.fail
