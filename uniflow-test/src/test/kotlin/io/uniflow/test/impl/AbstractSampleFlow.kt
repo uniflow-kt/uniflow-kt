@@ -1,18 +1,11 @@
 package io.uniflow.test.impl
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.ActionFlowScheduler
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.UIDataManager
-import io.uniflow.core.flow.UIDataPublisher
+import io.uniflow.core.flow.*
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 
 abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPublisher {
 
@@ -48,5 +41,9 @@ abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPubli
     fun close() {
         coroutineScope.cancel()
         scheduler.close()
+    }
+
+    final override suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
+        flow.setState { UIState.Failed("Got error $error", error) }
     }
 }

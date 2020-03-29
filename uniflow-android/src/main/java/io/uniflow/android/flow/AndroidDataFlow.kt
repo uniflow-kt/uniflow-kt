@@ -18,6 +18,7 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.support.annotation.CallSuper
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.ActionFlowScheduler
 import io.uniflow.core.flow.DataFlow
@@ -56,11 +57,11 @@ abstract class AndroidDataFlow(
     UIDataPublisher {
 
     private val supervisorJob = SupervisorJob()
-    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    final override val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
     private val uiDataManager by lazy { UIDataManager(this, defaultState) }
-    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher,
-        defaultCapacity)
+    final override val scheduler =
+        ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState>
@@ -74,23 +75,24 @@ abstract class AndroidDataFlow(
         action { setState { defaultState } }
     }
 
-    override fun getCurrentState(): UIState = uiDataManager.currentState
+    final override fun getCurrentState() = uiDataManager.currentState
 
-    override suspend fun publishState(state: UIState) {
+    final override suspend fun publishState(state: UIState) {
         onMain(immediate = true) {
             _states.value = state
         }
     }
 
-    override suspend fun sendEvent(event: UIEvent) {
+    final override suspend fun sendEvent(event: UIEvent) {
         onMain(immediate = true) {
             _events.value = Event(event)
         }
     }
 
+    @CallSuper
     override fun onCleared() {
-        super.onCleared()
-        supervisorJob.cancel()
+        coroutineScope.cancel()
         scheduler.close()
+        super.onCleared()
     }
 }
