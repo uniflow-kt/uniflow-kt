@@ -19,6 +19,7 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.launchOnIO
 import kotlinx.coroutines.CoroutineScope
 
@@ -31,7 +32,10 @@ interface DataFlow {
     val coroutineScope: CoroutineScope
     val scheduler: ActionFlowScheduler
     fun getCurrentState(): UIState
-    suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow)
+    suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
+        UniFlowLogger.logError("Uncaught error: $error", error)
+        throw error
+    }
 }
 
 fun DataFlow.action(onAction: ActionFunction<UIState>) =
