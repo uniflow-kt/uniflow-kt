@@ -56,7 +56,8 @@ abstract class AndroidDataFlow(
     UIDataPublisher {
 
     override val coroutineScope: CoroutineScope = viewModelScope
-    private val uiDataManager = UIDataManager(this, defaultState)
+
+    private val uiDataManager by lazy { UIDataManager(this, defaultState) }
     override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()

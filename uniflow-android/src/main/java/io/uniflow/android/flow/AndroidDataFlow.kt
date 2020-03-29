@@ -57,7 +57,8 @@ abstract class AndroidDataFlow(
 
     private val supervisorJob = SupervisorJob()
     override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
-    private val uiDataManager = UIDataManager(this, defaultState)
+
+    private val uiDataManager by lazy { UIDataManager(this, defaultState) }
     override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher,
         defaultCapacity)
 
