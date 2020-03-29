@@ -21,10 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.ActionFlowScheduler
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.UIDataManager
-import io.uniflow.core.flow.UIDataPublisher
+import io.uniflow.core.flow.*
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -47,9 +44,9 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-        defaultState: UIState = UIState.Empty,
-        defaultCapacity: Int = Channel.BUFFERED,
-        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+    defaultState: UIState = UIState.Empty,
+    defaultCapacity: Int = Channel.BUFFERED,
+    defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(),
     DataFlow,
     UIDataPublisher {
