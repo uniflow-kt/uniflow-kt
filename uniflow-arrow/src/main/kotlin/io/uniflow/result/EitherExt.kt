@@ -36,6 +36,15 @@ suspend fun <A> Either<Throwable, A>.onFailure(f: suspend (Throwable) -> Unit): 
         else -> this
     }
 
+fun <A> Either<Throwable, A>.onValue(f: (A) -> Unit): Either<Throwable, A> =
+    when (this) {
+        is Either.Right -> {
+            f(b)
+            this
+        }
+        else -> this
+    }
+
 suspend fun <T, R : UIState> Either<Throwable, T>.toState(onSuccess: suspend (T) -> R): R = onSuccess(get())
 
 suspend fun <T, R : UIState> Either<Throwable, T>.toStateOrNull(onSuccess: suspend (T) -> R?): R? =

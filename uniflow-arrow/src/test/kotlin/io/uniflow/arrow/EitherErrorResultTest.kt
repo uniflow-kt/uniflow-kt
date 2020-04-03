@@ -9,6 +9,7 @@ import io.uniflow.result.get
 import io.uniflow.result.getOrNull
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
+import io.uniflow.result.onValue
 import io.uniflow.result.toState
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
@@ -60,7 +61,7 @@ class EitherErrorResultTest {
     }
 
     @Test
-    fun `onValue`() = runBlocking {
+    fun `onSuccess`() = runBlocking {
         var writtenValue = ""
         error.left()
             .onSuccess { writtenValue = "$it" }
@@ -75,6 +76,15 @@ class EitherErrorResultTest {
             .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "$error")
+    }
+
+    @Test
+    fun `onValue`() {
+        var writtenValue = ""
+        error.left()
+            .onValue { writtenValue = "$it" }
+
+        assertTrue(writtenValue == "")
     }
 
     @Test

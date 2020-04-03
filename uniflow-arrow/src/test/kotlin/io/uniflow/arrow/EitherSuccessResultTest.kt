@@ -7,6 +7,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
+import io.uniflow.result.onValue
 import io.uniflow.result.toState
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
@@ -52,7 +53,7 @@ class EitherSuccessResultTest {
     }
 
     @Test
-    fun `onValue`() = runBlocking {
+    fun `onSuccess`() = runBlocking {
         var writtenValue = ""
         value.right()
                 .onSuccess { writtenValue = it }
@@ -67,6 +68,15 @@ class EitherSuccessResultTest {
                 .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
+    }
+
+    @Test
+    fun `onValue`() {
+        var writtenValue = ""
+        value.right()
+            .onValue { writtenValue = it }
+
+        assertTrue(writtenValue == value)
     }
 
     @Test

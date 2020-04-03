@@ -5,6 +5,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
+import io.uniflow.result.onValue
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
@@ -49,7 +50,7 @@ class SuccessResultTest {
     }
 
     @Test
-    fun `onValue`() = runBlocking {
+    fun `onSuccess`() = runBlocking {
         var writtenValue = ""
         value.success()
                 .onSuccess { writtenValue = "$it" }
@@ -64,6 +65,15 @@ class SuccessResultTest {
                 .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
+    }
+
+    @Test
+    fun `onValue`() {
+        var writtenValue = ""
+        value.success()
+            .onValue { writtenValue = "$it" }
+
+        assertTrue(writtenValue == value)
     }
 
     @Test

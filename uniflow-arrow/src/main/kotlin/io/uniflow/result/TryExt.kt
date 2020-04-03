@@ -40,6 +40,15 @@ suspend fun <A> Try<A>.onFailure(f: suspend (Throwable) -> Unit): Try<A> =
             else -> this
         }
 
+fun <A> Try<A>.onValue(f: (A) -> Unit): Try<A> =
+        when (this) {
+            is Try.Success -> {
+                f(value)
+                this
+            }
+            else -> this
+        }
+
 suspend fun <T, R : UIState> Try<T>.toState(onSuccess: suspend (T) -> R): R = onSuccess(get())
 suspend fun <T, R : UIState> Try<T>.toStateOrNull(onSuccess: suspend (T) -> R?): R? = getOrNull()?.let { onSuccess(it) }
 suspend fun <T, R : UIState> Try<T>.toState(onSuccess: suspend (T) -> R, onError: suspend (Throwable) -> R): R =
