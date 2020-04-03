@@ -4,12 +4,15 @@ import arrow.core.flatMap
 import arrow.core.getOrHandle
 import arrow.core.left
 import arrow.core.right
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.getOrNull
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
 import io.uniflow.result.onValue
+import io.uniflow.result.toEvent
+import io.uniflow.result.toEventOrNull
 import io.uniflow.result.toState
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
@@ -99,5 +102,19 @@ class EitherErrorResultTest {
     fun `to State`() = runBlocking {
         val result = error.left()
             .toState { UIState.Failed() }
+    }
+
+    @Test
+    fun `to Event null`() = runBlocking {
+        val result = error.left()
+            .toEventOrNull { UIEvent.Fail() }
+
+        assertTrue(result == null)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `to Event`() = runBlocking {
+        val result = error.left()
+            .toEvent { UIEvent.Fail() }
     }
 }

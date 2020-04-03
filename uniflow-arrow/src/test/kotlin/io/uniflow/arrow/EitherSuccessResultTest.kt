@@ -3,11 +3,14 @@ package io.uniflow.arrow
 
 import arrow.core.flatMap
 import arrow.core.right
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
 import io.uniflow.result.onValue
+import io.uniflow.result.toEvent
+import io.uniflow.result.toEventOrNull
 import io.uniflow.result.toState
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
@@ -101,5 +104,21 @@ class EitherSuccessResultTest {
             .toState { UIState.Success }
 
         assertTrue(result == UIState.Success)
+    }
+
+    @Test
+    fun `to Event or null`() = runBlocking {
+        val result = value.right()
+            .toEventOrNull { UIEvent.Success }
+
+        assertTrue(result == UIEvent.Success)
+    }
+
+    @Test
+    fun `to Event`() = runBlocking {
+        val result = value.right()
+            .toEvent { UIEvent.Success }
+
+        assertTrue(result == UIEvent.Success)
     }
 }

@@ -2,6 +2,7 @@ package io.uniflow.result
 
 import arrow.core.Either
 import arrow.core.orNull
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 
 fun <A> Either<Throwable, A>.getOrNull(): A? = orNull()
@@ -56,6 +57,20 @@ suspend fun <T, R : UIState> Either<Throwable, T>.toStateOrNull(onSuccess: suspe
 suspend fun <T, R : UIState> Either<Throwable, T>.toState(onSuccess: suspend (T) -> R, onError: suspend (Throwable) -> R): R =
     fold(
         ifLeft = { onError(it) },
+        ifRight = { onSuccess(it) }
+    )
+
+suspend fun <T, R : UIEvent> Either<Throwable, T>.toEvent(onSuccess: suspend (T) -> R): R = onSuccess(get())
+
+suspend fun <T, R : UIEvent> Either<Throwable, T>.toEvent(onSuccess: suspend (T) -> R, onError: suspend (Throwable) -> R): R =
+    fold(
+        ifLeft = { onError(it) },
+        ifRight = { onSuccess(it) }
+    )
+
+suspend fun <T, R : UIEvent> Either<Throwable, T>.toEventOrNull(onSuccess: suspend (T) -> R): R? =
+    fold(
+        ifLeft = { null },
         ifRight = { onSuccess(it) }
     )
 

@@ -1,7 +1,9 @@
 package io.uniflow.result
 
+import arrow.core.Failure
 import arrow.core.Success
 import arrow.core.Try
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 
 fun <A> Try<A>.getOrNull(): A? =
@@ -57,3 +59,20 @@ suspend fun <T, R : UIState> Try<T>.toState(onSuccess: suspend (T) -> R, onError
             is Try.Failure -> onError(exception)
         }
 
+suspend fun <T, R : UIEvent> Try<T>.toEvent(onSuccess: suspend (T) -> R): R =
+        when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> throw exception
+        }
+
+suspend fun <T, R : UIEvent> Try<T>.toEvent(onSuccess: suspend (T) -> R, onError: suspend (Throwable) -> R): R =
+        when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> onError(exception)
+        }
+
+suspend fun <T, R : UIEvent> Try<T>.toEventOrNull(onSuccess: suspend (T) -> R): R? =
+        when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> null
+        }
