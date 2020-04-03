@@ -24,6 +24,15 @@ class SuccessResultTest {
     }
 
     @Test
+    fun `create mapped result`() {
+        val result = value.success()
+        assertTrue(result.get { "" } == "")
+
+        assertTrue(result.isSuccess())
+        assertTrue(!result.isFailure())
+    }
+
+    @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
         val result = value.success()

@@ -1,8 +1,16 @@
 package io.uniflow.arrow
 
-import arrow.core.*
+import arrow.core.Failure
+import arrow.core.Try
+import arrow.core.failure
+import arrow.core.orElse
+import arrow.core.success
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.result.*
+import io.uniflow.result.get
+import io.uniflow.result.getOrNull
+import io.uniflow.result.onFailure
+import io.uniflow.result.onSuccess
+import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,6 +26,12 @@ class ErrorResultTest {
 
         assertTrue(!result.isSuccess())
         assertTrue(result.isFailure())
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `create mapped result`() {
+        val result = error.failure()
+        result.get { "" }
     }
 
     @Test

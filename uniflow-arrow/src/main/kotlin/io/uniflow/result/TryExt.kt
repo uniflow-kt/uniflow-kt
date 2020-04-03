@@ -16,6 +16,12 @@ fun <A> Try<A>.get(): A =
             is Try.Success -> value
         }
 
+fun <A, R> Try<A>.get(result: (A) -> R): R =
+        when (this) {
+            is Try.Failure -> throw exception
+            is Try.Success -> result(value)
+        }
+
 suspend fun <A> Try<A>.onSuccess(f: suspend (A) -> Unit): Try<A> =
         when (this) {
             is Try.Success -> {

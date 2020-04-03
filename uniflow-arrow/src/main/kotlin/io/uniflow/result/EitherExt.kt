@@ -12,6 +12,12 @@ fun <A> Either<Throwable, A>.get(): A =
         ifRight = { it }
     )
 
+fun <A, R> Either<Throwable, A>.get(result: (A) -> R): R =
+    fold(
+        ifLeft = { throw it },
+        ifRight = { result(it) }
+    )
+
 suspend fun <A> Either<Throwable, A>.onSuccess(f: suspend (A) -> Unit): Either<Throwable, A> =
     when (this) {
         is Either.Right -> {

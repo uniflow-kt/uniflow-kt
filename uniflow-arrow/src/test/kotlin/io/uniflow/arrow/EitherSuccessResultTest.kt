@@ -27,6 +27,15 @@ class EitherSuccessResultTest {
     }
 
     @Test
+    fun `create mapped result`() {
+        val result = value.right()
+        assertTrue(result.get { "" } == "")
+
+        assertTrue(result.isRight())
+        assertTrue(!result.isLeft())
+    }
+
+    @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
         val result = value.right()

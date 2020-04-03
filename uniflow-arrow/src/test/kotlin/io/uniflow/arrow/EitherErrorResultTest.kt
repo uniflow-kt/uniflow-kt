@@ -28,6 +28,12 @@ class EitherErrorResultTest {
         assertTrue(result.isLeft())
     }
 
+    @Test(expected = IllegalStateException::class)
+    fun `create mapped result`() {
+        val result = error.left()
+        result.get { "" }
+    }
+
     @Test
     fun `map result`() = runBlocking {
         val sndValue = " #2"
