@@ -8,11 +8,7 @@ import io.uniflow.core.flow.UIDataPublisher
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 
 abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPublisher {
 
@@ -24,6 +20,28 @@ abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPubli
 
     val states = arrayListOf<UIState>()
     val events = arrayListOf<UIEvent>()
+
+    fun hasStates(vararg states: UIState) {
+        assert(this.states == states.toList()) { "should have states ${states.toList()} but was ${this.states}" }
+    }
+
+    fun hasState(index: Int, state: UIState) {
+        assert(this.states[index] == state) { "should have state $state but was ${this.states[index]}" }
+    }
+
+    fun hasNoState() = hasStates()
+    val lastState: UIState?
+        get() = states.lastOrNull()
+
+    fun hasEvents(vararg events: UIEvent) {
+        assert(this.events == events.toList()) { "should have events ${events.toList()} but was ${this.events}" }
+    }
+
+    val lastEvent: UIEvent?
+        get() = events.lastOrNull()
+
+    fun hasNoEvent() = hasEvents()
+
 
     override fun getCurrentState(): UIState {
         return uiDataManager.currentState

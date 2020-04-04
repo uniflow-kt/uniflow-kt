@@ -36,33 +36,34 @@ class StackFlowTest {
 
     @Test
     fun `empty state`() {
-        assertEquals(UIState.Empty, dataFlow.states.first())
+        dataFlow.hasStates(UIState.Empty)
+        dataFlow.hasNoEvent()
     }
 
     @Test
     fun `get all`() {
         dataFlow.getAll()
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        dataFlow.hasStates(UIState.Empty, TodoListState(emptyList()))
+        dataFlow.hasNoEvent()
     }
 
     @Test
     fun `add one`() {
         dataFlow.getAll()
         dataFlow.add("first")
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))))
+        dataFlow.hasNoEvent()
     }
 
     @Test
     fun `add one - fail`() {
         dataFlow.add("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-
-        assertTrue(dataFlow.events[0] is UIEvent.BadOrWrongState)
+        dataFlow.hasStates(UIState.Empty)
+        dataFlow.hasEvents(UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test
@@ -71,10 +72,12 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.done("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first", true))), dataFlow.states[3])
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first", true))))
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -85,12 +88,14 @@ class StackFlowTest {
         dataFlow.done("first")
         dataFlow.filterDones()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first"), Todo("second"))), dataFlow.states[3])
-        assertEquals(TodoListState(listOf(Todo("second"), Todo("first", true))), dataFlow.states[4])
-        assertEquals(TodoListState(listOf(Todo("first", true))), dataFlow.states[5])
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first"), Todo("second"))),
+                TodoListState(listOf(Todo("second"), Todo("first", true))),
+                TodoListState(listOf(Todo("first", true))))
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -98,10 +103,10 @@ class StackFlowTest {
         dataFlow.getAll()
         dataFlow.done("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()))
+        dataFlow.hasEvents(UIEvent.Fail(message = "Can't make done 'first'"))
     }
 
     @Test
@@ -110,38 +115,21 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.makeOnError()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.last() is UIEvent.Fail)
-        assertTrue(dataFlow.events.size == 1)
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))))
+        assert(dataFlow.lastEvent is UIEvent.Fail)
     }
-
-//    @Test
-//    fun `action failed error`() {
-//        dataFlow.getAll()
-//        dataFlow.add("first")
-//        dataFlow.makeOnFailed()
-//
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-//
-//        assertTrue(dataFlow.states.size == 4)
-//        assertTrue(dataFlow.states.last() is UIState.Failed)
-//        assertTrue(dataFlow.events.size == 0)
-//    }
 
     @Test
     fun `global action error`() = runBlocking {
         dataFlow.makeGlobalError()
         delay(100)
 
-        assertTrue(dataFlow.states[1] is UIState.Failed)
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.hasState(0,UIState.Empty)
+        assert(dataFlow.lastState is UIState.Failed)
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -150,13 +138,11 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.childIOError()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.last() is UIState.Failed)
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.hasState(0,UIState.Empty)
+        dataFlow.hasState(1,TodoListState(emptyList()))
+        dataFlow.hasState(2,TodoListState(listOf(Todo("first"))))
+        assert(dataFlow.lastState is UIState.Failed)
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -166,13 +152,13 @@ class StackFlowTest {
         dataFlow.childIO()
         delay(200)
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first"), Todo("LongTodo"))), dataFlow.states[3])
-
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first"), Todo("LongTodo")))
+        )
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -182,11 +168,11 @@ class StackFlowTest {
         delay(300)
         dataFlow.close()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList())
+        )
+        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -195,11 +181,11 @@ class StackFlowTest {
         dataFlow.close()
         dataFlow.longWait()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.hasStates(
+                UIState.Empty,
+                TodoListState(emptyList())
+        )
+        dataFlow.hasNoEvent()
     }
 
 }
