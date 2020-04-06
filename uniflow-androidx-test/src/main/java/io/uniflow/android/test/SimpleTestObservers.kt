@@ -2,9 +2,9 @@ package io.uniflow.android.test
 
 import androidx.lifecycle.Observer
 import io.uniflow.androidx.flow.AndroidDataFlow
-import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 class TestObserver<T> : Observer<T> {
     val elements = arrayListOf<T>()
@@ -13,7 +13,6 @@ class TestObserver<T> : Observer<T> {
         elements.add(t)
     }
 }
-
 
 data class TestViewObserver(private val states: TestObserver<UIState>, private val events: TestObserver<Event<UIEvent>>) {
     fun hasState(state: UIState): Boolean = states.elements.lastOrNull() == state

@@ -1,9 +1,9 @@
 
-# Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
+# Uniflow 🦄- Simple Unidirectional Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
 
 ## Setup
 
-#### Current version is `0.9.4`
+#### Current version is `0.10.2`
 
 Choose one of the following dependency:
 
@@ -23,10 +23,11 @@ implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
+this version is based on Kotlin `1.3.71` & Coroutines `1.3.2`
 
 ## Web Article 🎉
 
+- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
 
 ## Full documentation 📖
@@ -88,11 +89,11 @@ Publish state updates from your ViewModel:
 ```kotlin
 class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow() {
 
-    fun getWeather() = setState {
+    fun getWeather() = action {
         // call to get data
         val weather = repo.getWeatherForToday().await()
         // return a new state
-        WeatherState(weather.day, weather.temperature)
+        setState { WeatherState(weather.day, weather.temperature) }
     }
 }
 ```

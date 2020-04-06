@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.uniflow.core.flow
+package io.uniflow.core.flow.data
 
 /**
  * Data Flow Event wrapper

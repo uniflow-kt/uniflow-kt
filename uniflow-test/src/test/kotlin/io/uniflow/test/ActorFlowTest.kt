@@ -1,19 +1,23 @@
 package io.uniflow.test
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
-import io.uniflow.core.flow.getStateAsOrNull
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.getCurrentStateOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
-import io.uniflow.test.data.*
+import io.uniflow.test.data.Todo
+import io.uniflow.test.data.TodoListState
+import io.uniflow.test.data.TodoListUpdate
+import io.uniflow.test.data.TodoRepository
+import io.uniflow.test.impl.BadDF
+import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
@@ -35,16 +39,26 @@ class ActorFlowTest {
     var coroutinesMainDispatcherRule = TestDispatchersRule()
 
     val repository = TodoRepository()
-    lateinit var dataFlow: TodoStackActorFlow
+    lateinit var dataFlow: SampleFlow
 
     @Before
     fun before() {
-        dataFlow = TodoStackActorFlow(repository)
+        dataFlow = SampleFlow(repository)
     }
 
     @Test
     fun `is valid`() {
-        validate<TodoStackActorFlow>()
+        validate<SampleFlow>()
+    }
+
+    @Test
+    fun `is not valid`() {
+        try {
+            validate<BadDF>()
+            fail()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 
@@ -63,7 +77,7 @@ class ActorFlowTest {
     @Test
     fun `get all - get state`() {
         dataFlow.getAll()
-        val state = dataFlow.getStateAsOrNull<TodoListState>()
+        val state = dataFlow.getCurrentStateOrNull<TodoListState>()
         assertEquals(TodoListState(emptyList()), state)
     }
 
@@ -141,21 +155,6 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `action state error`() {
-        dataFlow.getAll()
-        dataFlow.add("first")
-        dataFlow.makeOnStateError()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
-        assertTrue(dataFlow.events.size == 1)
-    }
-
-    @Test
     fun `global action error`() = runBlocking {
         dataFlow.makeGlobalError()
         delay(100)
@@ -201,7 +200,7 @@ class ActorFlowTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
-        dataFlow.cancel()
+        dataFlow.close()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
         assertEquals(TodoListState(emptyList()), dataFlow.states[1])
@@ -215,16 +214,18 @@ class ActorFlowTest {
         dataFlow.getAll()
         dataFlow.notifyUpdate()
 
-        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.states.size == 2)
         assertTrue(dataFlow.states.last() is TodoListState)
         assertTrue(dataFlow.events.size == 1)
         assertTrue(dataFlow.events.last() is TodoListUpdate)
+
+        assertTrue(dataFlow.getCurrentStateOrNull<TodoListState>()!!.todos.size == 1)
     }
 
     @Test
     fun `cancel before test`() = runBlocking {
         dataFlow.getAll()
-        dataFlow.cancel()
+        dataFlow.close()
         dataFlow.longWait()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
@@ -244,6 +245,33 @@ class ActorFlowTest {
         assertEquals(UIState.Success, dataFlow.states[2])
         assertTrue(dataFlow.states.size == 3)
         assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `test flow from state`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.notifyFlowFromState()
+        delay(20)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        assertEquals(UIState.Loading, dataFlow.states[2])
+        assertEquals(UIState.Success, dataFlow.states[3])
+
+        assertTrue(dataFlow.states.size == 4)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `test flow from state exception`() = runBlocking {
+        dataFlow.notifyFlowFromState()
+        delay(20)
+
+        assertEquals(UIState.Empty, dataFlow.states[0])
+        assertEquals(UIEvent.BadOrWrongState(UIState.Empty), dataFlow.events[0])
+
+        assertTrue(dataFlow.states.size == 1)
+        assertTrue(dataFlow.events.size == 1)
     }
 
     @Test

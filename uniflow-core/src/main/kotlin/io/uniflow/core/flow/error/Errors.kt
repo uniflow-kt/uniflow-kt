@@ -1,7 +1,7 @@
-package io.uniflow.core.error
+package io.uniflow.core.flow.error
 
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 class NetworkException(message: String? = null, error: Throwable? = null) : Exception(message, error)
 class DatabaseException(message: String? = null, error: Throwable? = null) : Exception(message, error)

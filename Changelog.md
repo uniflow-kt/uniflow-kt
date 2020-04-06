@@ -3,6 +3,24 @@
 
 ## Changelog
 
+### 0.10.2
+
+- `fixed` DataFlow is now adding new action with `send` on Actor, anwith a coroutine call on IO
+
+### 0.10.1
+
+- `update` AndroidDataFlow() use `UIState.Empty` as default state 
+
+### 0.10.0
+
+_no backward compatibility API with previous version!_
+
+- `update` Rework all internals app design components, an action is now a Kotlin Flow emitting UISTate/UIEvent
+- `update` Non nullable default state
+- `add` Unify actions API to return `ActionFlow` and use `setState` and not having 2 kinds of action flow
+- `update` `setState { }` / `fromState<> { }` API are now `action { }` and `actionOn<> { }`. You need to use `setState` to specify a state.
+- `update` `stateFlow { }` / `stateFlowFrom<> { }` API are now `action { }` and `actionOn<> { }`
+
 ### 0.8.x
 
 #### 0.8.5

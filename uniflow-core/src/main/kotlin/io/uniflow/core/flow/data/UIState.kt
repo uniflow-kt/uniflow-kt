@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.androidx.flow
-
-import io.uniflow.core.flow.DataFlow
+package io.uniflow.core.flow.data
 
 /**
- * AndroidDataFlow
- * Unidirectional dataflow with states & events
+ * Data Flow UI State
  *
  * @author Arnaud Giuliani
  */
-@Deprecated("AndroidActorFlow has been merged into AndroidDataFlow", level = DeprecationLevel.ERROR)
-abstract class AndroidActorFlow : AndroidDataFlow(), DataFlow
+open class UIState : UIData {
+    object Empty : UIState()
+    object Loading : UIState()
+    object Success : UIState()
+    data class Failed(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIState()
+}

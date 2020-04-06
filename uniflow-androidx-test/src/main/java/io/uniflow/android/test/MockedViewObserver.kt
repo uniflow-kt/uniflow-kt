@@ -3,9 +3,9 @@ package io.uniflow.android.test
 import androidx.lifecycle.Observer
 import io.mockk.mockk
 import io.uniflow.androidx.flow.AndroidDataFlow
-import io.uniflow.core.flow.Event
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 
 data class MockedViewObserver(val states: Observer<UIState>, val events: Observer<Event<UIEvent>>) {
     infix fun hasState(state: UIState) = states.onChanged(state)

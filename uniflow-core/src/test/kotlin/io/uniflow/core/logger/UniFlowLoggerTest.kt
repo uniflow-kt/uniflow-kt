@@ -2,8 +2,8 @@ package io.uniflow.core.logger
 
 import com.github.erikhuizinga.mockk.junit4.MockkTest
 import io.mockk.*
-import io.uniflow.core.flow.UIEvent
-import io.uniflow.core.flow.UIState
+import io.uniflow.core.flow.data.UIEvent
+import io.uniflow.core.flow.data.UIState
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
