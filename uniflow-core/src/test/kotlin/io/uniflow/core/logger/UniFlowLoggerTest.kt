@@ -1,13 +1,15 @@
 package io.uniflow.core.logger
 
+import com.github.erikhuizinga.mockk.junit4.MockkTest
 import io.mockk.*
 import io.uniflow.core.flow.UIEvent
 import io.uniflow.core.flow.UIState
-import io.uniflow.core.rule.MockkTestClassRule
-import io.uniflow.core.rule.MockkTestRule
-import org.junit.*
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
+import org.junit.Test
 
-class UniFlowLoggerTest {
+class UniFlowLoggerTest : MockkTest() {
     companion object {
         private val testLoggerMock = mockk<Logger>(name = "testLoggerMock", relaxUnitFun = true)
 
@@ -17,16 +19,9 @@ class UniFlowLoggerTest {
         private val expectedException = Exception("expected exception")
 
         @JvmStatic
-        @get:ClassRule
-        val mockkTestClassRule = MockkTestClassRule()
-
-        @JvmStatic
         @BeforeClass
         fun `before class`() = mockkConstructor(SimpleMessageLogger::class)
     }
-
-    @get:Rule
-    val mockkTestRule = MockkTestRule()
 
     @get:Rule
     val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
