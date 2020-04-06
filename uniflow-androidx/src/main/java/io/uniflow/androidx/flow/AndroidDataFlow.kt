@@ -15,23 +15,19 @@
  */
 package io.uniflow.androidx.flow
 
+import androidx.annotation.CallSuper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.ActionFlowScheduler
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.UIDataManager
-import io.uniflow.core.flow.UIDataPublisher
+import io.uniflow.core.flow.*
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onMain
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 
 /**
@@ -48,46 +44,46 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-        defaultState: UIState = UIState.Empty,
-        defaultCapacity: Int = Channel.BUFFERED,
-        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+    defaultState: UIState = UIState.Empty,
+    defaultCapacity: Int = Channel.BUFFERED,
+    defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(),
     DataFlow,
     UIDataPublisher {
 
-    override val coroutineScope: CoroutineScope = viewModelScope
-    private val uiDataManager = UIDataManager(this, defaultState)
-    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
+    final override val coroutineScope = viewModelScope
+
+    private val uiDataManager by lazy { UIDataManager(this, defaultState) }
+    final override val scheduler =
+        ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
 
     private val _states = MutableLiveData<UIState>()
-    val states: LiveData<UIState>
-        get() = _states
+    val states: LiveData<UIState> = _states
 
     private val _events = MutableLiveData<Event<UIEvent>>()
-    val events: LiveData<Event<UIEvent>>
-        get() = _events
+    val events: LiveData<Event<UIEvent>> = _events
 
     init {
         action { setState { defaultState } }
     }
 
-    override fun getCurrentState(): UIState = uiDataManager.currentState
+    final override fun getCurrentState() = uiDataManager.currentState
 
-    override suspend fun publishState(state: UIState) {
+    final override suspend fun publishState(state: UIState) {
         onMain(immediate = true) {
             _states.value = state
         }
     }
 
-    override suspend fun sendEvent(event: UIEvent) {
+    final override suspend fun sendEvent(event: UIEvent) {
         onMain(immediate = true) {
             _events.value = Event(event)
         }
     }
 
+    @CallSuper
     override fun onCleared() {
-        super.onCleared()
-        viewModelScope.cancel()
         scheduler.close()
+        super.onCleared()
     }
 }

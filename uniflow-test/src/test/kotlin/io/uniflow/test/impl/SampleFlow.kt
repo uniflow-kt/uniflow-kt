@@ -1,6 +1,6 @@
 package io.uniflow.test.impl
 
-import io.uniflow.core.flow.ActionFlow
+import io.uniflow.core.flow.action
 import io.uniflow.core.flow.actionOn
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -9,8 +9,6 @@ import io.uniflow.test.data.*
 import kotlinx.coroutines.delay
 
 class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
-
-
     fun getAll() = action {
         setState {
             repository.getAllTodo().mapToTodoListState()
@@ -100,10 +98,6 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Loading }
         error("boom")
     }, { e, _ -> setState { UIState.Failed("flow boom", e) } })
-
-    override suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        flow.setState { UIState.Failed("Got error $error", error) }
-    }
 }
 
 

@@ -29,34 +29,22 @@ import kotlinx.coroutines.CoroutineScope
  * @author Arnaud Giuliani
  */
 interface DataFlow {
-
     val coroutineScope: CoroutineScope
     val scheduler: ActionFlowScheduler
-
     fun getCurrentState(): UIState
-
-    fun action(onAction: ActionFunction<UIState>): ActionFlow {
-        val action = ActionFlow(onAction) { error, state -> this@DataFlow.onError(error, state, this) }
-        coroutineScope.launchOnIO {
-            scheduler.addAction(action)
-        }
-        return action
-    }
-
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow {
-        val action = ActionFlow(onAction, onError)
-        coroutineScope.launchOnIO {
-            scheduler.addAction(action)
-        }
-        return action
-    }
-
     suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        val errorMessage = "Uncaught error: $error"
-        UniFlowLogger.logError(errorMessage, error)
+        UniFlowLogger.logError("Uncaught error: $error", error)
         throw error
     }
 }
+
+fun DataFlow.action(onAction: ActionFunction<UIState>) =
+    action(onAction) { error, state -> onError(error, state, this) }
+
+fun DataFlow.action(
+    onAction: ActionFunction<UIState>,
+    onError: ActionErrorFunction
+) = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { scheduler.addAction(it) } }
 
 inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
     val currentState = getCurrentState()
