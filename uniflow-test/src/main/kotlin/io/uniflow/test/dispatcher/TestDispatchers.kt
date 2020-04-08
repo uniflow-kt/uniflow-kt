@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.core.dispatcher
+package io.uniflow.test.dispatcher
+
+import io.uniflow.core.dispatcher.UniFlowDispatcherConfiguration
 
 /**
  * Dispatchers Configuration for Tests
