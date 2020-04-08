@@ -100,11 +100,18 @@ First don't forget to use thr following rule:
 
 ```kotlin
 @get:Rule
-var rule = TestDispatchersRule()
+val rule = TestDispatchersRule()
 ```
 
-`TestDispatchersRule` allows you to test with the `Dispatchers.Unconfined` dispatcher by default, as it flattens all scheduling to help sequential processing of all states and events.
-Alternatively, you can specify a `UniFlowDispatcherConfiguration` in the `TestDispatchersRule` constructor to set custom dispatchers, e.g. a `TestCoroutineDispatcher`.
+`TestDispatchersRule` allows you to test with a `TestCoroutineDispatcher` by default.
+It flattens all scheduling to help sequential processing of all states and events.
+The rule also automatically replaces the `Main` dispatcher with the test dispatcher and it detects any leaking coroutines.
+You can obtain the `TestCoroutineDispatcher` from the rule and use it in your tests as follows:
+
+```kotlin
+@Test
+fun `your test`() = rule.testCoroutineDispatcher.runBlockingTest { /*..*/ }
+```
 
 You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
 
