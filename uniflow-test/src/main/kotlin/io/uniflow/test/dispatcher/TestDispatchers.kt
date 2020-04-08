@@ -16,14 +16,18 @@
 package io.uniflow.test.dispatcher
 
 import io.uniflow.core.dispatcher.UniFlowDispatcherConfiguration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**
  * Dispatchers Configuration for Tests
  *
  * @author Arnaud Giuliani
  */
+@ExperimentalCoroutinesApi
 class TestDispatchers : UniFlowDispatcherConfiguration {
-    override fun main() = kotlinx.coroutines.Dispatchers.Unconfined
-    override fun default() = kotlinx.coroutines.Dispatchers.Unconfined
-    override fun io() = kotlinx.coroutines.Dispatchers.Unconfined
+    val testCoroutineDispatcher = TestCoroutineDispatcher()
+    override fun main() = testCoroutineDispatcher
+    override fun default() = testCoroutineDispatcher
+    override fun io() = testCoroutineDispatcher
 }
