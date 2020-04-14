@@ -3,41 +3,45 @@ package io.uniflow.android.test
 import android.arch.lifecycle.Observer
 import io.uniflow.android.flow.AndroidDataFlow
 import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 
-class TestObserver<T> : Observer<T> {
-    val elements = arrayListOf<T>()
+class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
+    val values = arrayListOf<T>()
 
     override fun onChanged(t: T?) {
-        t?.let { elements.add(it) }
+        t?.let {
+            values.add(it)
+            callback(it)
+        }
     }
 }
 
-data class TestViewObserver(private val states: TestObserver<UIState>, private val events: TestObserver<Event<UIEvent>>) {
-    fun hasState(state: UIState) = hasState(state, states.elements.lastIndex)
-    fun hasState(state: UIState, index: Int) = assert(states.elements[index] == state) { "should have state '$state' at $index but was '${states.elements[index]}'" }
-    fun hasStates(vararg states: UIState) = assert(this.states.elements == states) { "should have states [$states] but was [${this.states.elements}]" }
-    fun hasNoState() = assert(this.states.elements.isEmpty()) { "should have no state but was [${this.states.elements}]" }
-    val lastState: UIState?
-        get() = states.elements[states.elements.lastIndex]
-    val statesCount
-        get() = states.elements.count()
+class TestViewObserver {
+    val values = arrayListOf<UIData>()
+    val states = SimpleObserver<UIState> { values.add(it) }
+    val events = SimpleObserver<Event<UIEvent>> { values.add(it.peek()) }
 
-    fun hasEvent(event: UIEvent) = hasEvent(event, events.elements.lastIndex)
-    fun hasEvent(event: UIEvent, index: Int) = assert(events.elements[index] == event) { "should have event '$event' at $index but was [${this.events.elements[index]}]" }
-    fun hasEvent(vararg events: UIEvent) = assert(this.events.elements == events) { "should have has events [$events] but was [${this.events.elements}]" }
-    fun hasNoEvent() = assert(this.events.elements.isEmpty()) { "should have no event but was [${this.events.elements}]" }
+    val lastState: UIState?
+        get() = states.values.lastOrNull()
+    val statesCount
+        get() = states.values.count()
     val eventsCount
-        get() = events.elements.count()
+        get() = events.values.count()
     val lastEvent
-        get() = events.elements[events.elements.lastIndex].take()
+        get() = events.values.lastOrNull()
+    val last
+        get() = values.lastOrNull()
+
+    fun assertReceived(vararg any: UIData) = assert(this.values == any) { "Wrong values\nshould have [$any]\nbut was [${values}]" }
+    fun assertReceived(vararg states: UIState) = assert(this.states.values == states) { "Wrong values\nshould have [$states]\nbut was [${this.states.values}]" }
+    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events) { "Wrong values\nshould have [$events]\nbut was [${this.events.values}]" }
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
-    val viewStates: TestObserver<UIState> = TestObserver()
-    val viewEvents: TestObserver<Event<UIEvent>> = TestObserver()
-    states.observeForever(viewStates)
-    events.observeForever(viewEvents)
-    return TestViewObserver(viewStates, viewEvents)
+    val tester = TestViewObserver()
+    states.observeForever(tester.states)
+    events.observeForever(tester.events)
+    return tester
 }

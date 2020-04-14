@@ -20,7 +20,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
     fun filterDones() = action { current ->
         when (current) {
             is TodoListState -> setState { current.copy(current.todos.filter { it.done }) }
-            else -> sendEvent(UIEvent.Fail("Can't filter as without todo list"))
+            else -> sendEvent(UIEvent.Error("Can't filter as without todo list"))
         }
     }
 
@@ -29,7 +29,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         if (added) {
             setState { repository.getAllTodo().mapToTodoListState() }
         } else {
-            sendEvent(UIEvent.Fail("Can't add '$title'"))
+            sendEvent(UIEvent.Error("Can't add '$title'"))
         }
     }
 
@@ -39,7 +39,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
             if (done) {
                 setState { repository.getAllTodo().mapToTodoListState() }
             } else {
-                sendEvent(UIEvent.Fail("Can't make done '$title'"))
+                sendEvent(UIEvent.Error("Can't make done '$title'"))
             }
         } else {
             sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getCurrentState()))
@@ -70,7 +70,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
             {
                 error("boom")
             },
-            { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
+            { error, _ -> sendEvent(UIEvent.Error("Event logError", error)) })
 
 
     fun makeGlobalError() = action {

@@ -11,8 +11,6 @@ import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,34 +34,30 @@ class StackFlowTest {
 
     @Test
     fun `empty state`() {
-        dataFlow.hasStates(UIState.Empty)
-        dataFlow.hasNoEvent()
+        dataFlow.assertReceived(UIState.Empty)
     }
 
     @Test
     fun `get all`() {
         dataFlow.getAll()
-        dataFlow.hasStates(UIState.Empty, TodoListState(emptyList()))
-        dataFlow.hasNoEvent()
+        dataFlow.assertReceived(UIState.Empty, TodoListState(emptyList()))
     }
 
     @Test
     fun `add one`() {
         dataFlow.getAll()
         dataFlow.add("first")
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))))
-        dataFlow.hasNoEvent()
     }
 
     @Test
     fun `add one - fail`() {
         dataFlow.add("first")
 
-        dataFlow.hasStates(UIState.Empty)
-        dataFlow.hasEvents(UIEvent.BadOrWrongState(UIState.Empty))
+        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test
@@ -72,12 +66,11 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.done("first")
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
                 TodoListState(listOf(Todo("first", true))))
-        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -88,14 +81,13 @@ class StackFlowTest {
         dataFlow.done("first")
         dataFlow.filterDones()
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
                 TodoListState(listOf(Todo("first"), Todo("second"))),
                 TodoListState(listOf(Todo("second"), Todo("first", true))),
                 TodoListState(listOf(Todo("first", true))))
-        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -103,10 +95,10 @@ class StackFlowTest {
         dataFlow.getAll()
         dataFlow.done("first")
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
-                TodoListState(emptyList()))
-        dataFlow.hasEvents(UIEvent.Fail(message = "Can't make done 'first'"))
+                TodoListState(emptyList()),
+                UIEvent.Error(message = "Can't make done 'first'"))
     }
 
     @Test
@@ -115,34 +107,35 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.makeOnError()
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))))
-        assert(dataFlow.lastEvent is UIEvent.Fail)
+        assert(dataFlow.lastEvent is UIEvent.Error)
     }
 
     @Test
     fun `global action error`() = runBlocking {
+        val error = IllegalStateException("global boom")
         dataFlow.makeGlobalError()
         delay(100)
 
-        dataFlow.hasState(0,UIState.Empty)
-        assert(dataFlow.lastState is UIState.Failed)
-        dataFlow.hasNoEvent()
+        dataFlow.assertReceived(
+                UIState.Empty,
+                UIState.Failed("Got error $error", error))
     }
 
     @Test
     fun `child io action error`() {
+        val error = IllegalStateException("Boom on IO")
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIOError()
 
-        dataFlow.hasState(0,UIState.Empty)
-        dataFlow.hasState(1,TodoListState(emptyList()))
-        dataFlow.hasState(2,TodoListState(listOf(Todo("first"))))
-        assert(dataFlow.lastState is UIState.Failed)
-        dataFlow.hasNoEvent()
+        dataFlow.assertReceived(UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                UIState.Failed("Got error $error", error))
     }
 
     @Test
@@ -152,13 +145,12 @@ class StackFlowTest {
         dataFlow.childIO()
         delay(200)
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
                 TodoListState(listOf(Todo("first"), Todo("LongTodo")))
         )
-        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -168,11 +160,10 @@ class StackFlowTest {
         delay(300)
         dataFlow.close()
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList())
         )
-        dataFlow.hasNoEvent()
     }
 
     @Test
@@ -181,11 +172,10 @@ class StackFlowTest {
         dataFlow.close()
         dataFlow.longWait()
 
-        dataFlow.hasStates(
+        dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList())
         )
-        dataFlow.hasNoEvent()
     }
 
 }
