@@ -158,6 +158,17 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `global action error on state`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.makeGlobalErrorOnState()
+        delay(100)
+
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.states[2] is UIState.Failed)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
     fun `child io action error`() {
         dataFlow.getAll()
         dataFlow.add("first")
