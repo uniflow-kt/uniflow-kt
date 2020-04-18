@@ -4,6 +4,7 @@ import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
@@ -15,14 +16,20 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class StackFlowTest {
+    companion object {
+        init {
+            UniFlowLogger.init(DebugMessageLogger())
+        }
 
-    init {
-        UniFlowLogger.init(DebugMessageLogger())
+        @JvmStatic
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
     @get:Rule

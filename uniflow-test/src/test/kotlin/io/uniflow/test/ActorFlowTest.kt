@@ -5,6 +5,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.flow.getCurrentStateOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoListUpdate
@@ -18,14 +19,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class ActorFlowTest {
+    companion object {
+        init {
+            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+        }
 
-    init {
-        UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+        @JvmStatic
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
     @get:Rule

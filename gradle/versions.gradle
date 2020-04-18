@@ -18,6 +18,9 @@ ext {
     // Mockk
     mockk_version = "1.9"
 
+    // MockK Patterns
+    mockk_patterns_junit4_version = '1.0.0'
+
     android_maven_publish = "3.6.2"
 
     junit_version = "4.12"
