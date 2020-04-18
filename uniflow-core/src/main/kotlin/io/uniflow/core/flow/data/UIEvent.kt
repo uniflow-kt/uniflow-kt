@@ -21,14 +21,16 @@ package io.uniflow.core.flow.data
  * @author Arnaud Giuliani
  */
 open class UIEvent : UIData {
-    object Loading : UIEvent()
-    object Success : UIEvent()
+    object Loading : UIEvent() {
+        override fun toString(): String = "Loading"
+    }
+    object Success : UIEvent() {
+        override fun toString(): String = "Success"
+    }
     data class Error(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIEvent() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Error
+            if (other !is Error) return false
 
             if (message != other.message) return false
             if (error?.javaClass != other.error?.javaClass) return false
