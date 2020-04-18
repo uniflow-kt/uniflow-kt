@@ -9,14 +9,16 @@ import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class StackFlowTest {
 
     init {
@@ -24,7 +26,9 @@ class StackFlowTest {
     }
 
     @get:Rule
-    var rule = TestDispatchersRule()
+    val testDispatchersRule = TestDispatchersRule()
+
+    private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 
     val repository = TodoRepository()
     lateinit var dataFlow: SampleFlow
@@ -135,7 +139,7 @@ class StackFlowTest {
 //    }
 
     @Test
-    fun `global action error`() = runBlocking {
+    fun `global action error`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.makeGlobalError()
         delay(100)
 
@@ -171,7 +175,7 @@ class StackFlowTest {
     }
 
     @Test
-    fun `child io action`() = runBlocking {
+    fun `child io action`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIO()
@@ -187,7 +191,7 @@ class StackFlowTest {
     }
 
     @Test
-    fun `cancel test`() = runBlocking {
+    fun `cancel test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
@@ -201,7 +205,7 @@ class StackFlowTest {
     }
 
     @Test
-    fun `cancel before test`() = runBlocking {
+    fun `cancel before test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.close()
         dataFlow.longWait()
