@@ -1,10 +1,11 @@
 package io.uniflow.test
 
-import io.uniflow.core.flow.getCurrentStateOrNull
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.getCurrentStateOrNull
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoListUpdate
@@ -15,21 +16,29 @@ import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class ActorFlowTest {
+    companion object {
+        init {
+            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+        }
 
-    init {
-        UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+        @JvmStatic
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
-    @ExperimentalCoroutinesApi
     @get:Rule
-    var coroutinesMainDispatcherRule = TestDispatchersRule()
+    val testDispatchersRule = TestDispatchersRule()
+
+    private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 
     val repository = TodoRepository()
     lateinit var dataFlow: SampleFlow
@@ -148,12 +157,23 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `global action error`() = runBlocking {
+    fun `global action error`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.makeGlobalError()
         delay(100)
 
         assertTrue(dataFlow.states[1] is UIState.Failed)
         assertTrue(dataFlow.states.size == 2)
+        assertTrue(dataFlow.events.size == 0)
+    }
+
+    @Test
+    fun `global action error on state`() = runBlocking {
+        dataFlow.getAll()
+        dataFlow.makeGlobalErrorOnState()
+        delay(100)
+
+        assertTrue(dataFlow.states.size == 3)
+        assertTrue(dataFlow.states[2] is UIState.Failed)
         assertTrue(dataFlow.events.size == 0)
     }
 
@@ -173,7 +193,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `child io action`() = runBlocking {
+    fun `child io action`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIO()
@@ -189,7 +209,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `cancel test`() = runBlocking {
+    fun `cancel test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
@@ -216,7 +236,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `cancel before test`() = runBlocking {
+    fun `cancel before test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.close()
         dataFlow.longWait()
@@ -229,7 +249,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow test`() = runBlocking {
+    fun `flow test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.testFlow()
         delay(20)
 
@@ -241,7 +261,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `test flow from state`() = runBlocking {
+    fun `test flow from state`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.notifyFlowFromState()
         delay(20)
@@ -256,7 +276,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `test flow from state exception`() = runBlocking {
+    fun `test flow from state exception`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.notifyFlowFromState()
         delay(20)
 
@@ -268,7 +288,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow order test`() = runBlocking {
+    fun `flow order test`() = testCoroutineDispatcher.runBlockingTest {
         assertEquals(UIState.Empty, dataFlow.states[0])
         dataFlow.states.clear()
 
@@ -286,7 +306,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow boom test`() = runBlocking {
+    fun `flow boom test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.testBoomFlow()
 
         assertEquals(UIState.Empty, dataFlow.states[0])

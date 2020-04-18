@@ -1,26 +1,31 @@
 package io.uniflow.test.rule
 
 import io.uniflow.core.dispatcher.ApplicationDispatchers
-import io.uniflow.core.dispatcher.TestDispatchers
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.dispatcher.UniFlowDispatcherConfiguration
+import io.uniflow.test.dispatcher.TestDispatchers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /**
  * Setup Test Configuration Dispatcher
  */
-class TestDispatchersRule(
-    private val testDispatchers: UniFlowDispatcherConfiguration = TestDispatchers()
-) : TestWatcher() {
+@ExperimentalCoroutinesApi
+class TestDispatchersRule : TestWatcher() {
+    private val testDispatchers = TestDispatchers()
+    val testCoroutineDispatcher = testDispatchers.testCoroutineDispatcher
 
     override fun starting(description: Description?) {
-        super.starting(description)
+        Dispatchers.setMain(testCoroutineDispatcher)
         UniFlowDispatcher.dispatcher = testDispatchers
     }
 
     override fun finished(description: Description?) {
-        super.finished(description)
+        testCoroutineDispatcher.cleanupTestCoroutines()
+        Dispatchers.resetMain()
         UniFlowDispatcher.dispatcher = ApplicationDispatchers()
     }
 }

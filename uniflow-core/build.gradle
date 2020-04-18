@@ -8,6 +8,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     testImplementation "junit:junit:$junit_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+    testImplementation "com.github.erikhuizinga:mockk-junit4:$mockk_patterns_junit4_version"
+    testImplementation project(':uniflow-test')
 }
 
 apply from: '../gradle/publish.gradle'

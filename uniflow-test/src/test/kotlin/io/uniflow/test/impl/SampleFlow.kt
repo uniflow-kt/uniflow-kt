@@ -75,6 +75,10 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         error("global boom")
     }
 
+    fun makeGlobalErrorOnState() = actionOn<TodoListState> {
+        error("global TodoListState boom")
+    }
+
     fun notifyUpdate() = actionOn<TodoListState> { state ->
         val t = Todo("t2")
         val list = state.todos + t
