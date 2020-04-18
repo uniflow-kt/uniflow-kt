@@ -46,7 +46,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
 
     fun childIO() = action {
         onIO {
-            delay(100)
+            delay(10)
             repository.add("LongTodo")
             setState { repository.getAllTodo().mapToTodoListState() }
         }

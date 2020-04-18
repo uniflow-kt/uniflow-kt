@@ -168,7 +168,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `child io action`() = runBlocking {
+    fun `child io action`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIO()
