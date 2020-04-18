@@ -14,8 +14,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 
 @UseExperimental(ObsoleteCoroutinesApi::class)
-class ActionFlowScheduler(private val uiDataManager: UIDataManager, private val coroutineScope: CoroutineScope,
-    private val defaultDispatcher: CoroutineDispatcher, defaultCapacity: Int = Channel.BUFFERED) {
+class ActionReducer(private val uiDataManager: UIDataStore, private val coroutineScope: CoroutineScope,
+                    private val defaultDispatcher: CoroutineDispatcher, defaultCapacity: Int = Channel.BUFFERED) {
 
     private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(),
         capacity = defaultCapacity) {

@@ -12,6 +12,7 @@ import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

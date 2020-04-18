@@ -48,18 +48,26 @@ abstract class AndroidDataFlow(
     defaultCapacity: Int = Channel.BUFFERED,
     defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(),
-    DataFlow,
-    UIDataPublisher {
+    DataFlow{
 
     final override val coroutineScope = viewModelScope
+    private val dataPublisher : UIDataPublisher = object : UIDataPublisher {
+        override suspend fun publishState(state: UIState) {
+            onMain(immediate = true) {
+                _states.value = state
+            }
+        }
 
-    private val uiDataManager by lazy { UIDataManager(this, defaultState) }
-    final override val scheduler =
-        ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher, defaultCapacity)
-
+        override suspend fun publishEvent(event: UIEvent) {
+            onMain(immediate = true) {
+                _events.value = Event(event)
+            }
+        }
+    }
+    private val dataStore by lazy { UIDataStore(dataPublisher, defaultState) }
+    final override val reducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity)
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState> = _states
-
     private val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events
 
@@ -67,23 +75,11 @@ abstract class AndroidDataFlow(
         action { setState { defaultState } }
     }
 
-    final override fun getCurrentState() = uiDataManager.currentState
-
-    final override suspend fun publishState(state: UIState) {
-        onMain(immediate = true) {
-            _states.value = state
-        }
-    }
-
-    final override suspend fun sendEvent(event: UIEvent) {
-        onMain(immediate = true) {
-            _events.value = Event(event)
-        }
-    }
+    final override fun getCurrentState() = dataStore.currentState
 
     @CallSuper
     override fun onCleared() {
-        scheduler.close()
+        reducer.close()
         super.onCleared()
     }
 }

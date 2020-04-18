@@ -5,5 +5,5 @@ import io.uniflow.core.flow.data.UIState
 
 interface UIDataPublisher {
     suspend fun publishState(state: UIState)
-    suspend fun sendEvent(event: UIEvent)
+    suspend fun publishEvent(event: UIEvent)
 }

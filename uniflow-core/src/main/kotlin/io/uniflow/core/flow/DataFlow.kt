@@ -30,7 +30,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 interface DataFlow {
     val coroutineScope: CoroutineScope
-    val scheduler: ActionFlowScheduler
+    val reducer: ActionReducer
     fun getCurrentState(): UIState
     suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
         UniFlowLogger.logError("Uncaught error: $error", error)
@@ -44,7 +44,7 @@ fun DataFlow.action(onAction: ActionFunction<UIState>) =
 fun DataFlow.action(
     onAction: ActionFunction<UIState>,
     onError: ActionErrorFunction
-) = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { scheduler.addAction(it) } }
+) = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { reducer.addAction(it) } }
 
 inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
     val currentState = getCurrentState()
@@ -61,7 +61,7 @@ inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunc
     return if (currentState is T) {
         val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
         coroutineScope.launchOnIO {
-            scheduler.addAction(action)
+            reducer.addAction(action)
         }
         action
     } else {

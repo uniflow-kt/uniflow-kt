@@ -16,6 +16,7 @@ import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
