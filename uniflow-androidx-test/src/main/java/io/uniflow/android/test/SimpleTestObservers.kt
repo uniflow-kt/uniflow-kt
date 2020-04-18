@@ -3,45 +3,30 @@ package io.uniflow.android.test
 import androidx.lifecycle.Observer
 import io.uniflow.androidx.flow.AndroidDataFlow
 import io.uniflow.core.flow.data.Event
-import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 
-class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
-    val values = arrayListOf<T>()
+class TestObserver<T> : Observer<T> {
+    val elements = arrayListOf<T>()
 
-    override fun onChanged(t: T?) {
-        t?.let {
-            values.add(it)
-            callback(it)
-        }
+    override fun onChanged(t: T) {
+        elements.add(t)
     }
 }
 
-class TestViewObserver {
-    val values = arrayListOf<UIData>()
-    val states = SimpleObserver<UIState> { values.add(it) }
-    val events = SimpleObserver<Event<UIEvent>> { values.add(it.peek()) }
-
-    val lastState: UIState?
-        get() = states.values.lastOrNull()
-    val statesCount
-        get() = states.values.count()
-    val eventsCount
-        get() = events.values.count()
-    val lastEvent
-        get() = events.values.lastOrNull()
-    val last
-        get() = values.lastOrNull()
-
-    fun assertReceived(vararg any: UIData) = assert(this.values == any) { "Wrong values\nshould have [$any]\nbut was [${values}]" }
-    fun assertReceived(vararg states: UIState) = assert(this.states.values == states) { "Wrong values\nshould have [$states]\nbut was [${this.states.values}]" }
-    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events) { "Wrong values\nshould have [$events]\nbut was [${this.events.values}]" }
+data class TestViewObserver(private val states: TestObserver<UIState>, private val events: TestObserver<Event<UIEvent>>) {
+    fun hasState(state: UIState, index: Int = states.elements.lastIndex): Boolean = states.elements[index] == state
+    fun lastState(): UIState? = states.elements[states.elements.lastIndex]
+    fun statesCount() = states.elements.count()
+    fun hasEvent(event: UIEvent, index: Int = events.elements.lastIndex) = events.elements[index].take() == event
+    fun eventsCount() = events.elements.count()
+    fun lastEvent(): UIEvent? = events.elements[events.elements.lastIndex].take()
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
-    val tester = TestViewObserver()
-    states.observeForever(tester.states)
-    events.observeForever(tester.events)
-    return tester
+    val viewStates: TestObserver<UIState> = TestObserver()
+    val viewEvents: TestObserver<Event<UIEvent>> = TestObserver()
+    states.observeForever(viewStates)
+    events.observeForever(viewEvents)
+    return TestViewObserver(viewStates, viewEvents)
 }
