@@ -52,7 +52,7 @@ inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
 }
 
 inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow {
-    return actionOn(onAction) { error, state -> onError(error, state) }
+    return actionOn(onAction) { error, state -> onError(error, state, this) }
 }
 
 inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>,
