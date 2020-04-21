@@ -12,7 +12,6 @@ import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -157,7 +156,7 @@ class StackFlowTest {
     }
 
     @Test
-    fun `global action error on state`() = runBlocking {
+    fun `global action error on state`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.makeGlobalErrorOnState()
         delay(100)

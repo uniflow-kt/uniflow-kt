@@ -16,7 +16,6 @@ import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -168,7 +167,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `global action error on state`() = runBlocking {
+    fun `global action error on state`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.makeGlobalErrorOnState()
         delay(100)

@@ -38,13 +38,13 @@ interface DataFlow {
     }
 }
 
-fun DataFlow.action(onAction: ActionFunction<UIState>) =
+fun DataFlow.action(onAction: ActionFunction<UIState>): ActionFlow =
     action(onAction) { error, state -> onError(error, state, this) }
 
 fun DataFlow.action(
     onAction: ActionFunction<UIState>,
     onError: ActionErrorFunction
-) = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { reducer.addAction(it) } }
+) : ActionFlow = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { reducer.enqueueAction(it) } }
 
 inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
     val currentState = getCurrentState()
@@ -61,7 +61,7 @@ inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunc
     return if (currentState is T) {
         val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
         coroutineScope.launchOnIO {
-            reducer.addAction(action)
+            reducer.enqueueAction(action)
         }
         action
     } else {
