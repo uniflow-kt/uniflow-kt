@@ -24,12 +24,15 @@ open class UIState : UIData {
     object Empty : UIState() {
         override fun toString(): String = "Empty"
     }
+
     object Loading : UIState() {
         override fun toString(): String = "Loading"
     }
+
     object Success : UIState() {
         override fun toString(): String = "Success"
     }
+
     data class Failed(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIState() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -38,6 +41,8 @@ open class UIState : UIData {
             if (message != other.message) return false
             if (error?.javaClass != other.error?.javaClass) return false
             if (error?.message != other.error?.message) return false
+            if (error?.cause?.javaClass != other.error?.cause?.javaClass) return false
+            if (error?.cause?.message != other.error?.cause?.message) return false
             if (state != other.state) return false
 
             return true

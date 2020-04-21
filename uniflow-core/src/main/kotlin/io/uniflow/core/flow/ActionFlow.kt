@@ -25,7 +25,11 @@ class ActionFlow(
         flow.emit(UIDataUpdate(state))
     }
 
-    suspend fun setState(state: suspend () -> UIState) {
+    suspend fun setState(state: () -> UIState) {
+        flow.emit(UIDataUpdate(state()))
+    }
+
+    suspend fun setStateAsync(state: suspend () -> UIState) {
         flow.emit(UIDataUpdate(state()))
     }
 

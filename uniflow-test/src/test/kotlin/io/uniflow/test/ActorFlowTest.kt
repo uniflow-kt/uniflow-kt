@@ -14,7 +14,6 @@ import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -183,7 +182,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `cancel test`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `cancel test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
@@ -208,7 +207,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `cancel before test`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `cancel before test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.close()
         dataFlow.longWait()
@@ -220,7 +219,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow test`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `flow test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.testFlow()
         delay(20)
 
@@ -232,7 +231,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `test flow from state`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `test flow from state`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.notifyFlowFromState()
         delay(20)
@@ -247,7 +246,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `test flow from state exception`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `test flow from state exception`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.notifyFlowFromState()
         delay(20)
 
@@ -259,7 +258,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow order test`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `flow order test`() = testCoroutineDispatcher.runBlockingTest {
         assertEquals(UIState.Empty, dataFlow.states[0])
         dataFlow.states.clear()
 
@@ -277,7 +276,7 @@ class ActorFlowTest {
     }
 
     @Test
-    fun `flow boom test`() =  testCoroutineDispatcher.runBlockingTest {
+    fun `flow boom test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.testBoomFlow()
 
         assertEquals(UIState.Empty, dataFlow.states[0])
