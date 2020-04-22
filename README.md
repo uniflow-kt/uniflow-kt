@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.10.2`
+#### Current version is `0.11.O`
 
 Choose one of the following dependency:
 
@@ -132,6 +132,8 @@ fun before() {
 	dataFlow = WeatherDataFlow(mockedRepo)
 	// create mocked observer
 	view = detailViewModel.mockObservers()
+    // or test value observer 
+    view = detailViewModel.createTestObserver()
 }
 ```
 
@@ -152,6 +154,26 @@ fun `has some weather`() {
 	verifySequence {
 		view.hasState(WeatherState(weatherData.day, weatherData.temperature))
 	}
+}
+```
+
+or with value test observer:
+
+```kotlin
+@Test
+fun `has some weather`() {
+	// prepare test data
+	val weatherData = WeatherData(...)
+	// setup mocked call
+	coEvery { mockedRepo.getWeatherForToday() } return weatherData
+
+	// Call getWeather()
+	dataFlow.getWeather()
+		
+	// verify state
+	dataFlow.assertHasReceived (
+		WeatherState(weatherData.day, weatherData.temperature)
+    )
 }
 ```
 
