@@ -29,6 +29,10 @@ class ActionFlow(
         flow.emit(UIDataUpdate(state()))
     }
 
+    suspend fun setStateAsync(state: suspend () -> UIState) {
+        flow.emit(UIDataUpdate(state()))
+    }
+
     suspend fun notifyStateUpdate(state: UIState, event: UIEvent) {
         flow.emit(UIDataUpdate(state, UIDataUpdateType.NOTIFY))
         sendEvent(event)

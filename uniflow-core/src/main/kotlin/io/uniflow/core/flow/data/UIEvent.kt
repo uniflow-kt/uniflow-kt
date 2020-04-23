@@ -21,9 +21,33 @@ package io.uniflow.core.flow.data
  * @author Arnaud Giuliani
  */
 open class UIEvent : UIData {
-    object Loading : UIEvent()
-    object Success : UIEvent()
-    data class Fail(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIEvent()
+    object Loading : UIEvent() {
+        override fun toString(): String = "Loading"
+    }
+    object Success : UIEvent() {
+        override fun toString(): String = "Success"
+    }
+    data class Error(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIEvent() {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Error) return false
+
+            if (message != other.message) return false
+            if (error?.javaClass != other.error?.javaClass) return false
+            if (error?.message != other.error?.message) return false
+            if (state != other.state) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = message?.hashCode() ?: 0
+            result = 31 * result + (error?.hashCode() ?: 0)
+            result = 31 * result + (state?.hashCode() ?: 0)
+            return result
+        }
+    }
+
     data class BadOrWrongState(val currentState: UIState) : UIEvent()
     data class StateUpdate(val currentState: UIState) : UIEvent()
 }
