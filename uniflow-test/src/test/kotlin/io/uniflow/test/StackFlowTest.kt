@@ -125,21 +125,6 @@ class StackFlowTest {
         // assert(dataFlow.last is UIEvent.Error)
     }
 
-//    @Test
-//    fun `action failed error`() {
-//        dataFlow.getAll()
-//        dataFlow.add("first")
-//        dataFlow.makeOnFailed()
-//
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-//
-//        assertTrue(dataFlow.states.size == 4)
-//        assertTrue(dataFlow.states.last() is UIState.Failed)
-//        assertTrue(dataFlow.events.size == 0)
-//    }
-
     @Test
     fun `global action error`() = testCoroutineDispatcher.runBlockingTest {
         val error = IllegalStateException("global boom")

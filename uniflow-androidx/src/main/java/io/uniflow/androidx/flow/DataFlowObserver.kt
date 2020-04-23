@@ -27,9 +27,9 @@ import io.uniflow.core.flow.data.UIState
  */
 
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
-    vm.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
+    vm.dataPublisher.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
 }
 
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
-    vm.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
+    vm.dataPublisher.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
 }

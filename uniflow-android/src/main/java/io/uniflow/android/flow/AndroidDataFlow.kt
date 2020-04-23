@@ -15,18 +15,17 @@
  */
 package io.uniflow.android.flow
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.support.annotation.CallSuper
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
-import io.uniflow.core.flow.data.Event
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlin.reflect.KClass
 
 /**
  * Android implementation of [DataFlow].
@@ -43,42 +42,31 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-    defaultState: UIState = UIState.Empty,
-    defaultCapacity: Int = Channel.BUFFERED,
-    defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-) : ViewModel(), DataFlow{
-
+        defaultState: UIState = UIState.Empty,
+        defaultCapacity: Int = Channel.BUFFERED,
+        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+) : ViewModel(), DataFlow {
+    val dataPublisher: LiveDataPublisher = LiveDataPublisher()
     private val supervisorJob = SupervisorJob()
-    final override val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
-    private val dataPublisher : UIDataPublisher = object : UIDataPublisher {
-        override suspend fun publishState(state: UIState) {
-            onMain(immediate = true) {
-                _states.value = state
-            }
-        }
-
-        override suspend fun publishEvent(event: UIEvent) {
-            onMain(immediate = true) {
-                _events.value = Event(event)
-            }
-        }
-    }
-    private val dataStore by lazy { UIDataStore(dataPublisher, defaultState) }
-    final override val reducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity)
-    private val _states = MutableLiveData<UIState>()
-    val states: LiveData<UIState> = _states
-    private val _events = MutableLiveData<Event<UIEvent>>()
-    val events: LiveData<Event<UIEvent>> = _events
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState)
+    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity)
+    private val actionDispatcher: ActionDispatcher
+        get() = ActionDispatcher(coroutineScope, reducer, dataStore, this)
 
     init {
         action { setState { defaultState } }
     }
 
-    final override fun getCurrentState() = dataStore.currentState
+    final override fun getCurrentState() = actionDispatcher.getCurrentState()
+    final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()
+    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
+    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
+    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionDispatcher.actionOn(stateClass, onAction)
+    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.actionOn(stateClass, onAction, onError)
 
     @CallSuper
     override fun onCleared() {
-        coroutineScope.cancel()
         reducer.close()
         super.onCleared()
     }
