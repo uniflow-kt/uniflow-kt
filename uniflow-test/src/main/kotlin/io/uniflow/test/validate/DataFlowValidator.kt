@@ -31,11 +31,10 @@ fun DataFlow.validate() {
     this::class.validate()
 }
 
-@UseExperimental(ExperimentalStdlibApi::class)
 fun KFunction<*>.validate(): Boolean {
     return if (name in exclusion) true
     else {
-        val clazz = returnType.classifier as KClass<*>
+        val clazz = returnType.classifier as? KClass<*>
         val isActionClass = clazz == ActionFlow::class
         if (!isActionClass) {
             UniFlowLogger.logError("Function '$name' is not a valid Action Function. It should return 'ActionFlow'. Please use action or actionOn operator.")
@@ -44,4 +43,4 @@ fun KFunction<*>.validate(): Boolean {
     }
 }
 
-val exclusion = listOf("getCurrentState", "close", "equals", "hashCode", "onError", "publishState", "sendEvent", "toString", "assertReceived")
+val exclusion = listOf("getCurrentState", "getCurrentStateOrNull", "close", "equals", "hashCode", "onError", "publishState", "publishEvent", "toString", "assertReceived")

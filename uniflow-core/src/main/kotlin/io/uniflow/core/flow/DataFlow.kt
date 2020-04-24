@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("UNCHECKED_CAST")
-
 package io.uniflow.core.flow
 
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.launchOnIO
-import kotlinx.coroutines.CoroutineScope
+import kotlin.reflect.KClass
 
 /**
  * Unidirectional Data Flow
@@ -29,42 +25,18 @@ import kotlinx.coroutines.CoroutineScope
  * @author Arnaud Giuliani
  */
 interface DataFlow {
-    val coroutineScope: CoroutineScope
-    val scheduler: ActionFlowScheduler
     fun getCurrentState(): UIState
+    fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T?
+    fun action(onAction: ActionFunction<UIState>): ActionFlow
+    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow
+    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
+    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
     suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
         UniFlowLogger.logError("Uncaught error: $error", error)
         throw error
     }
 }
 
-fun DataFlow.action(onAction: ActionFunction<UIState>) =
-    action(onAction) { error, state -> onError(error, state, this) }
-
-fun DataFlow.action(
-    onAction: ActionFunction<UIState>,
-    onError: ActionErrorFunction
-) = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { scheduler.addAction(it) } }
-
-inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? {
-    val currentState = getCurrentState()
-    return if (currentState is T) currentState else null
-}
-
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow {
-    return actionOn(onAction) { error, state -> onError(error, state, this) }
-}
-
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>,
-    noinline onError: ActionErrorFunction): ActionFlow {
-    val currentState = getCurrentState()
-    return if (currentState is T) {
-        val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
-        coroutineScope.launchOnIO {
-            scheduler.addAction(action)
-        }
-        action
-    } else {
-        action { sendEvent { UIEvent.BadOrWrongState(currentState) } }
-    }
-}
+inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow = actionOn(T::class, onAction)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow = actionOn(T::class, onAction, onError)

@@ -15,7 +15,7 @@ data class MockedViewObserver(val states: Observer<UIState>, val events: Observe
 fun AndroidDataFlow.mockObservers(): MockedViewObserver {
     val viewStates: Observer<UIState> = mockk(relaxed = true)
     val viewEvents: Observer<Event<UIEvent>> = mockk(relaxed = true)
-    states.observeForever(viewStates)
-    events.observeForever(viewEvents)
+    dataPublisher.states.observeForever(viewStates)
+    dataPublisher.events.observeForever(viewEvents)
     return MockedViewObserver(viewStates, viewEvents)
 }

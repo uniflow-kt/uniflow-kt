@@ -41,8 +41,6 @@ open class UIState : UIData {
             if (message != other.message) return false
             if (error?.javaClass != other.error?.javaClass) return false
             if (error?.message != other.error?.message) return false
-            if (error?.cause?.javaClass != other.error?.cause?.javaClass) return false
-            if (error?.cause?.message != other.error?.cause?.message) return false
             if (state != other.state) return false
 
             return true
