@@ -87,7 +87,7 @@ data class WeatherState(val day : String, val temperature : String) : UIState()
 Publish state updates from your ViewModel:
 
 ```kotlin
-class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow() {
+class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow(defaultState = Empty) {
 
     fun getWeather() = action {
         // call to get data
@@ -150,6 +150,7 @@ fun `has some weather`() {
         
     // verify state
     dataFlow.assertReceived (
+    	UIState.Empty,
         WeatherState(weatherData.day, weatherData.temperature)
     )
 }
