@@ -4,27 +4,36 @@ import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class StackFlowTest {
+    companion object {
+        init {
+            UniFlowLogger.init(DebugMessageLogger())
+        }
 
-    init {
-        UniFlowLogger.init(DebugMessageLogger())
+        @JvmStatic
+        @get:ClassRule
+        val uniFlowLoggerTestRule = UniFlowLoggerTestRule()
     }
 
     @get:Rule
-    var rule = TestDispatchersRule()
+    val testDispatchersRule = TestDispatchersRule()
+
+    private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 
     val repository = TodoRepository()
     lateinit var dataFlow: SampleFlow
@@ -36,33 +45,30 @@ class StackFlowTest {
 
     @Test
     fun `empty state`() {
-        assertEquals(UIState.Empty, dataFlow.states.first())
+        dataFlow.assertReceived(UIState.Empty)
     }
 
     @Test
     fun `get all`() {
         dataFlow.getAll()
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
+        dataFlow.assertReceived(UIState.Empty, TodoListState(emptyList()))
     }
 
     @Test
     fun `add one`() {
         dataFlow.getAll()
         dataFlow.add("first")
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))))
     }
 
     @Test
     fun `add one - fail`() {
         dataFlow.add("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-
-        assertTrue(dataFlow.events[0] is UIEvent.BadOrWrongState)
+        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test
@@ -71,10 +77,11 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.done("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first", true))), dataFlow.states[3])
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first", true))))
     }
 
     @Test
@@ -85,12 +92,13 @@ class StackFlowTest {
         dataFlow.done("first")
         dataFlow.filterDones()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first"), Todo("second"))), dataFlow.states[3])
-        assertEquals(TodoListState(listOf(Todo("second"), Todo("first", true))), dataFlow.states[4])
-        assertEquals(TodoListState(listOf(Todo("first", true))), dataFlow.states[5])
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first"), Todo("second"))),
+                TodoListState(listOf(Todo("second"), Todo("first", true))),
+                TodoListState(listOf(Todo("first", true))))
     }
 
     @Test
@@ -98,10 +106,10 @@ class StackFlowTest {
         dataFlow.getAll()
         dataFlow.done("first")
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.events[0] is UIEvent.Fail)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                UIEvent.Error(message = "Can't make done 'first'"))
     }
 
     @Test
@@ -110,111 +118,75 @@ class StackFlowTest {
         dataFlow.add("first")
         dataFlow.makeOnError()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.last() is UIEvent.Fail)
-        assertTrue(dataFlow.events.size == 1)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))))
+        // assert(dataFlow.last is UIEvent.Error)
     }
 
     @Test
-    fun `action state error`() {
-        dataFlow.getAll()
-        dataFlow.add("first")
-        dataFlow.makeOnStateError()
-
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.size == 3)
-        assertTrue(dataFlow.events.last() is UIEvent.Fail)
-        assertTrue(dataFlow.events.size == 1)
-    }
-
-//    @Test
-//    fun `action failed error`() {
-//        dataFlow.getAll()
-//        dataFlow.add("first")
-//        dataFlow.makeOnFailed()
-//
-//        assertEquals(UIState.Empty, dataFlow.states[0])
-//        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-//        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-//
-//        assertTrue(dataFlow.states.size == 4)
-//        assertTrue(dataFlow.states.last() is UIState.Failed)
-//        assertTrue(dataFlow.events.size == 0)
-//    }
-
-    @Test
-    fun `global action error`() = runBlocking {
+    fun `global action error`() = testCoroutineDispatcher.runBlockingTest {
+        val error = IllegalStateException("global boom")
         dataFlow.makeGlobalError()
         delay(100)
 
-        assertTrue(dataFlow.states[1] is UIState.Failed)
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                UIState.Failed("Got error $error", error))
     }
 
     @Test
     fun `child io action error`() {
+        val error = IllegalStateException("Boom on IO")
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIOError()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-
-        assertTrue(dataFlow.states.last() is UIState.Failed)
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.assertReceived(UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                UIState.Failed("Got error $error", error))
     }
 
     @Test
-    fun `child io action`() = runBlocking {
+    fun `child io action`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIO()
         delay(200)
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-        assertEquals(TodoListState(listOf(Todo("first"))), dataFlow.states[2])
-        assertEquals(TodoListState(listOf(Todo("first"), Todo("LongTodo"))), dataFlow.states[3])
-
-        assertTrue(dataFlow.states.size == 4)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList()),
+                TodoListState(listOf(Todo("first"))),
+                TodoListState(listOf(Todo("first"), Todo("LongTodo")))
+        )
     }
 
     @Test
-    fun `cancel test`() = runBlocking {
+    fun `cancel test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.longWait()
         delay(300)
         dataFlow.close()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList())
+        )
     }
 
     @Test
-    fun `cancel before test`() = runBlocking {
+    fun `cancel before test`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.close()
         dataFlow.longWait()
 
-        assertEquals(UIState.Empty, dataFlow.states[0])
-        assertEquals(TodoListState(emptyList()), dataFlow.states[1])
-
-        assertTrue(dataFlow.states.size == 2)
-        assertTrue(dataFlow.events.size == 0)
+        dataFlow.assertReceived(
+                UIState.Empty,
+                TodoListState(emptyList())
+        )
     }
 
 }

@@ -1,10 +1,15 @@
 package io.uniflow.arrow
 
 import arrow.core.success
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.result.get
 import io.uniflow.result.onFailure
 import io.uniflow.result.onSuccess
+import io.uniflow.result.onValue
+import io.uniflow.result.toEvent
+import io.uniflow.result.toEventOrNull
+import io.uniflow.result.toState
 import io.uniflow.result.toStateOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
@@ -18,6 +23,15 @@ class SuccessResultTest {
     fun `create result`() {
         val result = value.success()
         assertTrue(result.get() == value)
+
+        assertTrue(result.isSuccess())
+        assertTrue(!result.isFailure())
+    }
+
+    @Test
+    fun `create mapped result`() {
+        val result = value.success()
+        assertTrue(result.get { "" } == "")
 
         assertTrue(result.isSuccess())
         assertTrue(!result.isFailure())
@@ -40,7 +54,7 @@ class SuccessResultTest {
     }
 
     @Test
-    fun `onValue`() = runBlocking {
+    fun `onSuccess`() = runBlocking {
         var writtenValue = ""
         value.success()
                 .onSuccess { writtenValue = "$it" }
@@ -58,6 +72,15 @@ class SuccessResultTest {
     }
 
     @Test
+    fun `onValue`() {
+        var writtenValue = ""
+        value.success()
+            .onValue { writtenValue = "$it" }
+
+        assertTrue(writtenValue == value)
+    }
+
+    @Test
     fun `map State`() = runBlocking {
         val result = value.success()
                 .map { UIState.Success }
@@ -68,8 +91,32 @@ class SuccessResultTest {
     @Test
     fun `to State or null`() = runBlocking {
         val result = value.success()
-                .toStateOrNull { UIState.Success }
+            .toStateOrNull { UIState.Success }
 
         assertTrue(result == UIState.Success)
+    }
+
+    @Test
+    fun `to State`() = runBlocking {
+        val result = value.success()
+            .toState { UIState.Success }
+
+        assertTrue(result == UIState.Success)
+    }
+
+    @Test
+    fun `to Event or null`() = runBlocking {
+        val result = value.success()
+            .toEventOrNull { UIEvent.Success }
+
+        assertTrue(result == UIEvent.Success)
+    }
+
+    @Test
+    fun `to Event`() = runBlocking {
+        val result = value.success()
+            .toEvent { UIEvent.Success }
+
+        assertTrue(result == UIEvent.Success)
     }
 }

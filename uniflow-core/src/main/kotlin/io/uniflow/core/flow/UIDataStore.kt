@@ -5,7 +5,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 
 
-class UIDataManager(private val publisher: UIDataPublisher, defaultState: UIState) {
+class UIDataStore(private val publisher: UIDataPublisher, defaultState: UIState) {
 
     var currentState: UIState = defaultState
         private set
@@ -24,7 +24,7 @@ class UIDataManager(private val publisher: UIDataPublisher, defaultState: UIStat
             }
             is UIEvent -> {
                 UniFlowLogger.logEvent(dataUpdate.data)
-                publisher.sendEvent(dataUpdate.data)
+                publisher.publishEvent(dataUpdate.data)
             }
         }
     }

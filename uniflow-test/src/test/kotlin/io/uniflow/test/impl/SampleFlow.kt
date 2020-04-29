@@ -1,6 +1,5 @@
 package io.uniflow.test.impl
 
-import io.uniflow.core.flow.ActionFlow
 import io.uniflow.core.flow.actionOn
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -9,8 +8,6 @@ import io.uniflow.test.data.*
 import kotlinx.coroutines.delay
 
 class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
-
-
     fun getAll() = action {
         setState {
             repository.getAllTodo().mapToTodoListState()
@@ -20,7 +17,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
     fun filterDones() = action { current ->
         when (current) {
             is TodoListState -> setState { current.copy(current.todos.filter { it.done }) }
-            else -> sendEvent(UIEvent.Fail("Can't filter as without todo list"))
+            else -> sendEvent(UIEvent.Error("Can't filter as without todo list"))
         }
     }
 
@@ -29,7 +26,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         if (added) {
             setState { repository.getAllTodo().mapToTodoListState() }
         } else {
-            sendEvent(UIEvent.Fail("Can't add '$title'"))
+            sendEvent(UIEvent.Error("Can't add '$title'"))
         }
     }
 
@@ -39,7 +36,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
             if (done) {
                 setState { repository.getAllTodo().mapToTodoListState() }
             } else {
-                sendEvent(UIEvent.Fail("Can't make done '$title'"))
+                sendEvent(UIEvent.Error("Can't make done '$title'"))
             }
         } else {
             sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getCurrentState()))
@@ -48,7 +45,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
 
     fun childIO() = action {
         onIO {
-            delay(100)
+            delay(10)
             repository.add("LongTodo")
             setState { repository.getAllTodo().mapToTodoListState() }
         }
@@ -70,11 +67,15 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
             {
                 error("boom")
             },
-            { error, _ -> sendEvent(UIEvent.Fail("Event logError", error)) })
+            { error, _ -> sendEvent(UIEvent.Error("Event logError", error)) })
 
 
     fun makeGlobalError() = action {
         error("global boom")
+    }
+
+    fun makeGlobalErrorOnState() = actionOn<TodoListState> {
+        error("global TodoListState boom")
     }
 
     fun notifyUpdate() = actionOn<TodoListState> { state ->
@@ -100,10 +101,6 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Loading }
         error("boom")
     }, { e, _ -> setState { UIState.Failed("flow boom", e) } })
-
-    override suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        flow.setState { UIState.Failed("Got error $error", error) }
-    }
 }
 
 

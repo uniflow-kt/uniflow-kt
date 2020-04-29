@@ -24,11 +24,22 @@ import io.uniflow.core.flow.data.UIState
  * @author Arnaud Giuliani
  */
 object UniFlowLogger : Logger {
+    private val defaultLogger: Logger = SimpleMessageLogger()
+    private var logger = defaultLogger
 
-    private var logger: Logger = SimpleMessageLogger()
-
+    /**
+     * Set a [Logger] as the UniFlow event logger.
+     * Reset this using [default].
+     */
     fun init(logger: Logger) {
         this.logger = logger
+    }
+
+    /**
+     * Set the default [Logger] as the UniFlow event logger.
+     */
+    fun default() {
+        logger = defaultLogger
     }
 
     override fun log(message: String) = logger.log(message)

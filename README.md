@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.10.2`
+#### Current version is `0.11.O`
 
 Choose one of the following dependency:
 
@@ -23,10 +23,11 @@ implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-this version is based on Kotlin `1.3.50` & Coroutines `1.3.0`
+this version is based on Kotlin `1.3.71` & Coroutines `1.3.2`
 
 ## Web Article 🎉
 
+- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
 
 ## Full documentation 📖
@@ -127,30 +128,30 @@ lateinit var dataFlow : WeatherDataFlow
 
 @Before
 fun before() {
-	// create WeatherDataFlow instance with mocked WeatherRepository
-	dataFlow = WeatherDataFlow(mockedRepo)
-	// create mocked observer
-	view = detailViewModel.mockObservers()
+    // create WeatherDataFlow instance with mocked WeatherRepository
+    dataFlow = WeatherDataFlow(mockedRepo)
+    // create test observer 
+    view = detailViewModel.createTestObserver()
 }
 ```
 
-Now you can test incoming states with `hasState`. We are providing Mockk to help mock underlying coroutines call: 
+Now you can test incoming states & events with `assertReceived`:
 
 ```kotlin
 @Test
 fun `has some weather`() {
-	// prepare test data
-	val weatherData = WeatherData(...)
-	// setup mocked call
-	coEvery { mockedRepo.getWeatherForToday() } return weatherData
+    // prepare test data
+    val weatherData = WeatherData(...)
+    // setup mocked call
+    coEvery { mockedRepo.getWeatherForToday() } return weatherData
 
-	// Call getWeather()
-	dataFlow.getWeather()
-		
-	// verify state
-	verifySequence {
-		view.hasState(WeatherState(weatherData.day, weatherData.temperature))
-	}
+    // Call getWeather()
+    dataFlow.getWeather()
+        
+    // verify state
+    dataFlow.assertReceived (
+        WeatherState(weatherData.day, weatherData.temperature)
+    )
 }
 ```
 

@@ -1,52 +1,55 @@
 package io.uniflow.test.impl
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.ActionFlowScheduler
-import io.uniflow.core.flow.DataFlow
-import io.uniflow.core.flow.UIDataManager
-import io.uniflow.core.flow.UIDataPublisher
+import io.uniflow.core.flow.*
+import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.core.threading.onMain
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlin.reflect.KClass
 
-abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, UIDataPublisher {
-
+abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow {
     private val supervisorJob = SupervisorJob()
-    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
-    private val defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-    private val uiDataManager = UIDataManager(this, defaultState)
-    override val scheduler: ActionFlowScheduler = ActionFlowScheduler(uiDataManager, coroutineScope, defaultDispatcher)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    private val dataPublisher: SimpleDataPublisher = SimpleDataPublisher()
+    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState)
+    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED)
+    private val actionDispatcher: ActionDispatcher
+        get() = ActionDispatcher(coroutineScope, reducer, dataStore, this)
 
-    val states = arrayListOf<UIState>()
-    val events = arrayListOf<UIEvent>()
+    final override fun getCurrentState() = actionDispatcher.getCurrentState()
+    final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()
+    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
+    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
+    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionDispatcher.actionOn(stateClass, onAction)
+    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.actionOn(stateClass, onAction, onError)
 
-    override fun getCurrentState(): UIState {
-        return uiDataManager.currentState
+    override suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
+        flow.setState { UIState.Failed("Got error $error", error) }
     }
 
     init {
         action { setState { defaultState } }
     }
 
-    override suspend fun publishState(state: UIState) {
-        onMain(immediate = true) {
-            states.add(state)
-        }
+    fun assertReceived(vararg states: UIState) {
+        assert(dataPublisher.states == states.toList()) { "Wrong values\nshould have ${states.toList()}\nbut was ${dataPublisher.states}" }
     }
 
-    override suspend fun sendEvent(event: UIEvent) {
-        onMain(immediate = true) {
-            events.add(event)
-        }
+    fun assertReceived(vararg events: UIEvent) {
+        assert(dataPublisher.events == events.toList()) { "Wrong values\nshould have ${events.toList()}\nbut was ${dataPublisher.events}" }
+    }
+
+    fun assertReceived(vararg any: UIData) {
+        assert(dataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${dataPublisher.data}" }
     }
 
     fun close() {
         coroutineScope.cancel()
-        scheduler.close()
+        reducer.close()
     }
 }
