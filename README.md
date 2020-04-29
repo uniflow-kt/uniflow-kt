@@ -128,51 +128,29 @@ lateinit var dataFlow : WeatherDataFlow
 
 @Before
 fun before() {
-	// create WeatherDataFlow instance with mocked WeatherRepository
-	dataFlow = WeatherDataFlow(mockedRepo)
-	// create mocked observer
-	view = detailViewModel.mockObservers()
-    // or test value observer 
+    // create WeatherDataFlow instance with mocked WeatherRepository
+    dataFlow = WeatherDataFlow(mockedRepo)
+    // create test observer 
     view = detailViewModel.createTestObserver()
 }
 ```
 
-Now you can test incoming states with `hasState`. We are providing Mockk to help mock underlying coroutines call: 
+Now you can test incoming states & events with `assertReceived`:
 
 ```kotlin
 @Test
 fun `has some weather`() {
-	// prepare test data
-	val weatherData = WeatherData(...)
-	// setup mocked call
-	coEvery { mockedRepo.getWeatherForToday() } return weatherData
+    // prepare test data
+    val weatherData = WeatherData(...)
+    // setup mocked call
+    coEvery { mockedRepo.getWeatherForToday() } return weatherData
 
-	// Call getWeather()
-	dataFlow.getWeather()
-		
-	// verify state
-	verifySequence {
-		view.hasState(WeatherState(weatherData.day, weatherData.temperature))
-	}
-}
-```
-
-or with value test observer:
-
-```kotlin
-@Test
-fun `has some weather`() {
-	// prepare test data
-	val weatherData = WeatherData(...)
-	// setup mocked call
-	coEvery { mockedRepo.getWeatherForToday() } return weatherData
-
-	// Call getWeather()
-	dataFlow.getWeather()
-		
-	// verify state
-	dataFlow.assertHasReceived (
-		WeatherState(weatherData.day, weatherData.temperature)
+    // Call getWeather()
+    dataFlow.getWeather()
+        
+    // verify state
+    dataFlow.assertReceived (
+        WeatherState(weatherData.day, weatherData.temperature)
     )
 }
 ```

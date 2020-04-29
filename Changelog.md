@@ -1,7 +1,21 @@
 
 # Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
 
+#### ⚒ Team - (Arnaud Giuliani, Marcin Chrapowicz, Erik Huizinga)
+
 ## Changelog
+
+## 0.11.x
+
+### 0.11.0
+
+- `update` Kotlin 1.3.72 & Kotlin Coroutines 1.3.5
+- `update` Arrow integration with Either type in `uniflow-arrow` module. Arrow update to 0.10.5 (👍 Borja Quevedo)
+- `update` internal components design: Keep DataFlow as interface and use components: ActionDispatcher, ActionReducer, UiDataPublisher & UiDataStore. Help to avoid expose internal functions API
+- `added` better testing tools and introduce `createTestObserver` to help create `TestViewObserver`. It allow to use `assertReceived` data states & events
+- `fixed` Endless loop fix - (👍 Grzegorz Gajewski)
+- `added`  Add UniFlowLogger.default() to reset to the default Logger 
+- `fixed`  Use TestCoroutineDispatcher instead of Dispatchers.Unconfined
 
 ### 0.10.3
 

@@ -6,15 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.result.get
-import io.uniflow.result.getOrNull
-import io.uniflow.result.onFailure
-import io.uniflow.result.onSuccess
-import io.uniflow.result.onValue
-import io.uniflow.result.toEvent
-import io.uniflow.result.toEventOrNull
-import io.uniflow.result.toState
-import io.uniflow.result.toStateOrNull
+import io.uniflow.result.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -42,7 +34,7 @@ class EitherErrorResultTest {
     fun `map result`() = runBlocking {
         val sndValue = " #2"
         val result = error.left()
-            .map { sndValue }
+                .map { sndValue }
         assertTrue(result.getOrNull() == null)
     }
 
@@ -50,8 +42,8 @@ class EitherErrorResultTest {
     fun `orElse result`() = runBlocking {
         val sndValue = " #2"
         val result =
-            error.left()
-                .getOrHandle { sndValue.right() }
+                error.left()
+                        .getOrHandle { sndValue.right() }
         assertTrue(result.get() == sndValue)
     }
 
@@ -59,7 +51,7 @@ class EitherErrorResultTest {
     fun `flatmap result`() = runBlocking {
         val sndValue = 42
         val result = error.left()
-            .flatMap { sndValue.right() }
+                .flatMap { sndValue.right() }
         assertTrue(result.getOrNull() == null)
     }
 
@@ -67,7 +59,7 @@ class EitherErrorResultTest {
     fun `onSuccess`() = runBlocking {
         var writtenValue = ""
         error.left()
-            .onSuccess { writtenValue = "$it" }
+                .onSuccess { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
     }
@@ -76,7 +68,7 @@ class EitherErrorResultTest {
     fun `onError`() = runBlocking {
         var writtenValue = ""
         error.left()
-            .onFailure { writtenValue = "$it" }
+                .onFailure { writtenValue = "$it" }
 
         assertTrue(writtenValue == "$error")
     }
@@ -85,7 +77,7 @@ class EitherErrorResultTest {
     fun `onValue`() {
         var writtenValue = ""
         error.left()
-            .onValue { writtenValue = "$it" }
+                .onValue { writtenValue = "$it" }
 
         assertTrue(writtenValue == "")
     }
@@ -93,7 +85,7 @@ class EitherErrorResultTest {
     @Test
     fun `to State null`() = runBlocking {
         val result = error.left()
-            .toStateOrNull { UIState.Success }
+                .toStateOrNull { UIState.Success }
 
         assertTrue(result == null)
     }
@@ -101,13 +93,13 @@ class EitherErrorResultTest {
     @Test(expected = IllegalStateException::class)
     fun `to State`() = runBlocking {
         val result = error.left()
-            .toState { UIState.Failed() }
+                .toState { UIState.Failed() }
     }
 
     @Test
     fun `to Event null`() = runBlocking {
         val result = error.left()
-            .toEventOrNull { UIEvent.Fail() }
+                .toEventOrNull { UIEvent.Error() }
 
         assertTrue(result == null)
     }
@@ -115,6 +107,6 @@ class EitherErrorResultTest {
     @Test(expected = IllegalStateException::class)
     fun `to Event`() = runBlocking {
         val result = error.left()
-            .toEvent { UIEvent.Fail() }
+                .toEvent { UIEvent.Error() }
     }
 }

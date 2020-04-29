@@ -108,7 +108,7 @@ class ErrorResultTest {
     @Test
     fun `to Event null`() = runBlocking {
         val result = error.failure()
-            .toEventOrNull { UIEvent.Fail() }
+            .toEventOrNull { UIEvent.Error() }
 
         assertTrue(result == null)
     }
@@ -116,6 +116,6 @@ class ErrorResultTest {
     @Test(expected = IllegalStateException::class)
     fun `to Event`() = runBlocking {
         val result = error.failure()
-            .toEvent { UIEvent.Fail() }
+            .toEvent { UIEvent.Error() }
     }
 }

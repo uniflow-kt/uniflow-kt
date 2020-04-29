@@ -14,23 +14,23 @@ class EitherEventFlowTest {
     @Test
     fun `error event test flow`() = runBlocking {
 
-        val value = Either.catch { throw RuntimeException("boom") }
+        val value = Either.catch<UIEvent> { throw RuntimeException("boom") }
                 .onFailure { System.err.println("error -> $it") }
                 .toEvent(
-                        onSuccess =  { UIEvent.Success },
-                        onError ={ UIEvent.Fail(error = it) })
+                        onSuccess = { UIEvent.Success },
+                        onError = { UIEvent.Error(error = it) })
 
-        assertTrue(value is UIEvent.Fail)
+        assertTrue(value is UIEvent.Error)
     }
 
     @Test
     fun `success event test flow`() = runBlocking {
 
         val value = Either.catch { "Success" }
-            .onSuccess { System.err.println("success -> $it") }
-            .toEvent(
-                onSuccess = { UIEvent.Success },
-                onError = { UIEvent.Fail(error = it) })
+                .onSuccess { System.err.println("success -> $it") }
+                .toEvent(
+                        onSuccess = { UIEvent.Success },
+                        onError = { UIEvent.Error(error = it) })
 
         assertTrue(value is UIEvent.Success)
     }

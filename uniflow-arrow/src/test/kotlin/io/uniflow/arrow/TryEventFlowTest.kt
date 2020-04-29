@@ -14,13 +14,13 @@ class TryEventFlowTest {
     @Test
     fun `error event test flow`() = runBlocking {
 
-        val value = Try { throw RuntimeException("boom") }
+        val value = Try<UIEvent> { throw RuntimeException("boom") }
                 .onFailure { System.err.println("error -> $it") }
                 .toEvent(
                         onSuccess =  { UIEvent.Success },
-                        onError ={ UIEvent.Fail(error = it) })
+                        onError ={ UIEvent.Error(error = it) })
 
-        assertTrue(value is UIEvent.Fail)
+        assertTrue(value is UIEvent.Error)
     }
 
     @Test
@@ -30,7 +30,7 @@ class TryEventFlowTest {
             .onSuccess { System.err.println("success -> $it") }
             .toEvent(
                 onSuccess = { UIEvent.Success },
-                onError = { UIEvent.Fail(error = it) })
+                onError = { UIEvent.Error(error = it) })
 
         assertTrue(value is UIEvent.Success)
     }
