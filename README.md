@@ -23,7 +23,7 @@ implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-this version is based on Kotlin `1.3.71` & Coroutines `1.3.2`
+this version is based on Kotlin `1.3.72` & Coroutines `1.3.5`
 
 ## Web Article 🎉
 
@@ -87,7 +87,7 @@ data class WeatherState(val day : String, val temperature : String) : UIState()
 Publish state updates from your ViewModel:
 
 ```kotlin
-class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow() {
+class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow(defaultState = Empty) {
 
     fun getWeather() = action {
         // call to get data
@@ -150,6 +150,7 @@ fun `has some weather`() {
         
     // verify state
     dataFlow.assertReceived (
+    	UIState.Empty,
         WeatherState(weatherData.day, weatherData.temperature)
     )
 }
