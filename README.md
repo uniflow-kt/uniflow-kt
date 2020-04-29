@@ -23,7 +23,7 @@ implementation 'io.uniflow:uniflow-androidx:$version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$version'
 ```
 
-this version is based on Kotlin `1.3.71` & Coroutines `1.3.2`
+this version is based on Kotlin `1.3.72` & Coroutines `1.3.5`
 
 ## Web Article 🎉
 
