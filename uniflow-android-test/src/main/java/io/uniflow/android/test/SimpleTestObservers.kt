@@ -34,9 +34,9 @@ class TestViewObserver {
     val lastValueOrNull
         get() = values.lastOrNull()
 
-    fun assertReceived(vararg any: UIData) = assert(this.values == any) { "Wrong values\nshould have [$any]\nbut was [${values}]" }
-    fun assertReceived(vararg states: UIState) = assert(this.states.values == states) { "Wrong values\nshould have [$states]\nbut was [${this.states.values}]" }
-    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events) { "Wrong values\nshould have [$events]\nbut was [${this.events.values}]" }
+    fun assertReceived(vararg any: UIData) = assert(this.values == any.toList()) { "Wrong values\nshould have [${any.toList()}]\nbut was [${values}]" }
+    fun assertReceived(vararg states: UIState) = assert(this.states.values == states.toList()) { "Wrong values\nshould have [${states.toList()}]\nbut was [${this.states.values}]" }
+    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events.toList()) { "Wrong values\nshould have [${events.toList()}]\nbut was [${this.events.values}]" }
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
