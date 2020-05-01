@@ -2,7 +2,6 @@ package io.uniflow.android.test
 
 import androidx.lifecycle.Observer
 import io.uniflow.androidx.flow.AndroidDataFlow
-import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -19,7 +18,7 @@ class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
 class TestViewObserver {
     val values = arrayListOf<UIData>()
     val states = SimpleObserver<UIState> { values.add(it) }
-    val events = SimpleObserver<Event<UIEvent>> { values.add(it.peek()) }
+    val events = SimpleObserver<UIEvent> { values.add(it) }
 
     val lastStateOrNull: UIState?
         get() = states.values.lastOrNull()
@@ -40,6 +39,6 @@ class TestViewObserver {
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val tester = TestViewObserver()
     dataPublisher.states.observeForever(tester.states)
-    dataPublisher.events.observeForever(tester.events)
+    dataPublisher.events.observeForever { tester.events.onChanged(it.peek()) }
     return tester
 }
