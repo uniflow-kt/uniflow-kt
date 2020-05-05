@@ -12,7 +12,14 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /**
- * Setup Test Configuration Dispatcher
+ * This rule [sets][setMain] the [`Main`][Dispatchers.Main] coroutine dispatcher before tests.
+ * Any coroutines running on [testCoroutineDispatcher] are
+ * [cleaned up][kotlinx.coroutines.test.TestCoroutineDispatcher.cleanupTestCoroutines] after tests,
+ * after which the main dispatcher is [reset][resetMain].
+ *
+ * @param testCoroutineDispatcher The [TestCoroutineDispatcher] used to replace the coroutine
+ * dispatchers used by UniFlow.
+ * Defaults to `TestCoroutineDispatcher()`.
  */
 @ExperimentalCoroutinesApi
 class TestDispatchersRule(
