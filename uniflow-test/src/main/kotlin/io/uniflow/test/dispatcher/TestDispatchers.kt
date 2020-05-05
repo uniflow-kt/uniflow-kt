@@ -22,6 +22,10 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 /**
  * Dispatchers Configuration for Tests
  *
+ * @param testCoroutineDispatcher The [TestCoroutineDispatcher] used to replace the main, default
+ * and IO coroutine dispatchers of this `UniFlowDispatcherConfiguration`.
+ * Defaults to `TestCoroutineDispatcher()`.
+ *
  * @author Arnaud Giuliani
  */
 @ExperimentalCoroutinesApi
