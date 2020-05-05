@@ -25,8 +25,9 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
  * @author Arnaud Giuliani
  */
 @ExperimentalCoroutinesApi
-class TestDispatchers : UniFlowDispatcherConfiguration {
-    val testCoroutineDispatcher = TestCoroutineDispatcher()
+class TestDispatchers(
+    private val testCoroutineDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+) : UniFlowDispatcherConfiguration {
     override fun main() = testCoroutineDispatcher
     override fun default() = testCoroutineDispatcher
     override fun io() = testCoroutineDispatcher
