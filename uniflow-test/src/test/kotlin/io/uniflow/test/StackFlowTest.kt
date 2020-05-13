@@ -140,19 +140,6 @@ class StackFlowTest {
     }
 
     @Test
-    fun `child io action error`() {
-        val error = IllegalStateException("Boom on IO")
-        dataFlow.getAll()
-        dataFlow.add("first")
-        dataFlow.childIOError()
-
-        dataFlow.assertReceived(UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))),
-                UIState.Failed("Got error $error", error))
-    }
-
-    @Test
     fun `child io action`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.add("first")

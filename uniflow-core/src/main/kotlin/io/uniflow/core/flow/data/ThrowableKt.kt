@@ -1,29 +1,28 @@
 package io.uniflow.core.flow.data
 
-fun Throwable.isNotEquals(error: Throwable): Boolean = !isEquals(error)
-
-fun Throwable.isEquals(error: Throwable): Boolean {
-    return message == error.message &&
-            cause == error.cause
-}
-
 fun Throwable.toThrowableKt(): ThrowableKt {
-    return ThrowableKt(message, cause?.toThrowableKt())
+    return ThrowableKt(message, cause)
 }
 
 fun throwableKt(t: Throwable) = t.toThrowableKt()
 
 open class ThrowableKt(val message: String? = null, val cause: ThrowableKt? = null) {
 
+    var error: Throwable? = null
+        private set
+
     constructor(message: String? = null) : this(message, null as? ThrowableKt)
-    constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toThrowableKt())
-    constructor(message: String? = null, cause: Exception? = null) : this(message, cause?.toThrowableKt())
+    constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toThrowableKt()) {
+        error = cause
+    }
+
+    constructor(message: String? = null, cause: Exception? = null) : this(message, cause?.toThrowableKt()) {
+        error = cause
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ThrowableKt
+        if (other !is ThrowableKt) return false
 
         if (message != other.message) return false
         if (cause != other.cause) return false
