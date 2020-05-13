@@ -1,5 +1,6 @@
 package io.uniflow.test
 
+import io.uniflow.core.flow.data.ThrowableKt
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.DebugMessageLogger
@@ -121,7 +122,9 @@ class StackFlowTest {
         dataFlow.assertReceived(
                 UIState.Empty,
                 TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))))
+                TodoListState(listOf(Todo("first"))),
+                UIEvent.Error("Event logError", ThrowableKt("boom"))
+        )
         // assert(dataFlow.last is UIEvent.Error)
     }
 

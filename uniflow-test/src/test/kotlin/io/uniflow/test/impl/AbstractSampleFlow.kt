@@ -3,7 +3,6 @@ package io.uniflow.test.impl
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
 import io.uniflow.core.flow.data.UIData
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,14 +33,6 @@ abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow {
 
     init {
         action { setState { defaultState } }
-    }
-
-    fun assertReceived(vararg states: UIState) {
-        assert(dataPublisher.states == states.toList()) { "Wrong values\nshould have ${states.toList()}\nbut was ${dataPublisher.states}" }
-    }
-
-    fun assertReceived(vararg events: UIEvent) {
-        assert(dataPublisher.events == events.toList()) { "Wrong values\nshould have ${events.toList()}\nbut was ${dataPublisher.events}" }
     }
 
     fun assertReceived(vararg any: UIData) {
