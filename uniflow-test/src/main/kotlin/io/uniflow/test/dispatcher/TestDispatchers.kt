@@ -22,11 +22,16 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 /**
  * Dispatchers Configuration for Tests
  *
+ * @param testCoroutineDispatcher The [TestCoroutineDispatcher] used to replace the main, default
+ * and IO coroutine dispatchers of this `UniFlowDispatcherConfiguration`.
+ * Defaults to `TestCoroutineDispatcher()`.
+ *
  * @author Arnaud Giuliani
  */
 @ExperimentalCoroutinesApi
-class TestDispatchers : UniFlowDispatcherConfiguration {
-    val testCoroutineDispatcher = TestCoroutineDispatcher()
+class TestDispatchers(
+    private val testCoroutineDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+) : UniFlowDispatcherConfiguration {
     override fun main() = testCoroutineDispatcher
     override fun default() = testCoroutineDispatcher
     override fun io() = testCoroutineDispatcher
