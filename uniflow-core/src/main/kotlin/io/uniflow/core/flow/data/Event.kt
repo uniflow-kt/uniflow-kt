@@ -21,7 +21,7 @@ package io.uniflow.core.flow.data
  *
  * @author Arnaud Giuliani
  */
-data class Event<out T>(private val content: T) {
+data class Event<out T : UIEvent>(private val content: T) {
 
     var hasBeenHandled = false
         private set // Allow external read but not write

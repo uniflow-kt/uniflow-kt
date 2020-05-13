@@ -26,19 +26,19 @@ jobs:
       steps:
         - checkout
         - run:
-            name: Download dependencies
-            command: ./gradlew androidDependencies
-        - run:
             name: Run Tests
             command: ./test.sh
 
 
-  publish:
+  publish_build:
     <<: *android_config
     steps:
       - checkout
+       - run:
+          name: Install
+          command: ./install.sh
       - run:
-          name: Gradle build (debug)
+          name: Release
           command: ./release.sh
 
 workflows:
@@ -49,3 +49,9 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - publish_build:
+          tags:
+            only: /.*/
+          branches:
+            only:
+              - master
