@@ -5,19 +5,27 @@ import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.test.dispatcher.TestDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /**
- * Setup Test Configuration Dispatcher
+ * This rule [sets][setMain] the [`Main`][Dispatchers.Main] coroutine dispatcher before tests.
+ * Any coroutines running on [testCoroutineDispatcher] are
+ * [cleaned up][kotlinx.coroutines.test.TestCoroutineDispatcher.cleanupTestCoroutines] after tests,
+ * after which the main dispatcher is [reset][resetMain].
+ *
+ * @param testCoroutineDispatcher The [TestCoroutineDispatcher] used to replace the coroutine
+ * dispatchers used by UniFlow.
+ * Defaults to `TestCoroutineDispatcher()`.
  */
 @ExperimentalCoroutinesApi
-class TestDispatchersRule : TestWatcher() {
-    private val testDispatchers = TestDispatchers()
-    val testCoroutineDispatcher = testDispatchers.testCoroutineDispatcher
-
+class TestDispatchersRule(
+    val testCoroutineDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+) : TestWatcher() {
+    private val testDispatchers: TestDispatchers = TestDispatchers(testCoroutineDispatcher)
     override fun starting(description: Description?) {
         Dispatchers.setMain(testCoroutineDispatcher)
         UniFlowDispatcher.dispatcher = testDispatchers
