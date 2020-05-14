@@ -32,7 +32,6 @@ open class UIEvent : UIData {
     data class Error(val message: String? = null, val error: ThrowableKt? = null, val state: UIState? = null) : UIEvent() {
         constructor(message: String? = null) : this(message, null as? ThrowableKt)
         constructor(message: String? = null, error: Throwable? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
-        constructor(message: String? = null, error: Exception? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
     }
 
     data class BadOrWrongState(val currentState: UIState) : UIEvent()
