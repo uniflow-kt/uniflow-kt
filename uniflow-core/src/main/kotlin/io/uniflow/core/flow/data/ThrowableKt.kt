@@ -16,10 +16,6 @@ open class ThrowableKt(val message: String? = null, val cause: ThrowableKt? = nu
         error = cause
     }
 
-    constructor(message: String? = null, cause: Exception? = null) : this(message, cause?.toThrowableKt()) {
-        error = cause
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ThrowableKt) return false
