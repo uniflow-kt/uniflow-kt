@@ -21,8 +21,8 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 
 The state mutation operator are the following:
 
-- `action { current -> ... newState}` - from current state, udpate the current state
-- `actionOn<T> { current as T -> newState }` - from current state <T>, udpate the current state
+- `action { current -> ... newState}` - from current state, update the current state
+- `actionOn<T> { current as T -> newState }` - from current state <T>, update the current state
 
 ## States as immutable data
 
