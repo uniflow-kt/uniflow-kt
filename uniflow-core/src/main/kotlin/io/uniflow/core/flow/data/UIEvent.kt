@@ -29,8 +29,8 @@ open class UIEvent : UIData {
         override fun toString(): String = "Success"
     }
 
-    data class Error(val message: String? = null, val error: ThrowableKt? = null, val state: UIState? = null) : UIEvent() {
-        constructor(message: String? = null) : this(message, null as? ThrowableKt)
+    data class Error(val message: String? = null, val error: UIError? = null, val state: UIState? = null) : UIEvent() {
+        constructor(message: String? = null) : this(message, null as? UIError)
         constructor(message: String? = null, error: Throwable? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
     }
 

@@ -35,9 +35,9 @@ open class UIState : UIData {
         override fun toString(): String = "Success"
     }
 
-    data class Failed(val message: String? = null, val error: ThrowableKt? = null, val state: UIState? = null) : UIState() {
-        constructor(message: String? = null) : this(message, null as ThrowableKt)
-        constructor(message: String? = null, state: UIState? = null) : this(message, null as ThrowableKt, state)
+    data class Failed(val message: String? = null, val error: UIError? = null, val state: UIState? = null) : UIState() {
+        constructor(message: String? = null) : this(message, null as UIError)
+        constructor(message: String? = null, state: UIState? = null) : this(message, null as UIError, state)
         constructor(message: String? = null, error: Throwable? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
         constructor(message: String? = null, error: Exception? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
     }

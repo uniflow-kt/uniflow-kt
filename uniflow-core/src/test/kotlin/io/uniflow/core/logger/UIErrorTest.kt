@@ -5,7 +5,7 @@ import io.uniflow.core.flow.data.toThrowableKt
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ThrowableKtTest {
+class UIErrorTest {
 
     @Test
     fun `test equals`() {
