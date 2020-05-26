@@ -15,6 +15,8 @@
  */
 package io.uniflow.core.flow.data
 
+import java.lang.Exception
+
 /**
  * Data Flow UI State
  *
@@ -33,24 +35,12 @@ open class UIState : UIData {
         override fun toString(): String = "Success"
     }
 
-    data class Failed(val message: String? = null, val error: Throwable? = null, val state: UIState? = null) : UIState() {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is Failed) return false
-
-            if (message != other.message) return false
-            if (error?.javaClass != other.error?.javaClass) return false
-            if (error?.message != other.error?.message) return false
-            if (state != other.state) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = message?.hashCode() ?: 0
-            result = 31 * result + (error?.hashCode() ?: 0)
-            result = 31 * result + (state?.hashCode() ?: 0)
-            return result
-        }
+    data class Failed(val message: String? = null, val error: UIError? = null, val state: UIState? = null) : UIState() {
+        constructor(message: String? = null) : this(message, null as UIError)
+        constructor(message: String? = null, state: UIState? = null) : this(message, null as UIError, state)
+        constructor(message: String? = null, error: Throwable? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
+        constructor(message: String? = null, error: Exception? = null, state: UIState? = null) : this(message, error?.toThrowableKt(), state)
     }
 }
+
+

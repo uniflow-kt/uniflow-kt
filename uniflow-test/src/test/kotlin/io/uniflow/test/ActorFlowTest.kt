@@ -2,6 +2,7 @@ package io.uniflow.test
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.data.toThrowableKt
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -153,7 +154,8 @@ class ActorFlowTest {
 
     @Test
     fun `child io action error`() {
-        val error = IllegalStateException("Boom on IO")
+        val errorMsg = "Boom on IO"
+        val error = IllegalStateException(errorMsg, IllegalStateException(errorMsg))
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIOError()
@@ -162,7 +164,7 @@ class ActorFlowTest {
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
-                UIState.Failed("Got error $error", error)
+                UIState.Failed("Got error $error", error.toThrowableKt())
         )
     }
 

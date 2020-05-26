@@ -2,6 +2,7 @@ package io.uniflow.android.test
 
 import android.arch.lifecycle.Observer
 import io.uniflow.android.flow.AndroidDataFlow
+import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -33,9 +34,9 @@ class TestViewObserver {
     val lastValueOrNull
         get() = values.lastOrNull()
 
-    fun assertReceived(vararg any: UIData) = assert(this.values == any.toList()) { "Wrong values\nshould have [${any.toList()}]\nbut was [${values}]" }
-    fun assertReceived(vararg states: UIState) = assert(this.states.values == states.toList()) { "Wrong values\nshould have [${states.toList()}]\nbut was [${this.states.values}]" }
-    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events.toList()) { "Wrong values\nshould have [${events.toList()}]\nbut was [${this.events.values}]" }
+    @Deprecated("better use verifySequence")
+    fun assertReceived(vararg any: UIData) = verifySequence(*any)
+    fun verifySequence(vararg any: UIData) = assert(this.values == any.toList()) { "Wrong values\nshould have [${any.toList()}]\nbut was [${values}]" }
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
