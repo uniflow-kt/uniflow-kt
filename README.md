@@ -3,7 +3,7 @@
 
 ## Setup
 
-#### Current version is `0.11.0`
+#### Current version is `0.11.1`
 
 Choose one of the following dependency:
 
@@ -149,7 +149,7 @@ fun `has some weather`() {
     dataFlow.getWeather()
         
     // verify state
-    dataFlow.assertReceived (
+    dataFlow.verifySequence(
     	UIState.Empty,
         WeatherState(weatherData.day, weatherData.temperature)
     )

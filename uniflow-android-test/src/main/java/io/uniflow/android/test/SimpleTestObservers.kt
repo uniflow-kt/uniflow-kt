@@ -21,7 +21,7 @@ class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
 class TestViewObserver {
     val values = arrayListOf<UIData>()
     val states = SimpleObserver<UIState> { values.add(it) }
-    val events = SimpleObserver<Event<UIEvent>> { values.add(it.peek()) }
+    val events = SimpleObserver<UIEvent> { values.add(it) }
 
     val lastStateOrNull: UIState?
         get() = states.values.lastOrNull()
@@ -34,14 +34,14 @@ class TestViewObserver {
     val lastValueOrNull
         get() = values.lastOrNull()
 
-    fun assertReceived(vararg any: UIData) = assert(this.values == any) { "Wrong values\nshould have [$any]\nbut was [${values}]" }
-    fun assertReceived(vararg states: UIState) = assert(this.states.values == states) { "Wrong values\nshould have [$states]\nbut was [${this.states.values}]" }
-    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events) { "Wrong values\nshould have [$events]\nbut was [${this.events.values}]" }
+    @Deprecated("better use verifySequence")
+    fun assertReceived(vararg any: UIData) = verifySequence(*any)
+    fun verifySequence(vararg any: UIData) = assert(this.values == any.toList()) { "Wrong values\nshould have [${any.toList()}]\nbut was [${values}]" }
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val tester = TestViewObserver()
     dataPublisher.states.observeForever(tester.states)
-    dataPublisher.events.observeForever(tester.events)
+    dataPublisher.events.observeForever { tester.events.onChanged(it?.peek()) }
     return tester
 }
