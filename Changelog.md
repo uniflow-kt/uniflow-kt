@@ -7,6 +7,12 @@
 
 ## 0.11.x
 
+### 0.11.1
+
+- `added` Add `UIError` object to help wrap exception make it comparable. (#35)
+- `fixed` Parameterize `TestCoroutineDispatcher` in `TestDispatchers` and `TestDispatchersRule` (#30)
+- `fixed` Make `Event<out T>` covariant with `UIEvent` (#32)
+
 ### 0.11.0
 
 - `update` Kotlin 1.3.72 & Kotlin Coroutines 1.3.5
