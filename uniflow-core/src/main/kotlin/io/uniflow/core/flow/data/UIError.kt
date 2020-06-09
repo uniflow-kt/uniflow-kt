@@ -6,12 +6,12 @@ fun Throwable.toThrowableKt(): UIError {
 
 open class UIError(val message: String? = null, val cause: UIError? = null) {
 
-    var error: Throwable? = null
+    var origin: Throwable? = null
         private set
 
     constructor(message: String? = null) : this(message, null as? UIError)
     constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toThrowableKt()) {
-        error = cause
+        origin = cause
     }
 
     override fun equals(other: Any?): Boolean {
