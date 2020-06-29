@@ -7,6 +7,10 @@
 
 ## 0.11.x
 
+### 0.11.2
+
+- `fixed` fix extensions `UIError` 
+
 ### 0.11.1
 
 - `added` Add `UIError` object to help wrap exception make it comparable. (#35)

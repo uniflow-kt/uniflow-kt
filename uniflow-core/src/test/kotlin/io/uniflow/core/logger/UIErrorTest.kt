@@ -1,7 +1,7 @@
 package io.uniflow.core.logger
 
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.core.flow.data.toThrowableKt
+import io.uniflow.core.flow.data.toUIError
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -12,7 +12,7 @@ class UIErrorTest {
         val e1 = Exception("boom")
         val e2 = Exception("boom")
 
-        assertEquals(e1.toThrowableKt(), e2.toThrowableKt())
+        assertEquals(e1.toUIError(), e2.toUIError())
     }
 
     @Test
