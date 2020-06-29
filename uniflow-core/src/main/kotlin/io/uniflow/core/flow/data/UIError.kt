@@ -1,6 +1,6 @@
 package io.uniflow.core.flow.data
 
-fun Throwable.toThrowableKt(): UIError {
+fun Throwable.toUIError(): UIError {
     return UIError(message, cause)
 }
 
@@ -10,7 +10,7 @@ open class UIError(val message: String? = null, val cause: UIError? = null) {
         private set
 
     constructor(message: String? = null) : this(message, null as? UIError)
-    constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toThrowableKt()) {
+    constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toUIError()) {
         origin = cause
     }
 
@@ -30,5 +30,5 @@ open class UIError(val message: String? = null, val cause: UIError? = null) {
         return result
     }
 
-    override fun toString(): String = "ThrowableKt(message='$message',cause=$cause)"
+    override fun toString(): String = "UIError(message='$message',cause=$cause)"
 }

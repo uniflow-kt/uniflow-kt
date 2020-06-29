@@ -2,7 +2,7 @@ package io.uniflow.test
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
-import io.uniflow.core.flow.data.toThrowableKt
+import io.uniflow.core.flow.data.toUIError
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -164,7 +164,7 @@ class ActorFlowTest {
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
-                UIState.Failed("Got error $error", error.toThrowableKt())
+                UIState.Failed("Got error $error", error.toUIError())
         )
     }
 
