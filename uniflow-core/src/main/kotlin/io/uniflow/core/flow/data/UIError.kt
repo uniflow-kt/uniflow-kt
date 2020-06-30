@@ -1,7 +1,7 @@
 package io.uniflow.core.flow.data
 
 fun Throwable.toUIError(): UIError {
-    return UIError(message, cause)
+    return UIError(message, this)
 }
 
 open class UIError(val message: String? = null, val cause: UIError? = null) {
@@ -10,8 +10,8 @@ open class UIError(val message: String? = null, val cause: UIError? = null) {
         private set
 
     constructor(message: String? = null) : this(message, null as? UIError)
-    constructor(message: String? = null, cause: Throwable? = null) : this(message, cause?.toUIError()) {
-        origin = cause
+    constructor(message: String? = null, throwable: Throwable? = null) : this(message, throwable?.cause?.toUIError()) {
+        origin = throwable
     }
 
     override fun equals(other: Any?): Boolean {
