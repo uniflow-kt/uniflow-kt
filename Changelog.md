@@ -9,8 +9,10 @@
 
 ### 0.11.3
 
-- `fixed` android simple tester `verifySequence` API to point which state data is failing in the list
+- `fixed` android simple tester `verifySequence` API to help verify which state data is failing in the list
 - `fixed` UIError mapping
+- `fixed` Set initial state synchronously to avoid race condition - https://github.com/uniflow-kt/uniflow-kt/pull/41
+- `added` More logs
 
 ### 0.11.2
 
