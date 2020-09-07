@@ -7,6 +7,11 @@
 
 ## 0.11.x
 
+### 0.11.3
+
+- `fixed` android simple tester `verifySequence` API to point which state data is failing in the list
+- `fixed` UIError mapping
+
 ### 0.11.2
 
 - `fixed` fix extensions `UIError` 
