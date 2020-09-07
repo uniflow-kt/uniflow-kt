@@ -25,7 +25,7 @@ import org.junit.Test
 class ActorFlowTest {
     companion object {
         init {
-            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, showDebug = true))
         }
 
         @JvmStatic

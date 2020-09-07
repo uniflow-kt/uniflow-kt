@@ -2,6 +2,7 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.launchOnIO
 import kotlinx.coroutines.CoroutineScope
 import kotlin.reflect.KClass
@@ -29,6 +30,7 @@ class ActionDispatcher(
         return if (stateClass.isInstance(currentState)) {
             val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
             coroutineScope.launchOnIO {
+                UniFlowLogger.debug("ActionDispatcher - enqueue: $action")
                 reducer.enqueueAction(action)
             }
             action

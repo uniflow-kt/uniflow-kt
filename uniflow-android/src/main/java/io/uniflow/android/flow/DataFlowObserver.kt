@@ -18,7 +18,9 @@ package io.uniflow.android.flow
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 
 /**
  * AndroidDataFlow Observers for states & events
@@ -27,9 +29,41 @@ import io.uniflow.core.flow.data.UIState
  */
 
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
-    vm.dataPublisher.states.observe(this, Observer { state: UIState? -> state?.let { handleStates(state) } })
+    vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
+        state?.let {
+            UniFlowLogger.debug("onStates - $this -> $state")
+            handleStates(state)
+        }
+    })
 }
 
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
-    vm.dataPublisher.events.observe(this, Observer { event -> event?.let { handleEvents(event) } })
+    vm.dataPublisher.events.observe(this, Observer { event ->
+        event?.let {
+            UniFlowLogger.debug("onEvents - $this -> $event")
+            handleEvents(event)
+        }
+    })
+}
+
+fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    vm.dataPublisher.events.observe(this, Observer { event ->
+        event?.let {
+            event.peek().let {
+                UniFlowLogger.debug("onPeekEvents - $this -> $event")
+                handleEvents(it)
+            }
+        }
+    })
+}
+
+fun LifecycleOwner.onTakeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    vm.dataPublisher.events.observe(this, Observer { event ->
+        event?.let {
+            event.take()?.let {
+                UniFlowLogger.debug("onTakeEvents - $this -> $event")
+                handleEvents(it)
+            }
+        }
+    })
 }

@@ -25,7 +25,7 @@ class ActionReducer(
                     reduceAction(action)
                 }
             } else {
-                UniFlowLogger.log("actor $action cancelled")
+                UniFlowLogger.debug("ActionReducer - $action cancelled")
             }
         }
     }
@@ -35,6 +35,7 @@ class ActionReducer(
     }
 
     private suspend fun reduceAction(action: ActionFlow) {
+        UniFlowLogger.debug("ActionReducer - reduce: $action")
         val currentState: UIState = uiDataStore.currentState
         try {
             val onSuccess = action.onSuccess

@@ -26,9 +26,15 @@ import io.uniflow.core.logger.UniFlowLogger
  *
  * @author Arnaud Giuliani
  */
-class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, debugThread: Boolean = false) : Logger {
+class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, val showDebug: Boolean = false) : Logger {
 
-    val dbg_th: String = if (debugThread) "[${Thread.currentThread().name}] " else ""
+    val dbg_th: String = if (showDebug) "[${Thread.currentThread().name}] " else ""
+
+    override fun debug(message: String) {
+        if (showDebug){
+            Log.d(tag,"$dbg_th $message")
+        }
+    }
 
     override fun log(message: String) {
         Log.i(tag,"$dbg_th $message")
