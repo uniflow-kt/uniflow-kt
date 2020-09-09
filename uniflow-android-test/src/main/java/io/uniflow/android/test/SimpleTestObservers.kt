@@ -39,7 +39,7 @@ class TestViewObserver {
         val testingValues = testingData.toList()
         values.forEachIndexed { index, uiData ->
             assert(uiData == testingValues[index]) {
-                "Wrong values at [$index] - Type: ${uiData::class.simpleName}\nShould have [${testingValues[index]}]\n  but was [${uiData}]"
+                "Wrong value at [$index] - Type: ${uiData::class.simpleName}\nShould have [${testingValues[index]}]\nbut was [$uiData]"
             }
         }
     }
