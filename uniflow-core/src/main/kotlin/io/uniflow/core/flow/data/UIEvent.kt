@@ -22,11 +22,11 @@ package io.uniflow.core.flow.data
  */
 open class UIEvent : UIData {
     object Loading : UIEvent() {
-        override fun toString(): String = "Loading"
+        override fun toString(): String = "UIEvent.Loading"
     }
 
     object Success : UIEvent() {
-        override fun toString(): String = "Success"
+        override fun toString(): String = "UIEvent.Success"
     }
 
     data class Error(val message: String? = null, val error: UIError? = null, val state: UIState? = null) : UIEvent() {
