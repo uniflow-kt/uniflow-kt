@@ -7,6 +7,10 @@
 
 ## 0.11.x
 
+### 0.11.4
+
+- `fixed` test message comparison
+
 ### 0.11.3
 
 - `fixed` android simple tester `verifySequence` API to help verify which state data is failing in the list
