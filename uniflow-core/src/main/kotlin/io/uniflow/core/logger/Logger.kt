@@ -24,6 +24,7 @@ import io.uniflow.core.flow.data.UIState
  * @author Arnaud Giuliani
  */
 interface Logger {
+    fun debug(message: String)
     fun log(message: String)
     fun logState(state: UIState)
     fun logEvent(event: UIEvent)

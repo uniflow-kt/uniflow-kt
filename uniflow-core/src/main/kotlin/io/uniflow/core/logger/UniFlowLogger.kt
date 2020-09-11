@@ -42,6 +42,8 @@ object UniFlowLogger : Logger {
         logger = defaultLogger
     }
 
+    override fun debug(message: String) = logger.debug(message)
+
     override fun log(message: String) = logger.log(message)
 
     override fun logState(state: UIState) = logger.logState(state)

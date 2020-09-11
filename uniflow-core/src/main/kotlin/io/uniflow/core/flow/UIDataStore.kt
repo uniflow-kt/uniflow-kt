@@ -11,6 +11,7 @@ class UIDataStore(private val publisher: UIDataPublisher, defaultState: UIState)
         private set
 
     suspend fun pushNewData(dataUpdate: UIDataUpdate) {
+        UniFlowLogger.debug("UIDataStore - push: $dataUpdate")
         when (dataUpdate.data) {
             is UIState -> {
                 currentState = dataUpdate.data
@@ -18,7 +19,7 @@ class UIDataStore(private val publisher: UIDataPublisher, defaultState: UIState)
                 when (dataUpdate.type) {
                     UIDataUpdateType.PUBLISH -> publisher.publishState(dataUpdate.data)
                     else -> {
-                        UniFlowLogger.log("state notification - ${dataUpdate.data} is not published")
+                        UniFlowLogger.debug("[State] internal update '${dataUpdate.data}'")
                     }
                 }
             }

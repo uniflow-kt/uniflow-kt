@@ -24,15 +24,15 @@ import java.lang.Exception
  */
 open class UIState : UIData {
     object Empty : UIState() {
-        override fun toString(): String = "Empty"
+        override fun toString(): String = "UIState.Empty"
     }
 
     object Loading : UIState() {
-        override fun toString(): String = "Loading"
+        override fun toString(): String = "UIState.Loading"
     }
 
     object Success : UIState() {
-        override fun toString(): String = "Success"
+        override fun toString(): String = "UIState.Success"
     }
 
     data class Failed(val message: String? = null, val error: UIError? = null, val state: UIState? = null) : UIState() {

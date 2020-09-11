@@ -24,9 +24,15 @@ import io.uniflow.core.logger.UniFlowLogger.TAG
  *
  * @author Arnaud Giuliani
  */
-open class SimpleMessageLogger(val tag: String = TAG, debugThread: Boolean = false) : Logger {
+open class SimpleMessageLogger(val tag: String = TAG, val showDebug: Boolean = false) : Logger {
 
-    val dbg_th: String = if (debugThread) "[${Thread.currentThread().name}]" else ""
+    val dbg_th: String = if (showDebug) "[${Thread.currentThread().name}]" else ""
+
+    override fun debug(message: String) {
+        if (showDebug){
+            println("$tag$dbg_th - $message")
+        }
+    }
 
     override fun log(message: String) {
         println("$tag$dbg_th - $message")

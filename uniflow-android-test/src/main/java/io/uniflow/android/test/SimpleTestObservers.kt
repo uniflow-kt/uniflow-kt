@@ -5,6 +5,7 @@ import io.uniflow.android.flow.AndroidDataFlow
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import kotlin.test.assertEquals
 
 class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
     val values = arrayListOf<T>()
@@ -38,9 +39,9 @@ class TestViewObserver {
     fun verifySequence(vararg testingData: UIData) {
         val testingValues = testingData.toList()
         values.forEachIndexed { index, uiData ->
-            assert(uiData == testingValues[index]) {
-                "Wrong values at [$index] - Type: ${uiData::class.simpleName}\nShould have [${testingValues[index]}]\n  but was [${uiData}]"
-            }
+            assertEquals(uiData, testingValues[index],
+                    "Wrong values at [$index] - Type: ${uiData::class.simpleName}\nShould have [${testingValues[index]}]\n  but was [${uiData}]"
+            )
         }
     }
 }
