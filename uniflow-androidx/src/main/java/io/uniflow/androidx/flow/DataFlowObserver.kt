@@ -28,6 +28,9 @@ import io.uniflow.core.logger.UniFlowLogger
  * @author Arnaud Giuliani
  */
 
+/**
+ * Listen incoming states (UIState) on given AndroidDataFlow
+ */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
         state?.let {
@@ -37,6 +40,9 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
     })
 }
 
+/**
+ * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
+ */
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
@@ -46,6 +52,9 @@ fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Uni
     })
 }
 
+/**
+ * Listen incoming events & `peek` them (UIEvent) on given AndroidDataFlow
+ */
 fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
@@ -57,6 +66,9 @@ fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> 
     })
 }
 
+/**
+ * Listen incoming events & `take` them (UIEvent) on given AndroidDataFlow
+ */
 fun LifecycleOwner.onTakeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {

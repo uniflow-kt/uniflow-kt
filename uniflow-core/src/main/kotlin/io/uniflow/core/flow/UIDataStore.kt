@@ -19,7 +19,7 @@ class UIDataStore(private val publisher: UIDataPublisher, defaultState: UIState)
                 when (dataUpdate.type) {
                     UIDataUpdateType.PUBLISH -> publisher.publishState(dataUpdate.data)
                     else -> {
-                        UniFlowLogger.log("[State] internal update '${dataUpdate.data}'")
+                        UniFlowLogger.debug("[State] internal update '${dataUpdate.data}'")
                     }
                 }
             }
