@@ -1,6 +1,7 @@
 package io.uniflow.core.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.*
@@ -9,6 +10,7 @@ import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
+import kotlin.reflect.KClass
 
 @OptIn(ObsoleteCoroutinesApi::class)
 class ActionReducer(
@@ -36,20 +38,23 @@ class ActionReducer(
         actor.send(action)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private suspend fun reduceAction(action: ActionFlow) {
         UniFlowLogger.debug("$tag - execute: $action")
         val currentState: UIState = uiDataStore.currentState
         try {
-            val onSuccess = action.onSuccess
-            flow<UIDataUpdate> {
-                action.flow = this
-                onSuccess(action, currentState)
-            }
-            .onCompletion {
-                UniFlowLogger.debug("$tag - completed: $action")
-            }
-            .collect { dataUpdate ->
-                uiDataStore.pushNewData(dataUpdate)
+            if (!action.klass.isInstance(currentState)) {
+                enqueueAction(ActionFlow(currentState::class as KClass<UIState>, onSuccess = { sendEvent { UIEvent.BadOrWrongState(currentState) } }, onError = action.onError))
+            } else {
+                val onSuccess = action.onSuccess
+                flow<UIDataUpdate> {
+                    action.flow = this
+                    onSuccess(action, currentState)
+                }.onCompletion {
+                    UniFlowLogger.debug("$tag - completed: $action")
+                }.collect { dataUpdate ->
+                    uiDataStore.pushNewData(dataUpdate)
+                }
             }
         } catch (e: Exception) {
             val onError = action.onError

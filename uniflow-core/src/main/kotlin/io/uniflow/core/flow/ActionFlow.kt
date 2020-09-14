@@ -4,6 +4,7 @@ import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.flow.FlowCollector
+import kotlin.reflect.KClass
 
 
 typealias ActionFunction<T> = suspend ActionFlow.(T) -> (Unit)
@@ -16,6 +17,7 @@ enum class UIDataUpdateType {
 data class UIDataUpdate(val data: UIData, val type: UIDataUpdateType = UIDataUpdateType.PUBLISH)
 
 class ActionFlow(
+        val klass: KClass<UIState>,
         val onSuccess: ActionFunction<UIState>,
         val onError: ActionErrorFunction
 ) {
