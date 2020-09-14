@@ -34,7 +34,7 @@ import io.uniflow.core.logger.UniFlowLogger
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
         state?.let {
-            UniFlowLogger.debug("onStates - $this -> $state")
+            UniFlowLogger.debug("onStates - $this <- $state")
             handleStates(state)
         }
     })
@@ -46,7 +46,7 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
-            UniFlowLogger.debug("onEvents - $this -> $event")
+            UniFlowLogger.debug("onEvents - $this <- $event")
             handleEvents(event)
         }
     })
@@ -59,7 +59,7 @@ fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> 
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
             event.peek().let {
-                UniFlowLogger.debug("onPeekEvents - $this -> $event")
+                UniFlowLogger.debug("onPeekEvents - $this <- $event")
                 handleEvents(it)
             }
         }
@@ -73,7 +73,7 @@ fun LifecycleOwner.onTakeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> 
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
             event.take()?.let {
-                UniFlowLogger.debug("onTakeEvents - $this -> $event")
+                UniFlowLogger.debug("onTakeEvents - $this <- $event")
                 handleEvents(it)
             }
         }

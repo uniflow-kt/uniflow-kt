@@ -7,6 +7,10 @@
 
 ## 0.11.x
 
+### 0.11.5
+
+- `fixed` compact message logs
+
 ### 0.11.4
 
 - `fixed` test message comparison

@@ -45,12 +45,13 @@ abstract class AndroidDataFlow(
         defaultCapacity: Int = Channel.BUFFERED,
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(), DataFlow {
+    private val tag = this.toString()
     val dataPublisher: LiveDataPublisher = LiveDataPublisher(defaultState)
     private val coroutineScope: CoroutineScope = viewModelScope
-    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState)
-    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity)
+    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState,tag)
+    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity,tag)
     private val actionDispatcher: ActionDispatcher
-        get() = ActionDispatcher(viewModelScope, reducer, dataStore, this)
+        get() = ActionDispatcher(viewModelScope, reducer, dataStore, this,tag)
 
     final override fun getCurrentState() = actionDispatcher.getCurrentState()
     final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()

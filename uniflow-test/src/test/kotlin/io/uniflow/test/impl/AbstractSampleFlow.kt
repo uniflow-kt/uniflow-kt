@@ -12,13 +12,14 @@ import kotlinx.coroutines.channels.Channel
 import kotlin.reflect.KClass
 
 abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow {
+    private val tag = this.toString()
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
     private val dataPublisher: SimpleDataPublisher = SimpleDataPublisher()
-    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState)
-    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED)
+    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState, tag)
+    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
     private val actionDispatcher: ActionDispatcher
-        get() = ActionDispatcher(coroutineScope, reducer, dataStore, this)
+        get() = ActionDispatcher(coroutineScope, reducer, dataStore, this, tag)
 
     final override fun getCurrentState() = actionDispatcher.getCurrentState()
     final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()

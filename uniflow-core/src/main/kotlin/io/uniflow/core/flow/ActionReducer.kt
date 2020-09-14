@@ -8,13 +8,15 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 
-@UseExperimental(ObsoleteCoroutinesApi::class)
+@OptIn(ObsoleteCoroutinesApi::class)
 class ActionReducer(
         private val uiDataStore: UIDataStore,
         private val coroutineScope: CoroutineScope,
         private val defaultDispatcher: CoroutineDispatcher,
-        defaultCapacity: Int = Channel.BUFFERED
+        defaultCapacity: Int = Channel.BUFFERED,
+        val tag: String
 ) {
 
     private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(),
@@ -25,7 +27,7 @@ class ActionReducer(
                     reduceAction(action)
                 }
             } else {
-                UniFlowLogger.debug("ActionReducer - $action cancelled")
+                UniFlowLogger.debug("$tag - $action cancelled")
             }
         }
     }
@@ -35,14 +37,18 @@ class ActionReducer(
     }
 
     private suspend fun reduceAction(action: ActionFlow) {
-        UniFlowLogger.debug("ActionReducer - reduce: $action")
+        UniFlowLogger.debug("$tag - execute: $action")
         val currentState: UIState = uiDataStore.currentState
         try {
             val onSuccess = action.onSuccess
             flow<UIDataUpdate> {
                 action.flow = this
                 onSuccess(action, currentState)
-            }.collect { dataUpdate ->
+            }
+            .onCompletion {
+                UniFlowLogger.debug("$tag - completed: $action")
+            }
+            .collect { dataUpdate ->
                 uiDataStore.pushNewData(dataUpdate)
             }
         } catch (e: Exception) {

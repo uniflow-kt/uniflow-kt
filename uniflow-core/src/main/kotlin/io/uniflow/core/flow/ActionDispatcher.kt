@@ -11,7 +11,8 @@ class ActionDispatcher(
         private val coroutineScope: CoroutineScope,
         private val reducer: ActionReducer,
         private val dataStore: UIDataStore,
-        private val dataFlow: DataFlow
+        private val dataFlow: DataFlow,
+        val tag: String
 ) {
     fun getCurrentState(): UIState = dataStore.currentState
 
@@ -20,7 +21,12 @@ class ActionDispatcher(
 
     fun action(onAction: ActionFunction<UIState>): ActionFlow = action(onAction) { error, state -> dataFlow.onError(error, state, this) }
 
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = ActionFlow(onAction, onError).also { coroutineScope.launchOnIO { reducer.enqueueAction(it) } }
+    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = ActionFlow(onAction, onError).also {
+        coroutineScope.launchOnIO {
+            UniFlowLogger.debug("$tag - enqueue: $it")
+            reducer.enqueueAction(it)
+        }
+    }
 
     fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionOn(stateClass, onAction) { error, state -> dataFlow.onError(error, state, this) }
 
@@ -30,7 +36,7 @@ class ActionDispatcher(
         return if (stateClass.isInstance(currentState)) {
             val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
             coroutineScope.launchOnIO {
-                UniFlowLogger.debug("ActionDispatcher - enqueue: $action")
+                UniFlowLogger.debug("$tag - enqueue: $action")
                 reducer.enqueueAction(action)
             }
             action

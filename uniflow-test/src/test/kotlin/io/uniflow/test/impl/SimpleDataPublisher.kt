@@ -4,6 +4,7 @@ import io.uniflow.core.flow.UIDataPublisher
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
 class SimpleDataPublisher : UIDataPublisher {
@@ -14,6 +15,7 @@ class SimpleDataPublisher : UIDataPublisher {
 
     override suspend fun publishState(state: UIState) {
         onMain(immediate = true) {
+            UniFlowLogger.log("state <- $state")
             data.add(state)
             states.add(state)
         }
@@ -21,6 +23,7 @@ class SimpleDataPublisher : UIDataPublisher {
 
     override suspend fun publishEvent(event: UIEvent) {
         onMain(immediate = true) {
+            UniFlowLogger.log("event <- $event")
             data.add(event)
             events.add(event)
         }
