@@ -30,5 +30,5 @@ open class UIError(val message: String? = null, val cause: UIError? = null) {
         return result
     }
 
-    override fun toString(): String = "UIError(message='$message',cause=$cause)"
+    override fun toString(): String = "UIError(message='$message', origin=$origin)"
 }

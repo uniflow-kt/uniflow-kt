@@ -7,6 +7,10 @@
 
 ## 0.11.x
 
+### 0.11.6
+
+- `fixed` fix UIError message to include `origin` exception
+
 ### 0.11.5
 
 - `fixed` compact message logs
