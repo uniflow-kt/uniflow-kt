@@ -94,6 +94,10 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Success }
     }
 
+    fun testUIStateFailed() = action {
+        setState(UIState.Failed("Some message here"))
+    }
+
     fun notifyFlowFromState() = actionOn<TodoListState> {
         setState { UIState.Loading }
         delay(10)

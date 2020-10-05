@@ -233,6 +233,16 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `test UIState - Failed`() = testCoroutineDispatcher.runBlockingTest {
+        dataFlow.testUIStateFailed()
+
+        dataFlow.assertReceived(
+            UIState.Empty,
+            UIState.Failed(message = "Some message here")
+        )
+    }
+
+    @Test
     fun `test flow from state`() = testCoroutineDispatcher.runBlockingTest {
         dataFlow.getAll()
         dataFlow.notifyFlowFromState()
