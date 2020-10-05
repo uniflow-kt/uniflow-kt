@@ -94,7 +94,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Success }
     }
 
-    fun testUIStateFailed() = action {
+    fun setUIStateFailed() = action {
         setState(UIState.Failed("Some message here"))
     }
 
