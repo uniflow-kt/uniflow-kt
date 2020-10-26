@@ -43,7 +43,7 @@ object UniFlowLogger : Logger {
     }
 
     /**
-     * Set the default [Logger] as the UniFlow event logger.
+     * Set an [EmptyLogger] as the UniFlow event logger.
      */
     fun empty() {
         logger = EmptyLogger()
