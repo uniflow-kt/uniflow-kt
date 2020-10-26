@@ -24,30 +24,29 @@ import io.uniflow.core.flow.data.UIState
  * @author Arnaud Giuliani
  */
 object UniFlowLogger : Logger {
-    private var _logger: Logger? = null
-    val logger: Logger
-        get() = _logger ?: error("No UniFlowLogger has been setup. Please setup a logger with UniFlowLogger.init(...)")
+    var logger: Logger = SimpleMessageLogger()
+        private set
 
     /**
      * Set a [Logger] as the UniFlow event logger.
      * Reset this using [default].
      */
     fun init(logger: Logger) {
-        _logger = logger
+        this.logger = logger
     }
 
     /**
      * Set the default [Logger] as the UniFlow event logger.
      */
     fun default() {
-        _logger = SimpleMessageLogger()
+        logger = SimpleMessageLogger()
     }
 
     /**
      * Set the default [Logger] as the UniFlow event logger.
      */
     fun empty() {
-        _logger = EmptyLogger()
+        logger = EmptyLogger()
     }
 
     override fun debug(message: String) = logger.debug(message)
