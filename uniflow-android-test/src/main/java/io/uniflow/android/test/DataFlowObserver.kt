@@ -9,7 +9,7 @@ import io.uniflow.core.flow.data.UIState
 
 data class MockedViewObserver(val states: Observer<UIState>, val events: Observer<Event<UIEvent>>) {
     infix fun hasState(state: UIState) = states.onChanged(state)
-    infix fun hasEvent(event: UIEvent) = events.onChanged(Event(event))
+    infix fun hasEvent(event: UIEvent) = events.onChanged(Event(content = event))
 }
 
 fun AndroidDataFlow.mockObservers(): MockedViewObserver {

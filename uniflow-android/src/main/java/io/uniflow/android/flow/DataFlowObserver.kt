@@ -17,7 +17,7 @@ package io.uniflow.android.flow
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
-import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
@@ -43,39 +43,12 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 /**
  * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
  */
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    val consumer = EventConsumer()
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
             UniFlowLogger.debug("onEvents - $this <- $event")
-            handleEvents(event)
-        }
-    })
-}
-
-/**
- * Listen incoming events & `peek` them (UIEvent) on given AndroidDataFlow
- */
-fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    vm.dataPublisher.events.observe(this, Observer { event ->
-        event?.let {
-            event.peek().let {
-                UniFlowLogger.debug("onPeekEvents - $this <- $event")
-                handleEvents(it)
-            }
-        }
-    })
-}
-
-/**
- * Listen incoming events & `take` them (UIEvent) on given AndroidDataFlow
- */
-fun LifecycleOwner.onTakeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    vm.dataPublisher.events.observe(this, Observer { event ->
-        event?.let {
-            event.take()?.let {
-                UniFlowLogger.debug("onTakeEvents - $this <- $event")
-                handleEvents(it)
-            }
+            consumer.onEvent(event)
         }
     })
 }
