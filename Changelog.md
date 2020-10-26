@@ -7,6 +7,12 @@
 
 ## 0.11.x
 
+### 0.11.7
+
+- `added` Logger clean & requires setup, else would throw IllegalStateException - use `UniFlowLogger.init(...)`,  `UniFlowLogger.default()` or `UniFlowLogger.empty()`
+- `fixed` Fatal exception in UIState - https://github.com/uniflow-kt/uniflow-kt/pull/48
+- `fixed` Error stacktrace on std out - https://github.com/uniflow-kt/uniflow-kt/pull/47
+
 ### 0.11.6
 
 - `fixed` fix UIError message to include `origin` exception

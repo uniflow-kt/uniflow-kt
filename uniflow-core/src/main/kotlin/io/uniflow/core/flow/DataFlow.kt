@@ -32,7 +32,7 @@ interface DataFlow {
     fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
     fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
     suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        UniFlowLogger.logError("Uncaught error: $error", error)
+        UniFlowLogger.logError("Uncaught error: $error - ${error.stackTrace}", error)
         throw error
     }
 }
