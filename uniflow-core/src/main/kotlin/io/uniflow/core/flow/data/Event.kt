@@ -16,11 +16,35 @@
 
 package io.uniflow.core.flow.data
 
+import io.uniflow.core.flow.EventConsumer
+import io.uniflow.core.logger.UniFlowLogger
 import java.util.*
 
 /**
- * Data Flow Event wrapper
+ * Event wrapper
+ *
+ * Help send content to EventConsumer
  *
  * @author Arnaud Giuliani
  */
-data class Event<out T : UIEvent>(val id: String = UUID.randomUUID().toString(), val content: T)
+data class Event<out T : UIEvent>(val id: String = UUID.randomUUID().toString(), val content: T) {
+
+    private val consumerIds = arrayListOf<String>()
+
+    private fun hasNotBeenSentTo(consumer: EventConsumer): Boolean = !consumerIds.contains(consumer.id)
+
+    private fun registerConsumer(consumer: EventConsumer) {
+        consumerIds.add(consumer.id)
+    }
+
+    fun getContentForConsumer(consumer: EventConsumer): UIEvent? {
+        return if (hasNotBeenSentTo(consumer)) {
+            registerConsumer(consumer)
+            UniFlowLogger.debug("$consumer received $content")
+            content
+        } else {
+            UniFlowLogger.debug("$consumer skipped - already received $content")
+            null
+        }
+    }
+}

@@ -5,6 +5,13 @@
 
 ## Changelog
 
+## 0.12.x
+
+### 0.12.0
+
+- `added` new Event/EventConsumer API to avoid need of take/peek operator, and help simplify the use of UIEvent.  
+
+
 ## 0.11.x
 
 ### 0.11.7

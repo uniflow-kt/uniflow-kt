@@ -44,7 +44,7 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
  * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
  */
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    val consumer = EventConsumer()
+    val consumer = EventConsumer(consumerId)
     vm.dataPublisher.events.observe(this, Observer { event ->
         event?.let {
             UniFlowLogger.debug("onEvents - $this <- $event")
@@ -52,3 +52,6 @@ fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit
         }
     })
 }
+
+internal val Any.consumerId: String
+    get() = this::class.simpleName ?: error("can't get consumerId for $this")

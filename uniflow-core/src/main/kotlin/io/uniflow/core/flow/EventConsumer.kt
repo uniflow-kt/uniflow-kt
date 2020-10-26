@@ -5,24 +5,15 @@ import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.logger.UniFlowLogger
 
 /**
- * Help receive & consume event.
+ * Help consume events & extract content
  */
-class EventConsumer {
-    private val receivedIds: MutableList<String> = arrayListOf()
+data class EventConsumer(val id : String) {
 
-    fun onEvent(event: Event<UIEvent>): UIEvent? {
-        return if (canConsumeEvent(event)) {
-            consumeEvent(event)
-        } else {
-            UniFlowLogger.debug("$this has already received $event")
-            null
-        }
+    init {
+        UniFlowLogger.debug("$this has been created")
     }
 
-    private fun canConsumeEvent(event: Event<UIEvent>): Boolean = receivedIds.contains(event.id)
-    private fun consumeEvent(event: Event<UIEvent>): UIEvent {
-        receivedIds.add(event.id)
-        UniFlowLogger.debug("$this consumed $event")
-        return event.content
+    fun onEvent(event: Event<UIEvent>): UIEvent? {
+        return event.getContentForConsumer(this)
     }
 }
