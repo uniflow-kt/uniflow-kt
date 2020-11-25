@@ -7,7 +7,7 @@ import io.uniflow.core.logger.UniFlowLogger
 /**
  * Help consume events & extract content
  */
-data class EventConsumer(val id : String) {
+data class EventConsumer(val id: String) {
 
     init {
         UniFlowLogger.debug("$this has been created")
