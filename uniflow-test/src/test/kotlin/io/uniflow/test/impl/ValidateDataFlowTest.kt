@@ -10,7 +10,7 @@ import org.junit.Test
 class ValidateDataFlowTest {
 
     @Before
-    fun before(){
+    fun before() {
         UniFlowLogger.default()
     }
 
