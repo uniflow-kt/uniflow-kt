@@ -25,18 +25,20 @@ import kotlin.reflect.KClass
  * @author Arnaud Giuliani
  */
 interface DataFlow {
-    fun getCurrentState(): UIState
-    fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T?
-    fun action(onAction: ActionFunction<UIState>): ActionFlow
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow
-    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
-    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
-    suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
+//    fun getCurrentState(): UIState
+//    fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T?
+
+    val actionDispatcher: ActionDispatcher
+    fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
+    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
+//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
+//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
+    suspend fun onError(error: Exception, currentState: UIState) {
         UniFlowLogger.logError("Uncaught error: $error - ${error.stackTrace}", error)
         throw error
     }
 }
 
-inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow = actionOn(T::class, onAction)
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow = actionOn(T::class, onAction, onError)
+//inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
+//inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow = actionOn(T::class, onAction)
+//inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow = actionOn(T::class, onAction, onError)

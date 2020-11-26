@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onCompletion
 
 @OptIn(ObsoleteCoroutinesApi::class)
 class ActionReducer(
-        private val uiDataStore: UIDataStore,
+//        private val uiDataStore: UIDataStore,
         private val coroutineScope: CoroutineScope,
         private val defaultDispatcher: CoroutineDispatcher,
         defaultCapacity: Int = Channel.BUFFERED,
