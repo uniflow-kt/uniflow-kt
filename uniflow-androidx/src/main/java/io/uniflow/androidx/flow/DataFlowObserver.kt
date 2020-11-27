@@ -17,7 +17,7 @@ package io.uniflow.androidx.flow
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import io.uniflow.core.flow.data.Event
+import io.uniflow.core.flow.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
@@ -32,10 +32,18 @@ import io.uniflow.core.logger.UniFlowLogger
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
+    var lastState: UIState? = null
     vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
+        // TODO Extract generic State observer
         state?.let {
-            UniFlowLogger.debug("onStates - $this <- $state")
-            handleStates(state)
+            UniFlowLogger.debug("onStates - $this - last state: $lastState")
+            if (lastState != state) {
+                UniFlowLogger.debug("onStates - $this <- $state")
+                handleStates(state)
+                lastState = state
+            } else {
+                UniFlowLogger.debug("onStates - already received -  $this <- $state")
+            }
         }
     })
 }
@@ -43,39 +51,18 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 /**
  * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
  */
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (Event<*>) -> Unit) {
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    val consumer = EventConsumer(consumerId)
     vm.dataPublisher.events.observe(this, Observer { event ->
+        // TODO Extract generic Event observer
         event?.let {
-            UniFlowLogger.debug("onEvents - $this <- $event")
-            handleEvents(event)
+            consumer.onEvent(event)?.let {
+                UniFlowLogger.debug("onEvents - $this <- $event")
+                handleEvents(it)
+            } ?: UniFlowLogger.debug("onEvents - already received - $this <- $event")
         }
     })
 }
 
-/**
- * Listen incoming events & `peek` them (UIEvent) on given AndroidDataFlow
- */
-fun LifecycleOwner.onPeekEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    vm.dataPublisher.events.observe(this, Observer { event ->
-        event?.let {
-            event.peek().let {
-                UniFlowLogger.debug("onPeekEvents - $this <- $event")
-                handleEvents(it)
-            }
-        }
-    })
-}
-
-/**
- * Listen incoming events & `take` them (UIEvent) on given AndroidDataFlow
- */
-fun LifecycleOwner.onTakeEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    vm.dataPublisher.events.observe(this, Observer { event ->
-        event?.let {
-            event.take()?.let {
-                UniFlowLogger.debug("onTakeEvents - $this <- $event")
-                handleEvents(it)
-            }
-        }
-    })
-}
+internal val Any.consumerId: String
+    get() = this::class.simpleName ?: error("can't get consumerId for $this")

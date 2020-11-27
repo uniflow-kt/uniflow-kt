@@ -27,7 +27,7 @@ class LiveDataPublisher(defaultState: UIState) : UIDataPublisher {
 
     override suspend fun publishEvent(event: UIEvent) {
         onMain(immediate = true) {
-            _events.value = Event(event)
+            _events.value = Event(content = event)
         }
     }
 }

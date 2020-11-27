@@ -1,11 +1,18 @@
 package io.uniflow.test.impl
 
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.validate.validate
 import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.Test
 
 class ValidateDataFlowTest {
+
+    @Before
+    fun before() {
+        UniFlowLogger.default()
+    }
 
     @Test
     fun `test bad Dataflow`() {
