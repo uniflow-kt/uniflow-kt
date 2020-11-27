@@ -7,6 +7,12 @@
 
 ## 0.11.x
 
+### 0.11.7
+
+- `added` an empty logger (`EmptyLogger`, logs nothing): use `UniFlowLogger.init(EmptyLogger())` or `UniFlowLogger.empty()`
+- `fixed` Fatal exception in UIState - https://github.com/uniflow-kt/uniflow-kt/pull/48
+- `fixed` Error stacktrace on std out - https://github.com/uniflow-kt/uniflow-kt/pull/47
+
 ### 0.11.6
 
 - `fixed` fix UIError message to include `origin` exception
@@ -74,5 +80,4 @@ _no backward compatibility API with previous version!_
 #### 0.8.5
 
 - merge `AndroidDataFlow` and `AndroidActorFlow` classes in both Android libs to provide an actor based ViewModel by default, to ensure event scheduling ordered.
-
 

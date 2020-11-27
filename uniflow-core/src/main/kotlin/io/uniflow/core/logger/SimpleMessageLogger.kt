@@ -26,28 +26,28 @@ import io.uniflow.core.logger.UniFlowLogger.TAG
  */
 open class SimpleMessageLogger(val tag: String = TAG, val showDebug: Boolean = false) : Logger {
 
-    val dbg_th: String = if (showDebug) "[${Thread.currentThread().name}]" else ""
+    private val threadTag: String = if (showDebug) "[${Thread.currentThread().name}]" else ""
 
     override fun debug(message: String) {
         if (showDebug){
-            println("$tag$dbg_th - $message")
+            println("$tag$threadTag - $message")
         }
     }
 
     override fun log(message: String) {
-        println("$tag$dbg_th - $message")
+        println("$tag$threadTag - $message")
     }
 
     override fun logState(state: UIState) {
-        println("$tag$dbg_th [STATE] - $state")
+        println("$tag$threadTag [STATE] - $state")
     }
 
     override fun logEvent(event: UIEvent) {
-        println("$tag$dbg_th <EVENT> - $event")
+        println("$tag$threadTag <EVENT> - $event")
     }
 
     override fun logError(errorMessage: String, error: Exception?) {
         val finalError = error?.let { ":: $error" } ?: ""
-        System.err.println("$tag$dbg_th !ERROR! - $errorMessage $finalError")
+        System.err.println("$tag$threadTag !ERROR! - $errorMessage $finalError")
     }
 }
