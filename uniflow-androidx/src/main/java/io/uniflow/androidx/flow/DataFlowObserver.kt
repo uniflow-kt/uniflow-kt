@@ -32,10 +32,18 @@ import io.uniflow.core.logger.UniFlowLogger
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
+    var lastState: UIState? = null
     vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
+        // TODO Extract generic State observer
         state?.let {
-            UniFlowLogger.debug("onStates - $this <- $state")
-            handleStates(state)
+            UniFlowLogger.debug("onStates - $this - last state: $lastState")
+            if (lastState != state) {
+                UniFlowLogger.debug("onStates - $this <- $state")
+                handleStates(state)
+                lastState = state
+            } else {
+                UniFlowLogger.debug("onStates - already received -  $this <- $state")
+            }
         }
     })
 }
@@ -46,9 +54,12 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
     val consumer = EventConsumer(consumerId)
     vm.dataPublisher.events.observe(this, Observer { event ->
+        // TODO Extract generic Event observer
         event?.let {
-            UniFlowLogger.debug("onEvents - $this <- $event")
-            consumer.onEvent(event)
+            consumer.onEvent(event)?.let {
+                UniFlowLogger.debug("onEvents - $this <- $event")
+                handleEvents(it)
+            } ?: UniFlowLogger.debug("onEvents - already received - $this <- $event")
         }
     })
 }
