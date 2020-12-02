@@ -6,6 +6,7 @@ import io.uniflow.core.flow.ActionReducer
 import io.uniflow.core.flow.DataFlow
 import io.uniflow.core.flow.DataPublisher
 import io.uniflow.core.flow.data.UIData
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,26 +14,26 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 
-abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, DataPublisher by defaultPublisher(defaultState) {
+abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPublisher {
     override val tag = this.toString()
 
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
-    private val actionReducer = ActionReducer(this, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
+    override val defaultDataPublisher = defaultPublisher(defaultState)
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultDataPublisher.publishState(state, pushStateUpdate)
+    override suspend fun publishEvent(event: UIEvent) = defaultDataPublisher.publishEvent(event)
+    override suspend fun getState(): UIState = defaultDataPublisher.getState()
+
+    private val actionReducer = ActionReducer(defaultDataPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
     override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
 
-    init {
-        action { setState(defaultState) }
-    }
-
     override suspend fun onError(error: Exception, currentState: UIState) {
-        action { setState { UIState.Failed("Got error $error", error) } }
+        action { setState { UIState.Failed(error = error) } }
     }
 
     fun assertReceived(vararg any: UIData) {
-//        val sdp = this as SimpleDataPublisher
-//        assert(sdp.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${sdp.data}" }
+        assert(defaultDataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${defaultDataPublisher.data}" }
     }
 
     fun close() {
@@ -41,4 +42,4 @@ abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow, DataPublish
     }
 }
 
-fun defaultPublisher(defaultState: UIState): DataPublisher = SimpleDataPublisher(defaultState)
+fun defaultPublisher(defaultState: UIState, tag: String = "default") = SimpleDataPublisher(defaultState,tag)

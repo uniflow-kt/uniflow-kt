@@ -28,6 +28,7 @@ import io.uniflow.core.logger.UniFlowLogger
 interface DataFlow {
     val tag: String
     val actionDispatcher: ActionDispatcher
+    val defaultDataPublisher : DataPublisher
     fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
     fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)
     suspend fun onError(error: Exception, currentState: UIState) {
@@ -36,6 +37,5 @@ interface DataFlow {
     }
 }
 
-//inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
 inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction)
 inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>, noinline onError: ActionErrorFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction, onError as ActionErrorFunction)

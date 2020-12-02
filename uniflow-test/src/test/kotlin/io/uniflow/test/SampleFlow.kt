@@ -9,6 +9,11 @@ import io.uniflow.test.impl.AbstractSampleFlow
 import kotlinx.coroutines.delay
 
 class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
+
+    init {
+        action { setState(defaultState) }
+    }
+
     fun getAll() = action {
         setState {
             repository.getAllTodo().mapToTodoListState()

@@ -37,10 +37,10 @@ fun KFunction<*>.validate(): Boolean {
         val clazz = returnType.classifier as? KClass<*>
         val isActionClass = clazz == Action::class
         if (!isActionClass) {
-            UniFlowLogger.logError("Function '$name' is not a valid Action Function. It should return 'ActionFlow'. Please use action or actionOn operator.")
+            UniFlowLogger.logError("Function '$name' is not a valid Action Function. It should return 'Action'. Please use action or actionOn operator.")
         }
         isActionClass
     }
 }
 
-val exclusion = listOf("getCurrentState", "getCurrentStateOrNull", "close", "equals", "hashCode", "onError", "publishState", "publishEvent", "toString", "assertReceived")
+val exclusion = listOf("getState","notifyStateUpdate","sendEvent","setState","close", "equals", "hashCode", "onError", "publishState", "publishEvent", "toString", "assertReceived")

@@ -6,7 +6,6 @@ import io.uniflow.core.flow.data.UIState
 interface StatePublisher {
     suspend fun publishState(state: UIState, pushStateUpdate: Boolean = true)
     suspend fun getState(): UIState
-    suspend fun getStateOrNull(): UIState?
     suspend fun setState(state: UIState) = publishState(state)
     suspend fun setState(state: () -> UIState) = publishState(state())
 }
