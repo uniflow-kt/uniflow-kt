@@ -19,6 +19,7 @@ import android.arch.lifecycle.ViewModel
 import android.support.annotation.CallSuper
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.*
+import io.uniflow.core.flow.UIDataStore
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -57,8 +58,8 @@ abstract class AndroidDataFlow(
 
     final override fun getCurrentState() = actionDispatcher.getCurrentState()
     final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()
-    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
-    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
+    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.dispatchAction(onAction)
+    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.dispatchAction(onAction, onError)
     final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionDispatcher.actionOn(stateClass, onAction)
     final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.actionOn(stateClass, onAction, onError)
 

@@ -1,6 +1,5 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.launchOnIO
@@ -10,41 +9,26 @@ import kotlin.reflect.KClass
 class ActionDispatcher(
         private val coroutineScope: CoroutineScope,
         private val reducer: ActionReducer,
-        private val runError: (Exception,UIState) -> Unit,
+        private val runError: suspend (Exception, UIState) -> Unit,
         val tag: String
 ) {
-//    fun getCurrentState(): UIState = dataStore.currentState
-//
-//    @Suppress("UNCHECKED_CAST")
-//    fun <T : UIState> getCurrentStateOrNull(): T? = getCurrentState() as? T
+    fun dispatchAction(onAction: ActionFunction): Action = dispatchAction(onAction) { error, state -> runError(error, state) }
 
-    fun action(onAction: ActionFunction<UIState>): ActionFlow = action(onAction) { error, state -> runError(error, state) }
+    fun dispatchAction(onAction: ActionFunction, onError: ActionErrorFunction): Action = Action(onAction, onError).also {
+        dispatchAction(it)
+    }
 
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = ActionFlow(onAction, onError).also {
+    fun dispatchAction(action: Action) {
         coroutineScope.launchOnIO {
-            UniFlowLogger.debug("$tag - enqueue: $it")
-            reducer.enqueueAction(it)
+            UniFlowLogger.debug("$tag - enqueue: $action")
+            reducer.enqueueAction(action)
         }
     }
+
+    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Action = actionOn(kClass,onAction){ error, state -> runError(error, state) }
+    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction, onError: ActionErrorFunction): Action = Action(onAction, onError, kClass).also { dispatchAction(it) }
 
     fun close() {
         reducer.close()
     }
-
-//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionOn(stateClass, onAction) { error, state -> dataFlow.onError(error, state, this) }
-//
-//    @Suppress("UNCHECKED_CAST")
-//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow {
-//        val currentState = getCurrentState()
-//        return if (stateClass.isInstance(currentState)) {
-//            val action = ActionFlow(onAction as ActionFunction<UIState>, onError)
-//            coroutineScope.launchOnIO {
-//                UniFlowLogger.debug("$tag - enqueue: $action")
-//                reducer.enqueueAction(action)
-//            }
-//            action
-//        } else {
-//            action { sendEvent { UIEvent.BadOrWrongState(currentState) } }
-//        }
-//    }
 }

@@ -3,8 +3,8 @@ ext {
     uniflow_version = '0.12.0-beta-1'
 
     // Kotlin
-    kotlin_version = '1.3.72'
-    coroutines_version = "1.3.5"
+    kotlin_version = '1.4.10'
+    coroutines_version = "1.4.1"
 
     // Arrow
     arrow_version = "0.10.5"

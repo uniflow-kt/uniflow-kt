@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UNCHECKED_CAST")
+
 package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import kotlin.reflect.KClass
 
 /**
  * Unidirectional Data Flow
@@ -25,14 +26,10 @@ import kotlin.reflect.KClass
  * @author Arnaud Giuliani
  */
 interface DataFlow {
-//    fun getCurrentState(): UIState
-//    fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T?
-
+    val tag: String
     val actionDispatcher: ActionDispatcher
-    fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
-//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
-//    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
+    fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
+    fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)
     suspend fun onError(error: Exception, currentState: UIState) {
         UniFlowLogger.logError("Uncaught error: $error - ${error.stackTrace}", error)
         throw error
@@ -40,5 +37,5 @@ interface DataFlow {
 }
 
 //inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
-//inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow = actionOn(T::class, onAction)
-//inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow = actionOn(T::class, onAction, onError)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>, noinline onError: ActionErrorFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction, onError as ActionErrorFunction)

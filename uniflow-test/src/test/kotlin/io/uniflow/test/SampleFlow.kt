@@ -1,10 +1,11 @@
-package io.uniflow.test.impl
+package io.uniflow.test
 
 import io.uniflow.core.flow.actionOn
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onIO
 import io.uniflow.test.data.*
+import io.uniflow.test.impl.AbstractSampleFlow
 import kotlinx.coroutines.delay
 
 class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
@@ -39,7 +40,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
                 sendEvent(UIEvent.Error("Can't make done '$title'"))
             }
         } else {
-            sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getCurrentState()))
+            sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getState()))
         }
     }
 

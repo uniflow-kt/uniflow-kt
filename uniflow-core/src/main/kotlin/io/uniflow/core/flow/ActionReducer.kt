@@ -2,24 +2,22 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
 
-@OptIn(ObsoleteCoroutinesApi::class)
 class ActionReducer(
-//        private val uiDataStore: UIDataStore,
+        private val dataPublisher: DataPublisher,
         private val coroutineScope: CoroutineScope,
         private val defaultDispatcher: CoroutineDispatcher,
         defaultCapacity: Int = Channel.BUFFERED,
         val tag: String
 ) {
 
-    private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(),
+    @OptIn(ObsoleteCoroutinesApi::class)
+    private val actor = coroutineScope.actor<Action>(UniFlowDispatcher.dispatcher.default(),
             capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
@@ -32,33 +30,25 @@ class ActionReducer(
         }
     }
 
-    suspend fun enqueueAction(action: ActionFlow) {
+    suspend fun enqueueAction(action: Action) {
         actor.send(action)
     }
 
-    private suspend fun reduceAction(action: ActionFlow) {
-        UniFlowLogger.debug("$tag - execute: $action")
-        val currentState: UIState = uiDataStore.currentState
+    private suspend fun reduceAction(action: Action) {
+        UniFlowLogger.debug("$tag - reduce: $action")
+        val currentState: UIState = dataPublisher.getState()
         try {
-            val onSuccess = action.onSuccess
-            flow<UIDataUpdate> {
-                action.flow = this
-                onSuccess(action, currentState)
+            action.targetState?.let { targetState ->
+                if (targetState != currentState::class) {
+                    action.onError(BadOrWrongStateException(currentState, targetState), currentState)
+                    return
+                }
             }
-            .onCompletion {
-                UniFlowLogger.debug("$tag - completed: $action")
-            }
-            .collect { dataUpdate ->
-                uiDataStore.pushNewData(dataUpdate)
-            }
+            action.onSuccess(currentState)
+            UniFlowLogger.debug("$tag - completed: $action")
         } catch (e: Exception) {
-            val onError = action.onError
-            flow<UIDataUpdate> {
-                action.flow = this
-                onError(action, e, currentState)
-            }.collect { dataUpdate ->
-                uiDataStore.pushNewData(dataUpdate)
-            }
+            UniFlowLogger.debug("$tag - error: $action")
+            action.onError(e, currentState)
         }
     }
 

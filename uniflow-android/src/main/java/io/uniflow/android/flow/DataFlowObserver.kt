@@ -17,7 +17,7 @@ package io.uniflow.android.flow
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
-import io.uniflow.core.flow.EventConsumer
+import io.uniflow.core.flow.data.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger

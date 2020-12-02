@@ -1,4 +1,4 @@
-package io.uniflow.core.flow
+package io.uniflow.core.flow.data
 
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
