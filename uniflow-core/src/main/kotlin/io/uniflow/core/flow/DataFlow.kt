@@ -28,7 +28,7 @@ import io.uniflow.core.logger.UniFlowLogger
 interface DataFlow {
     val tag: String
     val actionDispatcher: ActionDispatcher
-    val defaultDataPublisher : DataPublisher
+    fun defaultPublisher(): DataPublisher
     fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
     fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)
     suspend fun onError(error: Exception, currentState: UIState) {

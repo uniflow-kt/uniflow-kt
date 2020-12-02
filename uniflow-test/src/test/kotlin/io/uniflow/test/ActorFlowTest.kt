@@ -3,6 +3,7 @@ package io.uniflow.test
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.flow.data.toUIError
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -104,7 +105,6 @@ class ActorFlowTest {
     @Test
     fun `add one - fail`() {
         dataFlow.add("first")
-        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test

@@ -9,7 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 
 class ActionReducer(
-        private val dataPublisher: DataPublisher,
+        private val dataFlow: DataFlow,
         private val coroutineScope: CoroutineScope,
         private val defaultDispatcher: CoroutineDispatcher,
         defaultCapacity: Int = Channel.BUFFERED,
@@ -36,7 +36,7 @@ class ActionReducer(
 
     private suspend fun reduceAction(action: Action) {
         UniFlowLogger.debug("$tag - reduce: $action")
-        val currentState: UIState = dataPublisher.getState()
+        val currentState: UIState = dataFlow.defaultPublisher().getState()
         try {
             action.targetState?.let { targetState ->
                 if (targetState != currentState::class) {

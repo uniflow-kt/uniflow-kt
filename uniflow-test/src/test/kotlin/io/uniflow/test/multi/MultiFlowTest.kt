@@ -4,13 +4,11 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
+import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.mapToTodoListState
 import io.uniflow.test.rule.TestDispatchersRule
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
@@ -70,16 +68,33 @@ class MultiFlowTest {
 
     @Test
     fun `several multi action`() = runBlocking {
-        val max = 10
-        (1..max).forEach { i ->
-            GlobalScope.launch {
-                println("-> $i")
-                dataFlow.addMulti("todo_$i")
-                delay(50)
+        val wait = 50L
+        val max = 100
+
+        GlobalScope.launch {
+            (1..max / 2).forEach { i ->
+                GlobalScope.launch {
+                    println("-> $i")
+                    dataFlow.addMulti("todo_$i")
+                    dataFlow.checkMe()
+                    delay(wait)
+                }
             }
         }
-        while((dataFlow.pub2.getState() as? CountState)?.c != max){
-            delay(100)
+        GlobalScope.launch {
+            (max / 2..max).forEach { i ->
+                GlobalScope.launch {
+                    println("-> $i")
+                    dataFlow.addMulti("todo_$i")
+                    dataFlow.checkMe()
+                    delay(wait)
+                }
+            }
+        }
+
+        while((dataFlow.pub2.getState() as? CountState)?.c != max+1){
+            delay(wait)
+            dataFlow.checkMe()
         }
     }
 }

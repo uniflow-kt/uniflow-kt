@@ -20,12 +20,13 @@ abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPub
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
-    override val defaultDataPublisher = defaultPublisher(defaultState)
+    internal val defaultDataPublisher = defaultPublisher(defaultState)
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultDataPublisher.publishState(state, pushStateUpdate)
     override suspend fun publishEvent(event: UIEvent) = defaultDataPublisher.publishEvent(event)
     override suspend fun getState(): UIState = defaultDataPublisher.getState()
+    override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    private val actionReducer = ActionReducer(defaultDataPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
+    private val actionReducer = ActionReducer(this, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
     override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
 
     override suspend fun onError(error: Exception, currentState: UIState) {
