@@ -4,11 +4,13 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
-import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.mapToTodoListState
 import io.uniflow.test.rule.TestDispatchersRule
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
@@ -67,6 +69,19 @@ class MultiFlowTest {
     }
 
     @Test
+    fun `manual guard`() {
+        dataFlow.manualGuard("toto")
+        dataFlow.assertReceived(
+                listOf(
+                        UIState.Empty
+                ),
+                listOf(
+                        UIState.Empty
+                )
+        )
+    }
+
+    @Test
     fun `several multi action`() = runBlocking {
         val wait = 50L
         val max = 100
@@ -92,7 +107,7 @@ class MultiFlowTest {
             }
         }
 
-        while((dataFlow.pub2.getState() as? CountState)?.c != max+1){
+        while ((dataFlow.pub2.getState() as? CountState)?.c != max + 1) {
             delay(wait)
             dataFlow.checkMe()
         }

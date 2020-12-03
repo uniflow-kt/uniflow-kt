@@ -46,7 +46,7 @@ class TestViewObserver {
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val tester = TestViewObserver()
-    dataPublisher.states.observeForever(tester.states)
-    dataPublisher.events.observeForever { tester.events.onChanged(it.content) }
+    defaultDataPublisher.states.observeForever(tester.states)
+    defaultDataPublisher.events.observeForever { tester.events.onChanged(it.content) }
     return tester
 }

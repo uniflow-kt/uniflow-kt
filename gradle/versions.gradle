@@ -1,6 +1,6 @@
 ext {
     // Koin
-    uniflow_version = '0.12.0-beta-1'
+    uniflow_version = '0.13.0-alpha-1'
 
     // Kotlin
     kotlin_version = '1.4.10'

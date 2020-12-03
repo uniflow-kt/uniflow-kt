@@ -2,6 +2,7 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.UniFlowLogger
 
 interface StatePublisher {
     suspend fun publishState(state: UIState, pushStateUpdate: Boolean = true)
@@ -21,4 +22,11 @@ interface DataPublisher : StatePublisher, EventPublisher {
         publishState(state, pushStateUpdate = false)
         publishEvent(event)
     }
+}
+
+suspend inline fun <reified T : UIState> StatePublisher.getStateOrNull(): T?{
+    val state = getState()
+    return if (state is T){
+        state as? T
+    } else null
 }

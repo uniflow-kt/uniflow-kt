@@ -114,6 +114,10 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Loading }
         error("boom")
     }, { e, _ -> setState { UIState.Failed("flow boom", e) } })
+
+    override suspend fun onError(error: Exception, currentState: UIState) {
+        action { setState { UIState.Failed(error = error) } }
+    }
 }
 
 

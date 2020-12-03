@@ -16,22 +16,17 @@ import kotlinx.coroutines.channels.Channel
 
 abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPublisher {
     override val tag = this.toString()
-
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
-    internal val defaultDataPublisher = defaultPublisher(defaultState)
-    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultDataPublisher.publishState(state, pushStateUpdate)
-    override suspend fun publishEvent(event: UIEvent) = defaultDataPublisher.publishEvent(event)
-    override suspend fun getState(): UIState = defaultDataPublisher.getState()
+    internal val defaultDataPublisher = simpleListPublisher(defaultState, "main")
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
+    override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
+    override suspend fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    private val actionReducer = ActionReducer(this, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
+    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
     override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
-
-    override suspend fun onError(error: Exception, currentState: UIState) {
-        action { setState { UIState.Failed(error = error) } }
-    }
 
     fun assertReceived(vararg any: UIData) {
         assert(defaultDataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${defaultDataPublisher.data}" }
@@ -43,4 +38,4 @@ abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPub
     }
 }
 
-fun defaultPublisher(defaultState: UIState, tag: String = "default") = SimpleDataPublisher(defaultState,tag)
+fun simpleListPublisher(defaultState: UIState, tag: String) = SimpleDataPublisher(defaultState, tag)

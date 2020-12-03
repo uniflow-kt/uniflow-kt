@@ -3,6 +3,7 @@ package io.uniflow.test
 import io.uniflow.core.flow.data.UIError
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -68,7 +69,7 @@ class StackFlowTest {
     fun `add one - fail`() {
         dataFlow.add("first")
 
-        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
+        dataFlow.assertReceived(UIState.Empty, UIState.Failed(error = BadOrWrongStateException(UIState.Empty,TodoListState::class)))
     }
 
     @Test
