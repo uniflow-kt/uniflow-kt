@@ -19,11 +19,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.*
 import org.junit.Assert.fail
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
 
 class ActorFlowTest {
     companion object {
@@ -281,7 +278,7 @@ class ActorFlowTest {
 
         dataFlow.assertReceived(
                 UIState.Empty,
-                UIEvent.BadOrWrongState(UIState.Empty)
+                UIState.Failed(error = BadOrWrongStateException(UIState.Empty,TodoListState::class))
         )
     }
 

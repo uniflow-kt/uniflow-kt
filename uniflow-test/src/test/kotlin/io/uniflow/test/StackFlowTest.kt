@@ -14,10 +14,7 @@ import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 
 @ExperimentalCoroutinesApi
 class StackFlowTest {
@@ -136,7 +133,8 @@ class StackFlowTest {
 
         dataFlow.assertReceived(
                 UIState.Empty,
-                UIState.Failed("Got error $error", error))
+                UIState.Failed(error = error)
+        )
     }
 
     @Test
