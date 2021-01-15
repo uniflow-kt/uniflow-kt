@@ -1,10 +1,10 @@
 ext {
     // Koin
-    uniflow_version = '0.13.0-alpha-1'
+    uniflow_version = '0.13.0-alpha-2'
 
     // Kotlin
-    kotlin_version = '1.4.10'
-    coroutines_version = "1.4.1"
+    kotlin_version = '1.4.21'
+    coroutines_version = "1.4.2"
 
     // Arrow
     arrow_version = "0.10.5"

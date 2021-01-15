@@ -8,6 +8,14 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 
+/**
+ * Action processor component, backed by a coroutine Actor to execute a queue of Actions
+ *
+ * enqueueAction - enqueue in incoming Action
+ * reduceAction - Execute an action to proceed any state update or event push
+ *
+ * @author Arnaud Giuliani
+ */
 class ActionReducer(
         private val defaultPublisher: () -> DataPublisher,
         private val coroutineScope: CoroutineScope,

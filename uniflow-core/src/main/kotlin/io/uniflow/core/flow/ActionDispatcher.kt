@@ -6,6 +6,15 @@ import io.uniflow.core.threading.launchOnIO
 import kotlinx.coroutines.CoroutineScope
 import kotlin.reflect.KClass
 
+/**
+ * Handle dispatch logic to ActionReducer, help wrap Action
+ * dispatchAction - Help dispatch given action to ActionReducer, on given coroutineScope context.
+ * actionOn - Handle default error behavior by routing back to ::onError function
+ *
+ * dispatch will be done in background
+ *
+ * @author Arnaud Giuliani
+ */
 class ActionDispatcher(
         private val coroutineScope: CoroutineScope,
         private val reducer: ActionReducer,
@@ -25,7 +34,7 @@ class ActionDispatcher(
         }
     }
 
-    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Action = actionOn(kClass,onAction){ error, state -> runError(error, state) }
+    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Action = actionOn(kClass, onAction) { error, state -> runError(error, state) }
     fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction, onError: ActionErrorFunction): Action = Action(onAction, onError, kClass).also { dispatchAction(it) }
 
     fun close() {

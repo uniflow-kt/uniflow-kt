@@ -23,6 +23,12 @@ import io.uniflow.core.logger.UniFlowLogger
 /**
  * Unidirectional Data Flow
  *
+ * A component that is able to declare new action, and dispatch to an internal reducer processor
+ *
+ * ActionDispatcher - Have at least one DataPublisher, to publish State/Event data
+ *
+ * onError - default error handling behavior that can be overloaded
+ *
  * @author Arnaud Giuliani
  */
 interface DataFlow {
