@@ -3,7 +3,17 @@
 
 ## Setup
 
-#### Current version is `0.11.6`
+#### Current version
+
+```gradle
+// Stable
+uniflow_version = "0.12.0-beta-1"
+
+// Unstable
+uniflow_version = "0.13.0-alpha-2"
+```
+
+#### Gradle setup
 
 Choose one of the following dependency:
 
@@ -11,19 +21,17 @@ Choose one of the following dependency:
 jcenter()
 
 // Minimal Core
-implementation 'io.uniflow:uniflow-core:$version'
-testImplementation 'io.uniflow:uniflow-test:$version'
+implementation 'io.uniflow:uniflow-core:$uniflow_version'
+testImplementation 'io.uniflow:uniflow-test:$uniflow_version'
 
 // Android
-implementation 'io.uniflow:uniflow-android:$version'
-testImplementation 'io.uniflow:uniflow-android-test:$version'
+implementation 'io.uniflow:uniflow-android:$uniflow_version'
+testImplementation 'io.uniflow:uniflow-android-test:$uniflow_version'
 
 // AndroidX
-implementation 'io.uniflow:uniflow-androidx:$version'
-testImplementation 'io.uniflow:uniflow-androidx-test:$version'
+implementation 'io.uniflow:uniflow-androidx:$uniflow_version'
+testImplementation 'io.uniflow:uniflow-androidx-test:$uniflow_version'
 ```
-
-this version is based on Kotlin `1.3.72` & Coroutines `1.3.5`
 
 ## Web Article 🎉
 
