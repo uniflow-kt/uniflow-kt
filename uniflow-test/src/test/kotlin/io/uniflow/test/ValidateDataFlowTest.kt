@@ -1,7 +1,8 @@
-package io.uniflow.test.impl
+package io.uniflow.test
 
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
+import io.uniflow.test.impl.AbstractSampleFlow
 import io.uniflow.test.validate.validate
 import org.junit.Assert.fail
 import org.junit.Before

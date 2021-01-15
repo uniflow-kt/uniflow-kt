@@ -1,13 +1,19 @@
-package io.uniflow.test.impl
+package io.uniflow.test
 
 import io.uniflow.core.flow.actionOn
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.threading.onIO
 import io.uniflow.test.data.*
+import io.uniflow.test.impl.AbstractSampleFlow
 import kotlinx.coroutines.delay
 
 class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIState.Empty) {
+
+    init {
+        action { setState(defaultState) }
+    }
+
     fun getAll() = action {
         setState {
             repository.getAllTodo().mapToTodoListState()
@@ -39,7 +45,7 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
                 sendEvent(UIEvent.Error("Can't make done '$title'"))
             }
         } else {
-            sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getCurrentState()))
+            sendEvent(UIEvent.BadOrWrongState(this@SampleFlow.getState()))
         }
     }
 
@@ -108,6 +114,10 @@ class SampleFlow(private val repository: TodoRepository) : AbstractSampleFlow(UI
         setState { UIState.Loading }
         error("boom")
     }, { e, _ -> setState { UIState.Failed("flow boom", e) } })
+
+    override suspend fun onError(error: Exception, currentState: UIState) {
+        action { setState { UIState.Failed(error = error) } }
+    }
 }
 
 

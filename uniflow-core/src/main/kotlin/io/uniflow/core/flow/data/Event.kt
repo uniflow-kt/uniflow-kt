@@ -16,7 +16,6 @@
 
 package io.uniflow.core.flow.data
 
-import io.uniflow.core.flow.EventConsumer
 import io.uniflow.core.logger.UniFlowLogger
 import java.util.*
 

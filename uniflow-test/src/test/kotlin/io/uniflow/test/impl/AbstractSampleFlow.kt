@@ -1,47 +1,41 @@
 package io.uniflow.test.impl
 
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.*
+import io.uniflow.core.flow.ActionDispatcher
+import io.uniflow.core.flow.ActionReducer
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.DataPublisher
 import io.uniflow.core.flow.data.UIData
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlin.reflect.KClass
 
-abstract class AbstractSampleFlow(defaultState: UIState) : DataFlow {
-    private val tag = this.toString()
+abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPublisher {
+    override val tag = this.toString()
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
-    private val dataPublisher: SimpleDataPublisher = SimpleDataPublisher()
-    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState, tag)
-    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
-    private val actionDispatcher: ActionDispatcher
-        get() = ActionDispatcher(coroutineScope, reducer, dataStore, this, tag)
 
-    final override fun getCurrentState() = actionDispatcher.getCurrentState()
-    final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()
-    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
-    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
-    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionDispatcher.actionOn(stateClass, onAction)
-    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.actionOn(stateClass, onAction, onError)
+    internal val defaultDataPublisher = simpleListPublisher(defaultState, "main")
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
+    override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
+    override suspend fun getState(): UIState = defaultPublisher().getState()
+    override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    override suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        flow.setState { UIState.Failed("Got error $error", error) }
-    }
-
-    init {
-        action { setState { defaultState } }
-    }
+    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
+    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
 
     fun assertReceived(vararg any: UIData) {
-        assert(dataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${dataPublisher.data}" }
+        assert(defaultDataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${defaultDataPublisher.data}" }
     }
 
     fun close() {
         coroutineScope.cancel()
-        reducer.close()
+        actionDispatcher.close()
     }
 }
+
+fun simpleListPublisher(defaultState: UIState, tag: String) = SimpleDataPublisher(defaultState, tag)

@@ -17,7 +17,7 @@ package io.uniflow.androidx.flow
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import io.uniflow.core.flow.EventConsumer
+import io.uniflow.core.flow.data.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
@@ -32,8 +32,15 @@ import io.uniflow.core.logger.UniFlowLogger
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
+    vm.defaultDataPublisher.onStates(this, handleStates)
+}
+
+/**
+ * Listen incoming states (UIState) on given AndroidDataFlow
+ */
+fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) -> Unit) {
     var lastState: UIState? = null
-    vm.dataPublisher.states.observe(this, Observer { state: UIState? ->
+    states.observe(owner, Observer { state: UIState? ->
         // TODO Extract generic State observer
         state?.let {
             UniFlowLogger.debug("onStates - $this - last state: $lastState")
@@ -48,12 +55,9 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
     })
 }
 
-/**
- * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
- */
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) -> Unit) {
     val consumer = EventConsumer(consumerId)
-    vm.dataPublisher.events.observe(this, Observer { event ->
+    events.observe(owner, Observer { event ->
         // TODO Extract generic Event observer
         event?.let {
             consumer.onEvent(event)?.let {
@@ -62,6 +66,13 @@ fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit
             } ?: UniFlowLogger.debug("onEvents - already received - $this <- $event")
         }
     })
+}
+
+/**
+ * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
+ */
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    vm.defaultDataPublisher.onEvents(this, handleEvents)
 }
 
 internal val Any.consumerId: String

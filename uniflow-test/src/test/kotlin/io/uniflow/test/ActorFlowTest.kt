@@ -3,6 +3,7 @@ package io.uniflow.test
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.flow.data.toUIError
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -10,17 +11,16 @@ import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoListUpdate
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.impl.BadDF
-import io.uniflow.test.impl.SampleFlow
+import io.uniflow.test.multi.CountState
 import io.uniflow.test.rule.TestDispatchersRule
 import io.uniflow.test.validate.validate
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.*
 import org.junit.Assert.fail
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
 
 class ActorFlowTest {
     companion object {
@@ -84,9 +84,24 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `add in row`() = runBlocking {
+        dataFlow.getAll()
+        val max = 10
+        (1..max).forEach { i ->
+            GlobalScope.launch {
+                println("-> $i")
+                dataFlow.add("todo_$i")
+                delay(50)
+            }
+        }
+        while(dataFlow.defaultDataPublisher.states.size < max){
+            delay(100)
+        }
+    }
+
+    @Test
     fun `add one - fail`() {
         dataFlow.add("first")
-        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test
@@ -148,7 +163,7 @@ class ActorFlowTest {
 
         dataFlow.assertReceived(
                 UIState.Empty,
-                UIState.Failed("Got error $error", error)
+                UIState.Failed(error = error)
         )
     }
 
@@ -164,7 +179,7 @@ class ActorFlowTest {
                 UIState.Empty,
                 TodoListState(emptyList()),
                 TodoListState(listOf(Todo("first"))),
-                UIState.Failed("Got error $error", error.toUIError())
+                UIState.Failed(error = error.toUIError())
         )
     }
 
@@ -263,7 +278,7 @@ class ActorFlowTest {
 
         dataFlow.assertReceived(
                 UIState.Empty,
-                UIEvent.BadOrWrongState(UIState.Empty)
+                UIState.Failed(error = BadOrWrongStateException(UIState.Empty,TodoListState::class))
         )
     }
 

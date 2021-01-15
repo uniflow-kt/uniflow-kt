@@ -1,6 +1,6 @@
 package io.uniflow.test.validate
 
-import io.uniflow.core.flow.ActionFlow
+import io.uniflow.core.flow.Action
 import io.uniflow.core.flow.DataFlow
 import io.uniflow.core.logger.UniFlowLogger
 import kotlin.reflect.KClass
@@ -35,12 +35,12 @@ fun KFunction<*>.validate(): Boolean {
     return if (name in exclusion) true
     else {
         val clazz = returnType.classifier as? KClass<*>
-        val isActionClass = clazz == ActionFlow::class
+        val isActionClass = clazz == Action::class
         if (!isActionClass) {
-            UniFlowLogger.logError("Function '$name' is not a valid Action Function. It should return 'ActionFlow'. Please use action or actionOn operator.")
+            UniFlowLogger.logError("Function '$name' is not a valid Action Function. It should return 'Action'. Please use action or actionOn operator.")
         }
         isActionClass
     }
 }
 
-val exclusion = listOf("getCurrentState", "getCurrentStateOrNull", "close", "equals", "hashCode", "onError", "publishState", "publishEvent", "toString", "assertReceived")
+val exclusion = listOf("getState","notifyStateUpdate","defaultPublisher","sendEvent","setState","close", "equals", "hashCode", "onError", "publishState", "publishEvent", "toString", "assertReceived")

@@ -19,13 +19,16 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.uniflow.core.dispatcher.UniFlowDispatcher
-import io.uniflow.core.flow.*
+import io.uniflow.core.flow.ActionDispatcher
+import io.uniflow.core.flow.ActionReducer
+import io.uniflow.core.flow.DataFlow
+import io.uniflow.core.flow.DataPublisher
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlin.reflect.KClass
 
 /**
  * Android implementation of [DataFlow].
@@ -44,25 +47,23 @@ abstract class AndroidDataFlow(
         defaultState: UIState = UIState.Empty,
         defaultCapacity: Int = Channel.BUFFERED,
         defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
-) : ViewModel(), DataFlow {
-    private val tag = this.toString()
-    val dataPublisher: LiveDataPublisher = LiveDataPublisher(defaultState)
-    private val coroutineScope: CoroutineScope = viewModelScope
-    private val dataStore: UIDataStore = UIDataStore(dataPublisher, defaultState,tag)
-    private val reducer: ActionReducer = ActionReducer(dataStore, coroutineScope, defaultDispatcher, defaultCapacity,tag)
-    private val actionDispatcher: ActionDispatcher
-        get() = ActionDispatcher(viewModelScope, reducer, dataStore, this,tag)
+) : ViewModel(), DataFlow, DataPublisher {
+    override val tag = this.toString()
 
-    final override fun getCurrentState() = actionDispatcher.getCurrentState()
-    final override fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T? = actionDispatcher.getCurrentStateOrNull()
-    final override fun action(onAction: ActionFunction<UIState>): ActionFlow = actionDispatcher.action(onAction)
-    final override fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.action(onAction, onError)
-    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow = actionDispatcher.actionOn(stateClass, onAction)
-    final override fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow = actionDispatcher.actionOn(stateClass, onAction, onError)
+    private val coroutineScope: CoroutineScope = viewModelScope
+
+    val defaultDataPublisher = liveDataPublisher(defaultState, "main")
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
+    override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
+    override suspend fun getState(): UIState = defaultPublisher().getState()
+    override fun defaultPublisher(): DataPublisher = defaultDataPublisher
+
+    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
+    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
 
     @CallSuper
     override fun onCleared() {
-        reducer.close()
+        actionReducer.close()
         super.onCleared()
     }
 }

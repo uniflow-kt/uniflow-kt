@@ -3,21 +3,18 @@ package io.uniflow.test
 import io.uniflow.core.flow.data.UIError
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.impl.SampleFlow
 import io.uniflow.test.rule.TestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 
 @ExperimentalCoroutinesApi
 class StackFlowTest {
@@ -69,7 +66,7 @@ class StackFlowTest {
     fun `add one - fail`() {
         dataFlow.add("first")
 
-        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
+        dataFlow.assertReceived(UIState.Empty, UIState.Failed(error = BadOrWrongStateException(UIState.Empty,TodoListState::class)))
     }
 
     @Test
@@ -136,7 +133,8 @@ class StackFlowTest {
 
         dataFlow.assertReceived(
                 UIState.Empty,
-                UIState.Failed("Got error $error", error))
+                UIState.Failed(error = error)
+        )
     }
 
     @Test
