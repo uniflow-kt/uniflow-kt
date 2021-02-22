@@ -1,9 +1,9 @@
 ext {
     // Koin
-    uniflow_version = '0.13.0-alpha-2'
+    uniflow_version = '0.13.0-alpha-3'
 
     // Kotlin
-    kotlin_version = '1.4.21'
+    kotlin_version = '1.4.30'
     coroutines_version = "1.4.2"
 
     // Arrow
@@ -13,15 +13,13 @@ ext {
     dokka_version = '0.9.18'
 
     // Bintray
-    bintray_version = "1.8.4"
+    bintray_version = "1.8.5"
 
     // Mockk
     mockk_version = "1.9"
 
     // MockK Patterns
     mockk_patterns_junit4_version = '1.0.0'
-
-    android_maven_publish = "3.6.2"
 
     junit_version = "4.12"
 }

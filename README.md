@@ -10,7 +10,7 @@
 uniflow_version = "0.12.0-beta-1"
 
 // Unstable
-uniflow_version = "0.13.0-alpha-2"
+uniflow_version = "0.13.0-alpha-3"
 ```
 
 #### Gradle setup
@@ -25,10 +25,6 @@ implementation 'io.uniflow:uniflow-core:$uniflow_version'
 testImplementation 'io.uniflow:uniflow-test:$uniflow_version'
 
 // Android
-implementation 'io.uniflow:uniflow-android:$uniflow_version'
-testImplementation 'io.uniflow:uniflow-android-test:$uniflow_version'
-
-// AndroidX
 implementation 'io.uniflow:uniflow-androidx:$uniflow_version'
 testImplementation 'io.uniflow:uniflow-androidx-test:$uniflow_version'
 ```
