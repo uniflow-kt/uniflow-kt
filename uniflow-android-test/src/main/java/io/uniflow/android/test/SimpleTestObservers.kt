@@ -1,7 +1,7 @@
 package io.uniflow.android.test
 
 import androidx.lifecycle.Observer
-import io.uniflow.androidx.flow.AndroidDataFlow
+import io.uniflow.android.dataflow.AndroidDataFlow
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState

@@ -1,4 +1,4 @@
-package io.uniflow.androidx.flow
+package io.uniflow.android.dataflow.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

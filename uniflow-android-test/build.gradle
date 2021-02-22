@@ -12,27 +12,25 @@ android {
 
     defaultConfig {
         minSdkVersion android_min_version
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
     api project(":uniflow-android")
-    implementation project(":uniflow-test")
-    implementation "io.mockk:mockk:$mockk_version"
-
     implementation "androidx.appcompat:appcompat:$androidx_lib_version"
-    implementation("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {
+    implementation("androidx.lifecycle:lifecycle-common:$androidx_lifecycle_version") {
         exclude group: "core-runtime"
     }
     // Architecture ViewModel
-    implementation("androidx.lifecycle:lifecycle-extensions:$androidx_arch_version") {
+    implementation("androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_version") {
         exclude module: "lifecycle-livedata"
         exclude module: "lifecycle-service"
         exclude module: "lifecycle-process"
         exclude module: "runtime"
         exclude group: "androidx.legacy"
     }
+    implementation project(":uniflow-test")
+    implementation "io.mockk:mockk:$mockk_version"
 }
 
 apply from: '../gradle/sources-android.gradle'

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.androidx.logger
+package io.uniflow.android.logger
 
 import android.util.Log
 import io.uniflow.core.flow.data.UIEvent
