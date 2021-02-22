@@ -1,48 +1,48 @@
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-
-// Android Publish local
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    duplicatesStrategy = "exclude"
-    from android.sourceSets.main.java.source
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                artifact sourcesJar
-                artifact dokkaJar
-            }
-        }
-    }
-}
-
-// Bintray
-if (hasProperty('bintray_user') && hasProperty('bintray_apikey')) {
-    bintray {
-        user = bintray_user
-        key = bintray_apikey
-
-        pkg {
-            repo = 'uniflow'
-            name = pom_name
-            userOrg = 'uniflow'
-
-            description = pom_description
-            publish = true
-            override = true
-
-            publicDownloadNumbers = true
-            licenses = ['Apache-2.0']
-            vcsUrl = 'https://github.com/arnaudgiuliani/uniflow.git'
-            websiteUrl = 'https://github.com/arnaudgiuliani/uniflow'
-            dryRun = false
-
-            publications = ['Production']
-        }
-    }
-}
+//apply plugin: 'maven-publish'
+//apply plugin: 'com.jfrog.bintray'
+//
+//
+//// Android Publish local
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    duplicatesStrategy = "exclude"
+//    from android.sourceSets.main.java.source
+//}
+//
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+//                from components.release
+//                artifact sourcesJar
+//                artifact dokkaJar
+//            }
+//        }
+//    }
+//}
+//
+//// Bintray
+//if (hasProperty('bintray_user') && hasProperty('bintray_apikey')) {
+//    bintray {
+//        user = bintray_user
+//        key = bintray_apikey
+//
+//        pkg {
+//            repo = 'uniflow'
+//            name = pom_name
+//            userOrg = 'uniflow'
+//
+//            description = pom_description
+//            publish = true
+//            override = true
+//
+//            publicDownloadNumbers = true
+//            licenses = ['Apache-2.0']
+//            vcsUrl = 'https://github.com/arnaudgiuliani/uniflow.git'
+//            websiteUrl = 'https://github.com/arnaudgiuliani/uniflow'
+//            dryRun = false
+//
+//            publications = ['Production']
+//        }
+//    }
+//}

@@ -3,8 +3,7 @@ apply plugin: 'kotlin-android'
 
 ext {
     android_sourceSet = true
-    pom_name = "uniflow-androidx-test"
-    pom_description = "UniFlow a Kotlin unidrectional data flow framework for testing AndroidX"
+    pom_name = "uniflow-android-test"
 }
 
 android {
@@ -18,7 +17,7 @@ android {
 }
 
 dependencies {
-    api project(":uniflow-androidx")
+    api project(":uniflow-android")
     implementation project(":uniflow-test")
     implementation "io.mockk:mockk:$mockk_version"
 
@@ -36,4 +35,5 @@ dependencies {
     }
 }
 
-apply from: '../gradle/publish-android.gradle'
+apply from: '../gradle/sources-android.gradle'
+apply from: '../gradle/publish-maven-central.gradle'

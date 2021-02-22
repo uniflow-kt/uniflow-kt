@@ -3,8 +3,7 @@ apply plugin: 'kotlin-android'
 
 ext {
     android_sourceSet = true
-    pom_name = "uniflow-androidx"
-    pom_description = "UniFlow a Kotlin unidrectional data flow framework for AndroidX"
+    pom_name = "uniflow-android"
 }
 
 android {
@@ -13,28 +12,25 @@ android {
 
     defaultConfig {
         minSdkVersion android_min_version
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
     api project(":uniflow-core")
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-
     api "androidx.appcompat:appcompat:$androidx_lib_version"
-    api("androidx.lifecycle:lifecycle-common:$androidx_arch_version") {
+    api("androidx.lifecycle:lifecycle-common:$androidx_vm_version") {
         exclude group: "core-runtime"
     }
-    // Architecture ViewModel
-    api("androidx.lifecycle:lifecycle-extensions:$androidx_arch_version") {
+    api("androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_version") {
         exclude module: "lifecycle-livedata"
         exclude module: "lifecycle-service"
         exclude module: "lifecycle-process"
         exclude module: "runtime"
         exclude group: "androidx.legacy"
     }
-
-    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_arch_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_vm_version"
 }
 
-apply from: '../gradle/publish-android.gradle'
+apply from: '../gradle/sources-android.gradle'
+apply from: '../gradle/publish-maven-central.gradle'

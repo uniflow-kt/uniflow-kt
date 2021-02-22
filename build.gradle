@@ -9,8 +9,6 @@ buildscript {
     dependencies {
         // Kotlin
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // Bintray
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray_version"
         // Dokka
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         // Android
@@ -26,18 +24,7 @@ allprojects {
         maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
     }
 
-    group = 'io.uniflow'
-    version = "$uniflow_version"
-
-    // Dokka
-    apply plugin: 'org.jetbrains.dokka'
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
-        reportUndocumented = true
-    }
-    task dokkaJar(type: Jar) {
-        classifier = 'javadoc'
-        from dokka
-    }
+    group = GROUP
+    version = VERSION_NAME
+    description = 'UniFlow a Kotlin unidrectional data flow framework'
 }

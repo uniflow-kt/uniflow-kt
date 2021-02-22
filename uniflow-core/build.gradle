@@ -1,7 +1,6 @@
 apply plugin: 'kotlin'
 
 archivesBaseName = 'uniflow-core'
-description = 'UniFlow a Kotlin unidrectional data flow framework'
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -10,7 +9,8 @@ dependencies {
     testImplementation "junit:junit:$junit_version"
     testImplementation "io.mockk:mockk:$mockk_version"
     testImplementation "com.github.erikhuizinga:mockk-junit4:$mockk_patterns_junit4_version"
-    testImplementation project(':uniflow-test')
+//    testImplementation project(':uniflow-test')
 }
 
-apply from: '../gradle/publish.gradle'
+apply from: '../gradle/sources.gradle'
+apply from: '../gradle/publish-maven-central.gradle'

@@ -1,7 +1,4 @@
 ext {
-    // Koin
-    uniflow_version = '0.13.0-alpha-3'
-
     // Kotlin
     kotlin_version = '1.4.30'
     coroutines_version = "1.4.2"
@@ -11,9 +8,6 @@ ext {
     
     // Dokka
     dokka_version = '0.9.18'
-
-    // Bintray
-    bintray_version = "1.8.5"
 
     // Mockk
     mockk_version = "1.9"
