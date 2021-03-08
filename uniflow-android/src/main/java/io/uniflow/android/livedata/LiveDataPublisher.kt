@@ -1,4 +1,4 @@
-package io.uniflow.android.dataflow.livedata
+package io.uniflow.android.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,4 +36,4 @@ class LiveDataPublisher(defaultState: UIState, val tag: String) : DataPublisher 
     }
 }
 
-fun liveDataPublisher(defaultState: UIState, tag: String) = LiveDataPublisher(defaultState,tag)
+fun liveDataPublisher(defaultState: UIState, tag: String) = LiveDataPublisher(defaultState, tag)

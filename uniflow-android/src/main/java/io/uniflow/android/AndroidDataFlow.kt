@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.android.dataflow
+package io.uniflow.android
 
 import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.uniflow.android.dataflow.livedata.liveDataPublisher
+import io.uniflow.android.livedata.liveDataPublisher
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.ActionDispatcher
 import io.uniflow.core.flow.ActionReducer
@@ -45,21 +45,24 @@ import kotlinx.coroutines.channels.Channel
  * Defaults to [Dispatchers.IO].
  */
 abstract class AndroidDataFlow(
-        defaultState: UIState = UIState.Empty,
-        defaultCapacity: Int = Channel.BUFFERED,
-        defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
+    defaultState: UIState = UIState.Empty,
+    defaultCapacity: Int = Channel.BUFFERED,
+    defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(), DataFlow, DataPublisher {
     override val tag = this.toString()
 
     private val coroutineScope: CoroutineScope = viewModelScope
 
     val defaultDataPublisher = liveDataPublisher(defaultState, "main")
-    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) =
+        defaultPublisher().publishState(state, pushStateUpdate)
+
     override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
     override suspend fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
+    private val actionReducer =
+        ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
     override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
 
     @CallSuper

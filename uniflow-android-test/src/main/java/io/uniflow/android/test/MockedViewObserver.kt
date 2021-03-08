@@ -2,7 +2,7 @@ package io.uniflow.android.test
 
 import androidx.lifecycle.Observer
 import io.mockk.mockk
-import io.uniflow.android.dataflow.AndroidDataFlow
+import io.uniflow.android.AndroidDataFlow
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState

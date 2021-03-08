@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.uniflow.android.dataflow.livedata
+package io.uniflow.android.livedata
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import io.uniflow.android.dataflow.AndroidDataFlow
+import io.uniflow.android.AndroidDataFlow
 import io.uniflow.core.flow.data.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
