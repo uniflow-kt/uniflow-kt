@@ -6,7 +6,7 @@ import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.TodoRepository
 import io.uniflow.test.data.mapToTodoListState
-import io.uniflow.test.rule.TestDispatchersRule
+import io.uniflow.test.rule.UniflowDispatchersRule
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,7 +28,7 @@ class MultiFlowTest {
     }
 
     @get:Rule
-    val testDispatchersRule = TestDispatchersRule()
+    val testDispatchersRule = UniflowDispatchersRule()
 
     private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 

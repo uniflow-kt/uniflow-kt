@@ -10,7 +10,7 @@ import io.uniflow.core.logger.UniFlowLoggerTestRule
 import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.rule.TestDispatchersRule
+import io.uniflow.test.rule.UniflowDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
@@ -29,7 +29,7 @@ class StackFlowTest {
     }
 
     @get:Rule
-    val testDispatchersRule = TestDispatchersRule()
+    val testDispatchersRule = UniflowDispatchersRule()
 
     private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 

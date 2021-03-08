@@ -44,9 +44,13 @@ interface DataPublisher : StatePublisher, EventPublisher {
 /**
  *
  */
-suspend inline fun <reified T : UIState> StatePublisher.getStateOrNull(): T?{
+suspend inline fun <reified T : UIState> StatePublisher.getStateOrNull(): T? {
     val state = getState()
-    return if (state is T){
-        state as? T
+    return if (state is T) {
+        state
     } else null
+}
+
+suspend inline fun <reified T : UIState> StatePublisher.onState(code: (T) -> Unit) {
+    getStateOrNull<T>()?.let { code(it) } ?: UniFlowLogger.log("onState ${T::class} returned null")
 }
