@@ -7,6 +7,7 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.rule.TestDispatcherRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -20,6 +21,7 @@ class SyncFlowTest {
         }
     }
 
+    @ExperimentalCoroutinesApi
     @get:Rule
     val td = TestDispatcherRule()
 
@@ -41,7 +43,9 @@ class SyncFlowTest {
         dataFlow.action1()
         dataFlow.action3()
 
-        delay(310)
+        while(tester.statesCount < 4){
+            delay(25)
+        }
 
         tester.verifySequence(
             UIState.Empty,
