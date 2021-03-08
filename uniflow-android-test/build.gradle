@@ -31,6 +31,8 @@ dependencies {
     }
     implementation project(":uniflow-test")
     implementation "io.mockk:mockk:$mockk_version"
+
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
 
 apply from: '../gradle/sources-android.gradle'

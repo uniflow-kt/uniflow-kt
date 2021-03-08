@@ -4,6 +4,7 @@ archivesBaseName = 'uniflow-test'
 
 dependencies {
     api project(":uniflow-core")
+
     api "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
     api "junit:junit:$junit_version"

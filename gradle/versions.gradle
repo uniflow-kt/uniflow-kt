@@ -1,7 +1,7 @@
 ext {
     // Kotlin
-    kotlin_version = '1.4.30'
-    coroutines_version = "1.4.2"
+    kotlin_version = '1.4.31'
+    coroutines_version = "1.4.3"
 
     // Arrow
     arrow_version = "0.10.5"
@@ -10,7 +10,7 @@ ext {
     dokka_version = '0.9.18'
 
     // Mockk
-    mockk_version = "1.9.3"
+    mockk_version = "1.10.0"
 
     // MockK Patterns
     mockk_patterns_junit4_version = '1.0.0'

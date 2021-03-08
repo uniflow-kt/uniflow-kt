@@ -3,7 +3,7 @@ ext {
     android_min_version = 14
     android_target_version = 28
     android_gradle_version = "3.6.0"
-    android_build_tools_version  = '28.0.3'
+    android_build_tools_version  = '30.0.3'
 
     androidx_lib_version = "1.2.0"
     androidx_vm_version = '2.3.0'
