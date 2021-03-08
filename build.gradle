@@ -24,7 +24,7 @@ allprojects {
         maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
     }
 
-    group = GROUP
-    version = VERSION_NAME
+    group = "org.uniflow-kt"
+    version = uniflow_version
     description = 'UniFlow a Kotlin unidrectional data flow framework'
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 apply from: '../gradle/dokka.gradle'
+apply from: '../gradle/versions.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -44,7 +45,7 @@ if (secretPropsFile.exists()) {
 }
 
 def isSnapshotBuild() {
-    return Boolean.valueOf(System.getProperty("snapshot"))
+    return is_snapshot
 }
 
 afterEvaluate { project ->

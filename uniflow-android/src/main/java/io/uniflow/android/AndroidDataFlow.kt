@@ -63,7 +63,7 @@ abstract class AndroidDataFlow(
 
     private val actionReducer =
         ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
-    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
+    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, runError = ::onError, tag = tag)
 
     @CallSuper
     override fun onCleared() {
