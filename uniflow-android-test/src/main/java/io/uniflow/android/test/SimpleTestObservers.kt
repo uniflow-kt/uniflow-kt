@@ -7,7 +7,7 @@ import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlin.test.assertEquals
 
-class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
+class SimpleDataObserver<T>(val callback: (T) -> Unit) : Observer<T> {
     val values = arrayListOf<T>()
 
     override fun onChanged(t: T) {
@@ -18,8 +18,8 @@ class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
 
 class TestViewObserver {
     val values = arrayListOf<UIData>()
-    val states = SimpleObserver<UIState> { values.add(it) }
-    val events = SimpleObserver<UIEvent> { values.add(it) }
+    val states = SimpleDataObserver<UIState> { values.add(it) }
+    val events = SimpleDataObserver<UIEvent> { values.add(it) }
 
     val lastStateOrNull: UIState?
         get() = states.values.lastOrNull()
