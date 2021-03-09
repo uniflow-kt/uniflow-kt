@@ -8,7 +8,6 @@ data class Todo(val title: String, val done: Boolean = false)
 class TodoRepository {
 
     private val allTodo = ConcurrentLinkedDeque<Todo>()
-    private val max = 150
 
     fun getAllTodo() = allTodo.toList()
 
@@ -23,11 +22,7 @@ class TodoRepository {
     }
 
     fun add(title: String): Boolean {
-        val canAdd = allTodo.size < max
-        if (canAdd) {
-            allTodo.add(Todo(title))
-        }
-        return canAdd
+        return allTodo.add(Todo(title))
     }
 
     fun remove(title: String): Boolean {

@@ -1,15 +1,8 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.core.threading.launchOnIO
-import io.uniflow.core.threading.launchOnMain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.xml.ws.Dispatch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.reflect.KClass
 
 /**
@@ -22,9 +15,7 @@ import kotlin.reflect.KClass
  * @author Arnaud Giuliani
  */
 class ActionDispatcher(
-    private val coroutineScope: CoroutineScope,
     private val reducer: ActionReducer,
-    private val coroutineDispatcher : CoroutineDispatcher = UniFlowDispatcher.dispatcher.main(),
     private val runError: suspend (Exception, UIState) -> Unit,
     val tag: String
 ) {
@@ -36,11 +27,10 @@ class ActionDispatcher(
             dispatchAction(it)
         }
 
+
     fun dispatchAction(action: Action) {
-        coroutineScope.launch(coroutineDispatcher) {
-            UniFlowLogger.debug("$tag - enqueue: $action")
-            reducer.enqueueAction(action)
-        }
+        UniFlowLogger.debug("$tag - enqueue: $action")
+        reducer.enqueueAction(action)
     }
 
     fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Action =

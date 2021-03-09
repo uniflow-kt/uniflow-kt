@@ -16,16 +16,17 @@ import kotlinx.coroutines.channels.actor
  *
  * @author Arnaud Giuliani
  */
-class ActionReducer(
-        private val defaultPublisher: () -> DataPublisher,
-        private val coroutineScope: CoroutineScope,
-        private val defaultDispatcher: CoroutineDispatcher,
-        defaultCapacity: Int = Channel.BUFFERED,
-        private val tag: String
+@OptIn(ExperimentalCoroutinesApi::class)
+open class ActionReducer(
+    private val defaultPublisher: () -> DataPublisher,
+    private val coroutineScope: CoroutineScope,
+    private val defaultDispatcher: CoroutineDispatcher,
+    defaultCapacity: Int = Channel.BUFFERED,
+    private val tag: String
 ) {
 
     @OptIn(ObsoleteCoroutinesApi::class)
-    private val actor = coroutineScope.actor<Action>(UniFlowDispatcher.dispatcher.default(), capacity = defaultCapacity) {
+    private val actor = coroutineScope.actor<Action>(UniFlowDispatcher.dispatcher.io(), capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
                 withContext(defaultDispatcher) {
@@ -37,8 +38,11 @@ class ActionReducer(
         }
     }
 
-    suspend fun enqueueAction(action: Action) {
-        actor.send(action)
+    open fun enqueueAction(action: Action) {
+        val offered = if (!actor.isClosedForSend) actor.offer(action) else false
+        if (!offered) {
+            UniFlowLogger.logError("$tag - $action couldn't be enqueued")
+        }
     }
 
     private suspend fun reduceAction(action: Action) {

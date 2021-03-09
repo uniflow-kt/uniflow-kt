@@ -61,9 +61,8 @@ abstract class AndroidDataFlow(
     override suspend fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    private val actionReducer =
-        ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
-    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, runError = ::onError, tag = tag)
+    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, defaultDispatcher, defaultCapacity, tag)
+    override val actionDispatcher = ActionDispatcher(actionReducer, ::onError, tag)
 
     @CallSuper
     override fun onCleared() {

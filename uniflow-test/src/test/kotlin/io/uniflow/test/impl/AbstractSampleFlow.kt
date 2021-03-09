@@ -26,7 +26,7 @@ abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPub
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
     private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
-    override val actionDispatcher: ActionDispatcher = ActionDispatcher(coroutineScope, actionReducer, ::onError, tag)
+    override val actionDispatcher: ActionDispatcher = ActionDispatcher(actionReducer, ::onError, tag)
 
     fun assertReceived(vararg any: UIData) {
         assert(defaultDataPublisher.data == any.toList()) { "Wrong values\nshould have ${any.toList()}\nbut was ${defaultDataPublisher.data}" }

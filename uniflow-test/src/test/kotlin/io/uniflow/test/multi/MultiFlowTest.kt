@@ -11,10 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 
 class MultiFlowTest {
     companion object {
@@ -83,33 +80,37 @@ class MultiFlowTest {
 
     @Test
     fun `several multi action`() = runBlocking {
-        val wait = 50L
+        val wait = 10L
         val max = 100
+        val mid = max/2
 
         GlobalScope.launch {
-            (1..max / 2).forEach { i ->
+            (1..mid).forEach { i ->
+                delay(5)
                 GlobalScope.launch {
+                    delay(wait)
                     println("-> $i")
                     dataFlow.addMulti("todo_$i")
                     dataFlow.checkMe()
-                    delay(wait)
                 }
             }
         }
         GlobalScope.launch {
-            (max / 2..max).forEach { i ->
+            (mid..max).forEach { i ->
+                delay(5)
                 GlobalScope.launch {
+                    delay(wait)
                     println("-> $i")
                     dataFlow.addMulti("todo_$i")
                     dataFlow.checkMe()
-                    delay(wait)
                 }
             }
         }
 
-        while ((dataFlow.pub2.getState() as? CountState)?.c != max + 1) {
+        while ((dataFlow.pub2.getState() as? CountState) == null || (dataFlow.pub2.getState() as? CountState)?.let { it.c < max } == true) {
             delay(wait)
             dataFlow.checkMe()
+            println("while wait ...")
         }
     }
 }
