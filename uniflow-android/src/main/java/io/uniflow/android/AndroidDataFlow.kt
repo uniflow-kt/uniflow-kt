@@ -51,8 +51,7 @@ abstract class AndroidDataFlow(
 ) : ViewModel(), DataFlow, DataPublisher {
     override val tag = this.toString()
 
-    private val coroutineScope: CoroutineScope = viewModelScope
-
+    override val coroutineScope: CoroutineScope = viewModelScope
     val defaultDataPublisher = liveDataPublisher(defaultState, "main")
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) =
         defaultPublisher().publishState(state, pushStateUpdate)

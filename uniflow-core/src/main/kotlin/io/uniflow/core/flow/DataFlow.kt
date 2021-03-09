@@ -19,6 +19,7 @@ package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Unidirectional Data Flow
@@ -34,6 +35,7 @@ import io.uniflow.core.logger.UniFlowLogger
 interface DataFlow {
     val tag: String
     val actionDispatcher: ActionDispatcher
+    val coroutineScope: CoroutineScope
     fun defaultPublisher(): DataPublisher
     fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
     fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)

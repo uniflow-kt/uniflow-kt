@@ -17,7 +17,7 @@ import kotlinx.coroutines.channels.Channel
 abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPublisher {
     override val tag = this.toString()
     private val supervisorJob = SupervisorJob()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
     internal val defaultDataPublisher = simpleListPublisher(defaultState, "main")
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)

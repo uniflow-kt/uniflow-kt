@@ -43,7 +43,7 @@ class SyncFlowTest {
         dataFlow.action1()
         dataFlow.action3()
 
-        while(tester.statesCount < 4){
+        while (tester.statesCount < 4) {
             delay(25)
         }
 
@@ -51,6 +51,20 @@ class SyncFlowTest {
             UIState.Empty,
             CountState(2),
             CountState(1),
+            CountState(3)
+        )
+    }
+
+    @Test
+    fun `actions List`() = runBlocking {
+        dataFlow.actionList()
+
+        delay(20)
+
+        tester.verifySequence(
+            UIState.Empty,
+            CountState(1),
+            CountState(2),
             CountState(3)
         )
     }
