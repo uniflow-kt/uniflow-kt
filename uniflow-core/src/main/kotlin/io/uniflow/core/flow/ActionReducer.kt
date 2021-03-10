@@ -1,6 +1,5 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.UniFlowLogger
@@ -26,10 +25,10 @@ open class ActionReducer(
 ) {
 
     @OptIn(ObsoleteCoroutinesApi::class)
-    private val actor = coroutineScope.actor<Action>(UniFlowDispatcher.dispatcher.io(), capacity = defaultCapacity) {
+    private val actor = coroutineScope.actor<Action>(defaultDispatcher, capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                withContext(defaultDispatcher) {
+                withContext(defaultDispatcher){
                     reduceAction(action)
                 }
             } else {

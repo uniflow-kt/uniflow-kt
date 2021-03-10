@@ -15,17 +15,17 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 
 abstract class AbstractSampleFlow(val defaultState: UIState) : DataFlow, DataPublisher {
-    override val tag = this.toString()
+    final override val tag = this::class.java.simpleName
     private val supervisorJob = SupervisorJob()
-    override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
+    final override val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + supervisorJob)
 
-    internal val defaultDataPublisher = simpleListPublisher(defaultState, "main")
+    internal val defaultDataPublisher = simpleListPublisher(defaultState, "$tag-Publisher")
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
     override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
     override suspend fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
-    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, UniFlowDispatcher.dispatcher.main(), Channel.BUFFERED, tag)
+    private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, UniFlowDispatcher.dispatcher.io(), Channel.BUFFERED, tag)
     override val actionDispatcher: ActionDispatcher = ActionDispatcher(actionReducer, ::onError, tag)
 
     fun assertReceived(vararg any: UIData) {
