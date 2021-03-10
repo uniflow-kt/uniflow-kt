@@ -42,15 +42,14 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) -> Unit) {
     var lastState: UIState? = null
     states.observe(owner, Observer { state: UIState? ->
-        // TODO Extract generic State observer
         state?.let {
-            UniFlowLogger.debug("onStates - $this - last state: $lastState")
+            UniFlowLogger.debug("onStates - $owner - last state: $lastState")
             if (lastState != state) {
-                UniFlowLogger.debug("onStates - $this <- $state")
+                UniFlowLogger.debug("onStates - $owner <- $state")
                 handleStates(state)
                 lastState = state
             } else {
-                UniFlowLogger.debug("onStates - already received -  $this <- $state")
+                UniFlowLogger.debug("onStates - already received -  $owner <- $state")
             }
         }
     })
@@ -59,12 +58,11 @@ fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) ->
 fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) -> Unit) {
     val consumer = EventConsumer(consumerId)
     events.observe(owner, Observer { event ->
-        // TODO Extract generic Event observer
         event?.let {
             consumer.onEvent(event)?.let {
-                UniFlowLogger.debug("onEvents - $this <- $event")
+                UniFlowLogger.debug("onEvents - $owner <- $event")
                 handleEvents(it)
-            } ?: UniFlowLogger.debug("onEvents - already received - $this <- $event")
+            } ?: UniFlowLogger.debug("onEvents - already received - $owner <- $event")
         }
     })
 }

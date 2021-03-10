@@ -16,6 +16,7 @@
 package io.uniflow.android
 
 import androidx.annotation.CallSuper
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.uniflow.android.livedata.liveDataPublisher
@@ -46,16 +47,16 @@ import kotlinx.coroutines.channels.Channel
  */
 abstract class AndroidDataFlow(
     defaultState: UIState = UIState.Empty,
+    savedStateHandle: SavedStateHandle? = null,
     defaultCapacity: Int = Channel.BUFFERED,
     defaultDispatcher: CoroutineDispatcher = UniFlowDispatcher.dispatcher.io()
 ) : ViewModel(), DataFlow, DataPublisher {
-    override val tag = this.toString()
 
-    override val coroutineScope: CoroutineScope = viewModelScope
-    val defaultDataPublisher = liveDataPublisher(defaultState, "main")
-    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) =
-        defaultPublisher().publishState(state, pushStateUpdate)
+    final override val tag = this::class.java.simpleName
+    final override val coroutineScope: CoroutineScope = viewModelScope
+    val defaultDataPublisher = liveDataPublisher(defaultState, "$tag-Publisher", savedStateHandle)
 
+    override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
     override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
     override suspend fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
