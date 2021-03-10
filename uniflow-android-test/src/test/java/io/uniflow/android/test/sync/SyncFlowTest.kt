@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.uniflow.android.test.TestViewObserver
 import io.uniflow.android.test.createTestObserver
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.logger.DebugMessageLogger
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.test.rule.TestDispatcherRule
@@ -17,7 +18,7 @@ import org.junit.Test
 class SyncFlowTest {
     companion object {
         init {
-            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, showDebug = true))
+            UniFlowLogger.init(DebugMessageLogger())
         }
     }
 

@@ -80,13 +80,13 @@ class MultiFlowTest {
 
     @Test
     fun `several multi action`() = runBlocking {
-        val wait = 10L
+        val wait = 5L
         val max = 100
         val mid = max/2
 
         GlobalScope.launch {
             (1..mid).forEach { i ->
-                delay(5)
+                delay(wait)
                 GlobalScope.launch {
                     delay(wait)
                     println("-> $i")
@@ -97,7 +97,7 @@ class MultiFlowTest {
         }
         GlobalScope.launch {
             (mid..max).forEach { i ->
-                delay(5)
+                delay(wait)
                 GlobalScope.launch {
                     delay(wait)
                     println("-> $i")
