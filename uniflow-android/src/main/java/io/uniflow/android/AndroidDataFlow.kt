@@ -19,7 +19,9 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.uniflow.android.livedata.LiveDataPublisher
 import io.uniflow.android.livedata.liveDataPublisher
+import io.uniflow.android.livedata.livePersistentDataPublisher
 import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.ActionDispatcher
 import io.uniflow.core.flow.ActionReducer
@@ -54,7 +56,9 @@ abstract class AndroidDataFlow(
 
     final override val tag = this::class.java.simpleName
     final override val coroutineScope: CoroutineScope = viewModelScope
-    val defaultDataPublisher = liveDataPublisher(defaultState, "$tag-Publisher", savedStateHandle)
+    val defaultDataPublisher: LiveDataPublisher =
+        if (savedStateHandle != null) livePersistentDataPublisher(defaultState, "$tag-PersistentPublisher", savedStateHandle)
+        else liveDataPublisher(defaultState, "$tag-Publisher")
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
     override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)

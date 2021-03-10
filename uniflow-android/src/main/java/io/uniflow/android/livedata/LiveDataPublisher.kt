@@ -10,34 +10,21 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
-class LiveDataPublisher(
+open class LiveDataPublisher(
     defaultState: UIState,
-    private val savedStateHandle: SavedStateHandle? = null,
     private val tag: String
 ) : DataPublisher {
 
-    val canPersistState: Boolean = (savedStateHandle != null)
-
-    private val _states = MutableLiveData<UIState>()
+    internal val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState> = _states
-    private val _events = MutableLiveData<Event<UIEvent>>()
+    internal val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events
 
     init {
-        if (canPersistState) {
-            restoreState()
-        } else {
-            defaultState(defaultState)
-        }
+        defaultState(defaultState)
     }
 
-    private fun restoreState() {
-        savedStateHandle?.get<UIState>(tag)?.let { state ->
-            _states.value = state
-        }
-    }
-
-    private fun defaultState(defaultState: UIState) {
+    fun defaultState(defaultState: UIState) {
         _states.value = defaultState
     }
 
@@ -46,13 +33,6 @@ class LiveDataPublisher(
         onMain(immediate = true) {
             UniFlowLogger.debug("$tag --> $state")
             _states.value = state
-        }
-        saveState(state)
-    }
-
-    private fun saveState(state: UIState) {
-        if (canPersistState) {
-            savedStateHandle?.set(tag, state)
         }
     }
 
@@ -63,6 +43,4 @@ class LiveDataPublisher(
         }
     }
 }
-
-fun liveDataPublisher(defaultState: UIState, tag: String, savedStateHandle: SavedStateHandle? = null) =
-    LiveDataPublisher(defaultState, savedStateHandle, tag)
+fun liveDataPublisher(defaultState: UIState, tag: String) = LiveDataPublisher(defaultState, tag)
