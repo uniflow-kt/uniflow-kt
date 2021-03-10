@@ -10,9 +10,13 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
-class LiveDataPublisher(defaultState: UIState, private val savedStateHandle: SavedStateHandle? = null, private val tag: String) : DataPublisher {
+class LiveDataPublisher(
+    defaultState: UIState,
+    private val savedStateHandle: SavedStateHandle? = null,
+    private val tag: String
+) : DataPublisher {
 
-    val canPersistState : Boolean = (savedStateHandle != null)
+    val canPersistState: Boolean = (savedStateHandle != null)
 
     private val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState> = _states
@@ -20,18 +24,17 @@ class LiveDataPublisher(defaultState: UIState, private val savedStateHandle: Sav
     val events: LiveData<Event<UIEvent>> = _events
 
     init {
-        restoreState() ?: defaultState(defaultState)
+        if (canPersistState) {
+            restoreState()
+        } else {
+            defaultState(defaultState)
+        }
     }
 
-    private fun restoreState() : UIState? {
-        return if (canPersistState){
-            savedStateHandle?.let {
-                it.get<UIState>(tag)?.let {  state ->
-                    _states.value = state
-                    state
-                }
-            }
-        } else null
+    private fun restoreState() {
+        savedStateHandle?.get<UIState>(tag)?.let { state ->
+            _states.value = state
+        }
     }
 
     private fun defaultState(defaultState: UIState) {
@@ -48,8 +51,8 @@ class LiveDataPublisher(defaultState: UIState, private val savedStateHandle: Sav
     }
 
     private fun saveState(state: UIState) {
-        if(canPersistState){
-            savedStateHandle?.apply { this[tag] = state }
+        if (canPersistState) {
+            savedStateHandle?.set(tag, state)
         }
     }
 
@@ -61,4 +64,5 @@ class LiveDataPublisher(defaultState: UIState, private val savedStateHandle: Sav
     }
 }
 
-fun liveDataPublisher(defaultState: UIState, tag: String,savedStateHandle: SavedStateHandle? = null) = LiveDataPublisher(defaultState, savedStateHandle, tag)
+fun liveDataPublisher(defaultState: UIState, tag: String, savedStateHandle: SavedStateHandle? = null) =
+    LiveDataPublisher(defaultState, savedStateHandle, tag)
