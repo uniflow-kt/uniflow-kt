@@ -18,6 +18,7 @@ android {
 dependencies {
     api project(":uniflow-core")
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    api "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
     api "androidx.appcompat:appcompat:$androidx_lib_version"
     api("androidx.lifecycle:lifecycle-common:$androidx_vm_version") {
         exclude group: "core-runtime"

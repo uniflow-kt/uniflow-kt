@@ -6,18 +6,19 @@ import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
 
-class LivePersistentDataPublisher(
+class PersistentLiveDataPublisher(
     defaultState: UIState,
     private val savedStateHandle: SavedStateHandle,
-    private val tag: String
-) : LiveDataPublisher(defaultState,tag) {
+    _tag: String? = null
+) : LiveDataPublisher(defaultState,_tag) {
 
     init {
-        restoreState() ?: defaultState(defaultState)
+        restoreState()
     }
 
     private fun restoreState(): UIState? {
         return savedStateHandle.get<UIState>(tag)?.let { state ->
+            UniFlowLogger.debug("$tag --> restore --> $state")
             _states.value = state
             state
         }
@@ -36,4 +37,4 @@ class LivePersistentDataPublisher(
     }
 }
 
-fun livePersistentDataPublisher(defaultState: UIState, tag: String, savedStateHandle: SavedStateHandle) = LivePersistentDataPublisher(defaultState, savedStateHandle, tag)
+fun persistentLiveDataPublisher(savedStateHandle: SavedStateHandle, defaultState: UIState = UIState.Empty, tag: String? = null) = PersistentLiveDataPublisher(defaultState, savedStateHandle, tag)

@@ -2,6 +2,7 @@ package io.uniflow.android.test
 
 import androidx.lifecycle.Observer
 import io.uniflow.android.AndroidDataFlow
+import io.uniflow.android.livedata.LiveDataPublisher
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -46,7 +47,8 @@ class TestViewObserver {
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val tester = TestViewObserver()
-    defaultDataPublisher.states.observeForever(tester.states)
-    defaultDataPublisher.events.observeForever { tester.events.onChanged(it.content) }
+    val liveDataPublisher = defaultDataPublisher as LiveDataPublisher
+    liveDataPublisher.states.observeForever(tester.states)
+    liveDataPublisher.events.observeForever { tester.events.onChanged(it.content) }
     return tester
 }

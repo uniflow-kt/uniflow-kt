@@ -3,6 +3,7 @@ package io.uniflow.android.test
 import androidx.lifecycle.Observer
 import io.mockk.mockk
 import io.uniflow.android.AndroidDataFlow
+import io.uniflow.android.livedata.LiveDataPublisher
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -15,7 +16,8 @@ data class MockViewObserver(val states: Observer<UIState>, val events: Observer<
 fun AndroidDataFlow.mockObservers(): MockViewObserver {
     val viewStates: Observer<UIState> = mockk(relaxed = true)
     val viewEvents: Observer<Event<UIEvent>> = mockk(relaxed = true)
-    defaultDataPublisher.states.observeForever(viewStates)
-    defaultDataPublisher.events.observeForever(viewEvents)
+    val liveDataPublisher = defaultDataPublisher as LiveDataPublisher
+    liveDataPublisher.states.observeForever(viewStates)
+    liveDataPublisher.events.observeForever(viewEvents)
     return MockViewObserver(viewStates, viewEvents)
 }

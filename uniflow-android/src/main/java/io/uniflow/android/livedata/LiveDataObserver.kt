@@ -18,6 +18,7 @@ package io.uniflow.android.livedata
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import io.uniflow.android.AndroidDataFlow
+import io.uniflow.android.consumerId
 import io.uniflow.core.flow.data.EventConsumer
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
@@ -33,7 +34,14 @@ import io.uniflow.core.logger.UniFlowLogger
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
-    vm.defaultDataPublisher.onStates(this, handleStates)
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onStates(this, handleStates)
+}
+
+/**
+ * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
+ */
+fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this, handleEvents)
 }
 
 /**
@@ -66,13 +74,3 @@ fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) ->
         }
     })
 }
-
-/**
- * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
- */
-fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    vm.defaultDataPublisher.onEvents(this, handleEvents)
-}
-
-internal val Any.consumerId: String
-    get() = this::class.simpleName ?: error("can't get consumerId for $this")

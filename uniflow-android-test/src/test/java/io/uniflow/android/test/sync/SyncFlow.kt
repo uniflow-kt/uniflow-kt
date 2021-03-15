@@ -2,9 +2,9 @@ package io.uniflow.android.test.sync
 
 import androidx.lifecycle.viewModelScope
 import io.uniflow.android.AndroidDataFlow
-import io.uniflow.core.coroutines.emitActions
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -32,12 +32,14 @@ class SyncFlow : AndroidDataFlow(UIState.Empty) {
         setState { CountState(3) }
     }
 
-    fun actionList(){
+    fun actionList() {
         viewModelScope.launch {
-            val f = flow { (1..3).forEach { emit(it) } }
-            emitActions( { f } ){ value ->
-                setState { CountState(value) }
-            }
+            flow { (1..3).forEach { emit(it) } }
+                .collect { value ->
+                    action {
+                        setState { CountState(value) }
+                    }
+                }
         }
     }
 }
