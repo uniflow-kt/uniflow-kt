@@ -7,6 +7,11 @@ We call a `Dataflow` a component that will emits states and events. This compone
 to ensure:
 - Single source of truth: data only come from `Dataflow`
 - States/Events are immutable, to avoid any side effects
+- A `Dataflow` is using an `action` to help emit a new state or an event
+
+A `DataFlow` component is backed by a coroutines [`Actor`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.channels/actor.html) to buffer and dispatch actions in order.
+
+Uniflow provides the `DataFlow` interface that is implementated by `AndroidDataFlow` for Android platform.
 
 ## States as immutable data
 
@@ -78,7 +83,20 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-## ActionOn: executing an action only from a given state
+You can also use `onState<T> { t -> ... }` to safely execute a code for given state:
+
+```kotlin
+class WeatherDataFlow(...) : AndroidDataFlow() {
+
+    fun getWeather() = action { 
+        onState<MyState> { myState ->
+            // ...
+        }
+    }
+}
+```
+
+## Executing an action only from a given state
 
 The `actionOn<T>` function help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
 

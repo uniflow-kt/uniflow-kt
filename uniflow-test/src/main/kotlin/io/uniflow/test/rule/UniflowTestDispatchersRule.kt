@@ -17,12 +17,14 @@ import org.junit.runner.Description
  * [cleaned up][kotlinx.coroutines.test.TestCoroutineDispatcher.cleanupTestCoroutines] after tests,
  * after which the main dispatcher is [reset][resetMain].
  *
+ * set UniFlowDispatcher.dispatcher = testDispatchers to run
+ *
  * @param testCoroutineDispatcher The [TestCoroutineDispatcher] used to replace the coroutine
  * dispatchers used by UniFlow.
  * Defaults to `TestCoroutineDispatcher()`.
  */
 @ExperimentalCoroutinesApi
-class UniflowDispatchersRule(
+class UniflowTestDispatchersRule(
     val testCoroutineDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ) : TestWatcher() {
     private val testDispatchers: TestDispatchers = TestDispatchers(testCoroutineDispatcher)

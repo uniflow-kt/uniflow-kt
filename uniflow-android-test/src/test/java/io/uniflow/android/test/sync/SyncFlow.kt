@@ -34,12 +34,12 @@ class SyncFlow : AndroidDataFlow(UIState.Empty) {
 
     fun actionList() {
         viewModelScope.launch {
-            flow { (1..3).forEach { emit(it) } }
-                .collect { value ->
-                    action {
-                        setState { CountState(value) }
-                    }
+            val flow = flow { (1..3).forEach { emit(it) } }
+            flow.collect { value ->
+                action {
+                    setState { CountState(value) }
                 }
+            }
         }
     }
 }

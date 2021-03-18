@@ -11,7 +11,7 @@ import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoListUpdate
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.rule.UniflowDispatchersRule
+import io.uniflow.test.rule.UniflowTestDispatchersRule
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,7 +34,7 @@ class ActorFlowTest {
     }
 
     @get:Rule
-    val testDispatchersRule = UniflowDispatchersRule()
+    val testDispatchersRule = UniflowTestDispatchersRule()
 
     private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 

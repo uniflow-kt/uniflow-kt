@@ -32,6 +32,14 @@ it’s easier to debug, as you know what is coming from where
 
 ## Getting Started 🚀
 
+### Turn on Logging
+
+At your Android Application start, just turn on Logging:
+
+```kotlin
+UniFlowLogger.init(AndroidMessageLogger())
+```
+
 ### Writing your first UI state
 
 Let's describe our data state with `UIState` type:
@@ -95,15 +103,27 @@ fun before() {
 }
 ```
 
+Don't forget to setup your test dispatcher:
+
+```kotlin
+// For Android ViewModel Test
+@get:Rule
+val rule = InstantTaskExecutorRule()
+
+// Uniflow Test Dispatcher
+@get:Rule
+val testDispatcherRule = UniflowTestDispatchersRule()
+```
+
 Now we can test incoming states & events with `assertReceived`:
 
 ```kotlin
 @Test
 fun `has some weather`() {
     // prepare test data
-    val weatherData = WeatherData(...)
+    val weatherData = WeatherData()
     // setup mocked call
-    coEvery { mockedRepo.getWeatherForToday() } return weatherData
+    coEvery { mockedRepo.getWeatherForToday() } willReturn { weatherData }
     
     // Call getWeather()
     dataFlow.getWeather()
@@ -115,7 +135,6 @@ fun `has some weather`() {
     )
 }
 ```
-
 ----
 
 ## [Back To Documentation Topics](../README.md#getting-started--documentation-)

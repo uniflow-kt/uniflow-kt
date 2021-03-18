@@ -66,7 +66,9 @@ fun `run some states`() {
 }
 ```
 
-### JUnit Rules
+## JUnit Rules
+
+### Logging
 
 - Change Logging during tests:
 
@@ -82,14 +84,24 @@ companion object {
 }
 ```
 
-- Use TestDispatcher
+### Test Dispatchers
+
+- `TestDispatcherRule` - simply uses Coroutines TestDispatcher to run your test (really dispatch on IO or other context)
 
 ```kotlin
 @get:Rule
-val testDispatchersRule = TestDispatchersRule()
+val testDispatcherRule = TestDispatcherRule()
 
 private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 ```
+
+- `UniflowTestDispatchersRule` - uses Uniflow Test Dispatcher (flatten on same main context) to run your test, in sequence
+
+```kotlin
+@get:Rule
+val testDispatcherRule = UniflowTestDispatchersRule()
+```
+
 
 ----
 

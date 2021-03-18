@@ -7,7 +7,7 @@
 
 ```gradle
 // Current Stable
-uniflow_version = "1.0.0"
+uniflow_version = "1.0.1"
 ```
 
 ### Gradle setup
@@ -44,12 +44,14 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 - [Writing an Action to update your state](doc/state_action.md)
 - [Pushing Events for side effects](doc/events.md)
 - [Easy Error Handling](doc/errors.md)
+- [Logging Actions](doc/logging.md)
 - [Testing your DataFlow](doc/testing.md)
 - [Using coroutines from your Action](doc/coroutines.md)
-- [Dealing Coroutines Flow of State](doc/flow.md)
-- [Multiple State Stream](doc/multiple_state_streams.md)
+- [Mapping Coroutines Flow to States](doc/flow.md)
+- [Defining Multiple Streams](doc/multiple_streams.md)
+- [Persistent Stream - Recover state](doc/persistent.md)
 - [More Safely with Functional Approach](doc/functional.md)
-- [Migrating from Uniflow 0.x to 1.0](doc/migrating.md)
+- [Migrating from Uniflow 0.x to 1.0.x](doc/migrating.md)
 
 ### Sample Apps 🎉
 

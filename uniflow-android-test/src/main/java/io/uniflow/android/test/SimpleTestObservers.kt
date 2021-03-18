@@ -6,6 +6,7 @@ import io.uniflow.android.livedata.LiveDataPublisher
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.test.assertEquals
 
 class SimpleDataObserver<T>(val callback: (T) -> Unit) : Observer<T> {
@@ -18,7 +19,7 @@ class SimpleDataObserver<T>(val callback: (T) -> Unit) : Observer<T> {
 }
 
 class TestViewObserver {
-    val values = arrayListOf<UIData>()
+    val values = ConcurrentLinkedQueue<UIData>()
     val states = SimpleDataObserver<UIState> { values.add(it) }
     val events = SimpleDataObserver<UIEvent> { values.add(it) }
 
@@ -50,5 +51,12 @@ fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val liveDataPublisher = defaultDataPublisher as LiveDataPublisher
     liveDataPublisher.states.observeForever(tester.states)
     liveDataPublisher.events.observeForever { tester.events.onChanged(it.content) }
+    return tester
+}
+
+fun LiveDataPublisher.createTestObserver(): TestViewObserver {
+    val tester = TestViewObserver()
+    states.observeForever(tester.states)
+    events.observeForever { tester.events.onChanged(it.content) }
     return tester
 }
