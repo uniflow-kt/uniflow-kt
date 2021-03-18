@@ -102,6 +102,12 @@ private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatche
 val testDispatcherRule = UniflowTestDispatchersRule()
 ```
 
+Don't forget to use `InstantTaskExecutorRule` for Android tests:
+
+```kotlin
+@get:Rule
+val rule = InstantTaskExecutorRule()
+```
 
 ----
 
