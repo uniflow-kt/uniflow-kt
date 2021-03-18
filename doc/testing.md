@@ -5,75 +5,64 @@
 
 ### Observing States/Events
 
-Create your ViewModel instance and mock your states observer:
+Create your ViewModel instance and create test observer with `createTestObserver():
 
 ```kotlin
-val mockedRepo : WeatherRepository = mockk(relaxed = true)
-lateinit var dataFlow : WeatherDataFlow
+lateinit var dataFlow: OurDataFlow
+lateinit var tester: TestViewObserver
 
 @Before
 fun before() {
-    // create WeatherDataFlow instance with mocked WeatherRepository
-    dataFlow = WeatherDataFlow(mockedRepo)
-    // create test observer 
-    view = detailViewModel.createTestObserver()
+    dataFlow = OurDataFlow()
+    // create test observer
+    tester = dataFlow.createTestObserver()
 }
 ```
 
-Now you can test incoming states & events with `assertReceived`:
+Now you can test incoming states & events with `verifySequence`:
 
 ```kotlin
 @Test
-fun `has some weather`() {
-    // prepare test data
-    val weatherData = WeatherData(...)
-    // setup mocked call
-    coEvery { mockedRepo.getWeatherForToday() } return weatherData
-
-    // Call getWeather()
-    dataFlow.getWeather()
-        
-    // verify state
-    dataFlow.assertReceived (
-        WeatherState(weatherData.day, weatherData.temperature)
+fun `run some states`() {
+    dataFlow.action1()
+    dataFlow.action2()
+    dataFlow.action3()
+    
+    // tester will receive states in following orders
+    tester.verifySequence(
+        UIState.Empty,
+        MyState1,
+        MyState2,
+        MyState3
     )
 }
 ```
 
-### Mocking States/Events
+### Mocking Observer 
 
-Create your ViewModel instance and mock your states observer:
+Create your ViewModel instance and mock your states observer with `mockObservers()`:
 
 ```kotlin
-val mockedRepo : WeatherRepository = mockk(relaxed = true)
-lateinit var dataFlow : WeatherDataFlow
+lateinit var dataFlow: OurDataFlow
+lateinit var tester: MockViewObserver
 
 @Before
 fun before() {
-    // create WeatherDataFlow instance with mocked WeatherRepository
-    dataFlow = WeatherDataFlow(mockedRepo)
-    // create test observer 
-    view = detailViewModel.createTestObserver()
+    dataFlow = OurDataFlow()
+    // create mocked observer 
+    view = dataFlow.mockObservers()
 }
 ```
 
-Now you can test incoming states & events with `assertReceived`:
+Now you can test incoming states & events with `hasState`:
 
 ```kotlin
 @Test
-fun `has some weather`() {
-    // prepare test data
-    val weatherData = WeatherData(...)
-    // setup mocked call
-    coEvery { mockedRepo.getWeatherForToday() } return weatherData
+fun `run some states`() {
+    dataFlow.action1()
 
-    // Call getWeather()
-    dataFlow.getWeather()
-        
-    // verify state
-    dataFlow.assertReceived (
-        WeatherState(weatherData.day, weatherData.temperature)
-    )
+    // tester will receive following state
+    tester.assertHasState(MyState1)
 }
 ```
 

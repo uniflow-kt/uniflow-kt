@@ -56,7 +56,7 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 - [Weather App](https://github.com/uniflow-kt/weatherapp-uniflow)
 - [Jetpack Compose Samples with Uniflow](https://github.com/uniflow-kt/compose-samples)
 
-## Resources 📖
+## Resources ☕️
 
 - [Riding the state flow (AndroidMakers 2020)](https://www.youtube.com/watch?v=m6dyIv1rDdo)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
