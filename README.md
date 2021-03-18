@@ -22,8 +22,6 @@ repositories {
 
 Check the [latest version](https://search.maven.org/search?q=org.uniflow-kt)
 
-⚠️ Maven group id has been updated from `io.uniflow` to `org.uniflow-kt` ⚠️
-
 ```gradle
 // Core
 implementation 'org.uniflow-kt:uniflow-core:$uniflow_version'
@@ -37,6 +35,8 @@ testImplementation 'org.uniflow-kt:uniflow-android-test:$uniflow_version'
 implementation 'org.uniflow-kt:uniflow-saferesult:$uniflow_version'
 implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 ```
+
+⚠️ Due to Maven Central migration, group id has been updated from `io.uniflow` to `org.uniflow-kt` ⚠️
 
 ## Getting started & Documentation 📖
 
