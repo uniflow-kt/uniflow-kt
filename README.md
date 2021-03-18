@@ -35,16 +35,18 @@ testImplementation 'org.uniflow-kt:uniflow-android-test:$uniflow_version'
 ```
 
 ## Getting started & Documentation 📖
-- [Getting Started](./doc/Intro.md)
-- [Documentation](./doc/Documentation.md)
-- [Testing](./doc/Documentation.md)
-- [Multiple State Stream](./doc/Documentation.md)
-- [Dealing with Flow of State](./doc/Documentation.md)
-- [Migrating from Uniflow 0.x to 1.0](./doc/Migrating.md)
+- [Getting Started](doc/intro.md)
+- [Writing an Action to update your state](doc/state_action.md)
+- [Pushing Events for side effects](doc/events.md)
+- [Test your DataFlow](doc/testing.md)
+- [Using coroutines inside an Action](doc/coroutines.md)
+- [Multiple State Stream](doc/multiple_state_streams.md)
+- [Coroutines - Dealing with Flow of State](doc/flow.md)
+- [Migrating from Uniflow 0.x to 1.0](doc/migrating.md)
 
 ### Sample Apps
-- Weather App: []()
-- Compose: []()
+- [Weather App](https://github.com/uniflow-kt/weatherapp-uniflow)
+- [Jetpack Compose Samples with Uniflow](https://github.com/uniflow-kt/compose-samples)
 
 ## Online Resources 🎉
 
