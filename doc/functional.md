@@ -115,4 +115,6 @@ fun `your test`() = rule.testCoroutineDispatcher.runBlockingTest { /*..*/ }
 
 You can also use the `TestThreadRule`, to emulate a main thread: replace main dispatcher by a single thread context dispatcher
 
-## [Back To Readme](../Readme.md)
+----
+
+## [Back To Documentation Topics](../README.md#getting-started--documentation-)

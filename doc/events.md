@@ -50,6 +50,9 @@ _Warning_: On an event, you can either `take()` or `peek()` its data:
 - `take` - consume the event data, can't be taken by other event consumer
 - `peek` - peek the event's data, even if the data has been consumed
 
-## [Back To Readme](../Readme.md)
+----
+
+## [Back To Documentation Topics](../README.md#getting-started--documentation-)
+
 
 
