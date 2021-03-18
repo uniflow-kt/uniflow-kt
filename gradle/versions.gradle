@@ -1,6 +1,6 @@
 ext {
-    uniflow_version = "1.0.0-SNAPSHOT"
-    is_snapshot = true
+    uniflow_version = "1.0.0"
+    is_snapshot = false
 
     // Kotlin
     kotlin_version = '1.4.31'

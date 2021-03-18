@@ -1,7 +1,5 @@
 
-# Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines
-
-<br>
+# Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin
 
 ## Writing an Action
 
