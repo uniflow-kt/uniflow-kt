@@ -3,7 +3,7 @@
 
 ## Testing 🚑
 
-### Asserting States & Events
+### Observing States/Events
 
 Create your ViewModel instance and mock your states observer:
 
@@ -40,7 +40,44 @@ fun `has some weather`() {
 }
 ```
 
-### Extra JUnit Rules
+### Mocking States/Events
+
+Create your ViewModel instance and mock your states observer:
+
+```kotlin
+val mockedRepo : WeatherRepository = mockk(relaxed = true)
+lateinit var dataFlow : WeatherDataFlow
+
+@Before
+fun before() {
+    // create WeatherDataFlow instance with mocked WeatherRepository
+    dataFlow = WeatherDataFlow(mockedRepo)
+    // create test observer 
+    view = detailViewModel.createTestObserver()
+}
+```
+
+Now you can test incoming states & events with `assertReceived`:
+
+```kotlin
+@Test
+fun `has some weather`() {
+    // prepare test data
+    val weatherData = WeatherData(...)
+    // setup mocked call
+    coEvery { mockedRepo.getWeatherForToday() } return weatherData
+
+    // Call getWeather()
+    dataFlow.getWeather()
+        
+    // verify state
+    dataFlow.assertReceived (
+        WeatherState(weatherData.day, weatherData.temperature)
+    )
+}
+```
+
+### JUnit Rules
 
 - Change Logging during tests:
 
