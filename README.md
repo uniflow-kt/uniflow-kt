@@ -1,6 +1,4 @@
 
-# Uniflow 🦄 -- Simple Unidirectional Data Flow for Android & Kotlin
-
 ![Uniflow logo](./doc/uniflow_big.png)
 
 ## Setup 🚀
