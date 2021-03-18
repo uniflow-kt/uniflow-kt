@@ -1,5 +1,5 @@
 
-![Uniflow logo](./doc/uniflow_big.png)
+![Uniflow logo](./doc/uniflow_header.png)
 
 ## Setup 🚀
 
