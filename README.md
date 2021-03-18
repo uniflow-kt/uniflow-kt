@@ -20,6 +20,8 @@ repositories {
 }
 ```
 
+Check the [latest version](https://search.maven.org/search?q=org.uniflow-kt)
+
 ⚠️ Maven group id has been updated from `io.uniflow` to `org.uniflow-kt` ⚠️
 
 ```gradle
