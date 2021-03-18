@@ -1,6 +1,8 @@
 
 # Uniflow 🦄 -- Simple Unidirectional Data Flow for Android & Kotlin
 
+![](./Doc/uniflow_big.png)
+
 ## Setup 🚀
 
 ### Current version
@@ -35,30 +37,23 @@ testImplementation 'org.uniflow-kt:uniflow-android-test:$uniflow_version'
 ```
 
 ## Getting started & Documentation 📖
-- [Getting Started](./Intro.md)
-- [Documentation](./Documentation.md)
-- Sample app: https://github.com/arnaudgiuliani/weatherapp-uniflow
+- [Getting Started](./doc/Intro.md)
+- [Documentation](./doc/Documentation.md)
+- [Testing](./doc/Documentation.md)
+- [Multiple State Stream](./doc/Documentation.md)
+- [Dealing with Flow of State](./doc/Documentation.md)
+- [Migrating from Uniflow 0.x to 1.0](./doc/Migrating.md)
 
-Come talk on Kotlin Slack @ [#uniflow channel](https://kotlinlang.slack.com/?redir=%2Fmessages%2Funiflow)
-
-## Migrating from 0.x to 1.0 🚧
-
-#### Update from `io.uniflow` to `org.uniflow-kt` (Maven Central)
-
-//TBD
-
-#### `io.uniflow:uniflow-androidx` merged into `org.uniflow-kt:uniflow-android`
-
-//TBD
-
-#### Imports & Package of Android API
-
-//TBD
-
+### Sample Apps
+- Weather App: []()
+- Compose: []()
 
 ## Online Resources 🎉
 
-- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
+- [Riding the state flow (AndroidMakers 2020)](https://www.youtube.com/watch?v=m6dyIv1rDdo)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
+- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
 
+## Contact us
 
+Come talk on Kotlin Slack @ [#uniflow channel](https://kotlinlang.slack.com/?redir=%2Fmessages%2Funiflow) 💬
