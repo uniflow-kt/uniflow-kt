@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./gradlew dokka install publishToMavenLocal bintrayUpload --info --no-parallel
+./gradlew dokka install publishToMavenLocal publishMavenPublicationPublicationToSonatypeRepository --info

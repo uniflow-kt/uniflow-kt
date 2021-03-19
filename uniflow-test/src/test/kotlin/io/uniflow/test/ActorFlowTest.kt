@@ -2,6 +2,8 @@ package io.uniflow.test
 
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.data.toUIError
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.logger.UniFlowLoggerTestRule
@@ -9,13 +11,12 @@ import io.uniflow.test.data.Todo
 import io.uniflow.test.data.TodoListState
 import io.uniflow.test.data.TodoListUpdate
 import io.uniflow.test.data.TodoRepository
-import io.uniflow.test.impl.BadDF
-import io.uniflow.test.impl.SampleFlow
-import io.uniflow.test.rule.TestDispatchersRule
-import io.uniflow.test.validate.validate
+import io.uniflow.test.rule.UniflowTestDispatchersRule
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
@@ -24,7 +25,7 @@ import org.junit.Test
 class ActorFlowTest {
     companion object {
         init {
-            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, debugThread = true))
+            UniFlowLogger.init(SimpleMessageLogger(UniFlowLogger.FUN_TAG, showDebug = true))
         }
 
         @JvmStatic
@@ -33,7 +34,7 @@ class ActorFlowTest {
     }
 
     @get:Rule
-    val testDispatchersRule = TestDispatchersRule()
+    val testDispatchersRule = UniflowTestDispatchersRule()
 
     private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 
@@ -45,20 +46,20 @@ class ActorFlowTest {
         dataFlow = SampleFlow(repository)
     }
 
-    @Test
-    fun `is valid`() {
-        validate<SampleFlow>()
-    }
-
-    @Test
-    fun `is not valid`() {
-        try {
-            validate<BadDF>()
-            fail()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+//    @Test
+//    fun `is valid`() {
+//        validate<SampleFlow>()
+//    }
+//
+//    @Test
+//    fun `is not valid`() {
+//        try {
+//            validate<BadDF>()
+//            fail()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
 
 
     @Test
@@ -70,8 +71,9 @@ class ActorFlowTest {
     fun `get all`() {
         dataFlow.getAll()
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()))
+            UIState.Empty,
+            TodoListState(emptyList())
+        )
     }
 
     @Test
@@ -83,9 +85,24 @@ class ActorFlowTest {
     }
 
     @Test
+    fun `add in row`() = runBlocking {
+        dataFlow.getAll()
+        val max = 10
+        (1..max).forEach { i ->
+            GlobalScope.launch {
+                println("-> $i")
+                dataFlow.add("todo_$i")
+                delay(50)
+            }
+        }
+        while (dataFlow.defaultDataPublisher.states.size < max) {
+            delay(100)
+        }
+    }
+
+    @Test
     fun `add one - fail`() {
         dataFlow.add("first")
-        dataFlow.assertReceived(UIState.Empty, UIEvent.BadOrWrongState(UIState.Empty))
     }
 
     @Test
@@ -94,7 +111,12 @@ class ActorFlowTest {
         dataFlow.add("first")
         dataFlow.done("first")
 
-        dataFlow.assertReceived(UIState.Empty, TodoListState(emptyList()), TodoListState(listOf(Todo("first"))), TodoListState(listOf(Todo("first", true))))
+        dataFlow.assertReceived(
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListState(listOf(Todo("first"))),
+            TodoListState(listOf(Todo("first", true)))
+        )
     }
 
     @Test
@@ -105,12 +127,14 @@ class ActorFlowTest {
         dataFlow.done("first")
         dataFlow.filterDones()
 
-        dataFlow.assertReceived(UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))),
-                TodoListState(listOf(Todo("first"), Todo("second"))),
-                TodoListState(listOf(Todo("second"), Todo("first", true))),
-                TodoListState(listOf(Todo("first", true))))
+        dataFlow.assertReceived(
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListState(listOf(Todo("first"))),
+            TodoListState(listOf(Todo("first"), Todo("second"))),
+            TodoListState(listOf(Todo("second"), Todo("first", true))),
+            TodoListState(listOf(Todo("first", true)))
+        )
     }
 
     @Test
@@ -119,9 +143,10 @@ class ActorFlowTest {
         dataFlow.done("first")
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                UIEvent.Error("Can't make done 'first'"))
+            UIState.Empty,
+            TodoListState(emptyList()),
+            UIEvent.Error("Can't make done 'first'")
+        )
     }
 
     @Test
@@ -132,10 +157,10 @@ class ActorFlowTest {
         dataFlow.makeOnError()
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))),
-                UIEvent.Error("Event logError", error)
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListState(listOf(Todo("first"))),
+            UIEvent.Error("Event logError", error)
         )
     }
 
@@ -146,23 +171,24 @@ class ActorFlowTest {
         delay(100)
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                UIState.Failed("Got error $error", error)
+            UIState.Empty,
+            UIState.Failed(error = error)
         )
     }
 
     @Test
     fun `child io action error`() {
-        val error = IllegalStateException("Boom on IO")
+        val errorMsg = "Boom on IO"
+        val error = IllegalStateException(errorMsg, IllegalStateException(errorMsg))
         dataFlow.getAll()
         dataFlow.add("first")
         dataFlow.childIOError()
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))),
-                UIState.Failed("Got error $error", error)
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListState(listOf(Todo("first"))),
+            UIState.Failed(error = error.toUIError())
         )
     }
 
@@ -174,10 +200,10 @@ class ActorFlowTest {
         delay(200)
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListState(listOf(Todo("first"))),
-                TodoListState(listOf(Todo("first"), Todo("LongTodo")))
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListState(listOf(Todo("first"))),
+            TodoListState(listOf(Todo("first"), Todo("LongTodo")))
         )
     }
 
@@ -189,8 +215,8 @@ class ActorFlowTest {
         dataFlow.close()
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList())
+            UIState.Empty,
+            TodoListState(emptyList())
         )
     }
 
@@ -200,9 +226,9 @@ class ActorFlowTest {
         dataFlow.notifyUpdate()
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                TodoListUpdate(Todo("t2"))
+            UIState.Empty,
+            TodoListState(emptyList()),
+            TodoListUpdate(Todo("t2"))
         )
     }
 
@@ -213,8 +239,8 @@ class ActorFlowTest {
         dataFlow.longWait()
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList())
+            UIState.Empty,
+            TodoListState(emptyList())
         )
     }
 
@@ -224,9 +250,19 @@ class ActorFlowTest {
         delay(20)
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                UIState.Loading,
-                UIState.Success
+            UIState.Empty,
+            UIState.Loading,
+            UIState.Success
+        )
+    }
+
+    @Test
+    fun `test UIState - Failed`() = testCoroutineDispatcher.runBlockingTest {
+        dataFlow.setUIStateFailed()
+
+        dataFlow.assertReceived(
+            UIState.Empty,
+            UIState.Failed(message = "Some message here")
         )
     }
 
@@ -237,10 +273,10 @@ class ActorFlowTest {
         delay(20)
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                TodoListState(emptyList()),
-                UIState.Loading,
-                UIState.Success
+            UIState.Empty,
+            TodoListState(emptyList()),
+            UIState.Loading,
+            UIState.Success
         )
     }
 
@@ -250,8 +286,8 @@ class ActorFlowTest {
         delay(20)
 
         dataFlow.assertReceived(
-                UIState.Empty,
-                UIEvent.BadOrWrongState(UIState.Empty)
+            UIState.Empty,
+            UIState.Failed(error = BadOrWrongStateException(UIState.Empty, TodoListState::class))
         )
     }
 

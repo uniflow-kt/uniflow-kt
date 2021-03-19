@@ -16,38 +16,34 @@
 
 package io.uniflow.core.flow.data
 
+import io.uniflow.core.logger.UniFlowLogger
+import java.util.*
+
 /**
- * Data Flow Event wrapper
+ * Event wrapper
+ *
+ * Help send content to EventConsumer
  *
  * @author Arnaud Giuliani
  */
-data class Event<out T>(private val content: T) {
+data class Event<out T : UIEvent>(val id: String = UUID.randomUUID().toString(), val content: T) {
 
-    var hasBeenHandled = false
-        private set // Allow external read but not write
+    private val consumerIds = arrayListOf<String>()
 
-    /**
-     * Returns the content and put the event has handled
-     */
-    fun take(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
+    private fun hasNotBeenSentTo(consumer: EventConsumer): Boolean = !consumerIds.contains(consumer.id)
+
+    private fun registerConsumer(consumer: EventConsumer) {
+        consumerIds.add(consumer.id)
+    }
+
+    fun getContentForConsumer(consumer: EventConsumer): UIEvent? {
+        return if (hasNotBeenSentTo(consumer)) {
+            registerConsumer(consumer)
+            UniFlowLogger.debug("$consumer received $content")
             content
+        } else {
+            UniFlowLogger.debug("$consumer skipped - already received $content")
+            null
         }
     }
-
-    /**
-     * Return and execute code on given value
-     * put the event has handled
-     */
-    fun take(code: (T) -> Unit) {
-        take()?.let { code(it) }
-    }
-
-    /**
-     * Returns the content, even if it's already been handled.
-     */
-    fun peek(): T = content
 }

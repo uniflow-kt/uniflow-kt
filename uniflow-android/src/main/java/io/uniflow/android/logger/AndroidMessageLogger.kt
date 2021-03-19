@@ -8,7 +8,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed launchOn an "AS IS" BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -26,9 +26,15 @@ import io.uniflow.core.logger.UniFlowLogger
  *
  * @author Arnaud Giuliani
  */
-class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, debugThread: Boolean = false) : Logger {
+class AndroidMessageLogger(val tag: String = UniFlowLogger.TAG, val showDebug: Boolean = false) : Logger {
 
-    val dbg_th: String = if (debugThread) "[${Thread.currentThread().name}] " else ""
+    val dbg_th: String = if (showDebug) "[${Thread.currentThread().name}] " else ""
+
+    override fun debug(message: String) {
+        if (showDebug){
+            Log.d(tag,"$dbg_th $message")
+        }
+    }
 
     override fun log(message: String) {
         Log.i(tag,"$dbg_th $message")

@@ -13,30 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UNCHECKED_CAST")
+
 package io.uniflow.core.flow
 
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
-import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Unidirectional Data Flow
  *
+ * A component that is able to declare new action, and dispatch to an internal reducer processor
+ *
+ * ActionDispatcher - Have at least one DataPublisher, to publish State/Event data
+ *
+ * onError - default error handling behavior that can be overloaded
+ *
  * @author Arnaud Giuliani
  */
 interface DataFlow {
-    fun getCurrentState(): UIState
-    fun <T : UIState> getCurrentStateOrNull(stateClass: KClass<T>): T?
-    fun action(onAction: ActionFunction<UIState>): ActionFlow
-    fun action(onAction: ActionFunction<UIState>, onError: ActionErrorFunction): ActionFlow
-    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>): ActionFlow
-    fun <T : UIState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
-    suspend fun onError(error: Exception, currentState: UIState, flow: ActionFlow) {
-        UniFlowLogger.logError("Uncaught error: $error", error)
+    val tag: String
+    val actionDispatcher: ActionDispatcher
+    val coroutineScope: CoroutineScope
+    fun defaultPublisher(): DataPublisher
+    fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
+    fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)
+    suspend fun onError(error: Exception, currentState: UIState) {
+        UniFlowLogger.logError("Uncaught error: $error - ${error.stackTrace}", error)
         throw error
     }
 }
 
-inline fun <reified T : UIState> DataFlow.getCurrentStateOrNull(): T? = getCurrentStateOrNull(T::class)
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>): ActionFlow = actionOn(T::class, onAction)
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction<T>, noinline onError: ActionErrorFunction): ActionFlow = actionOn(T::class, onAction, onError)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>, noinline onError: ActionErrorFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction, onError as ActionErrorFunction)

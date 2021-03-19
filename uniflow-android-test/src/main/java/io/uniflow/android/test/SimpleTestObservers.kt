@@ -1,27 +1,27 @@
 package io.uniflow.android.test
 
-import android.arch.lifecycle.Observer
-import io.uniflow.android.flow.AndroidDataFlow
-import io.uniflow.core.flow.data.Event
+import androidx.lifecycle.Observer
+import io.uniflow.android.AndroidDataFlow
+import io.uniflow.android.livedata.LiveDataPublisher
 import io.uniflow.core.flow.data.UIData
 import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.test.assertEquals
 
-class SimpleObserver<T>(val callback: (T) -> Unit) : Observer<T> {
+class SimpleDataObserver<T>(val callback: (T) -> Unit) : Observer<T> {
     val values = arrayListOf<T>()
 
-    override fun onChanged(t: T?) {
-        t?.let {
-            values.add(t)
-            callback(t)
-        }
+    override fun onChanged(t: T) {
+        values.add(t)
+        callback(t)
     }
 }
 
 class TestViewObserver {
-    val values = arrayListOf<UIData>()
-    val states = SimpleObserver<UIState> { values.add(it) }
-    val events = SimpleObserver<Event<UIEvent>> { values.add(it.peek()) }
+    val values = ConcurrentLinkedQueue<UIData>()
+    val states = SimpleDataObserver<UIState> { values.add(it) }
+    val events = SimpleDataObserver<UIEvent> { values.add(it) }
 
     val lastStateOrNull: UIState?
         get() = states.values.lastOrNull()
@@ -34,14 +34,29 @@ class TestViewObserver {
     val lastValueOrNull
         get() = values.lastOrNull()
 
-    fun assertReceived(vararg any: UIData) = assert(this.values == any) { "Wrong values\nshould have [$any]\nbut was [${values}]" }
-    fun assertReceived(vararg states: UIState) = assert(this.states.values == states) { "Wrong values\nshould have [$states]\nbut was [${this.states.values}]" }
-    fun assertReceived(vararg events: UIEvent) = assert(this.events.values == events) { "Wrong values\nshould have [$events]\nbut was [${this.events.values}]" }
+    @Deprecated("better use verifySequence")
+    fun assertReceived(vararg any: UIData) = verifySequence(*any)
+    fun verifySequence(vararg testingData: UIData) {
+        val testingValues = testingData.toList()
+        values.forEachIndexed { index, uiData ->
+            assertEquals(uiData, testingValues[index],
+                    "Wrong values at [$index] - expecting: ${uiData::class.simpleName}"
+            )
+        }
+    }
 }
 
 fun AndroidDataFlow.createTestObserver(): TestViewObserver {
     val tester = TestViewObserver()
-    dataPublisher.states.observeForever(tester.states)
-    dataPublisher.events.observeForever(tester.events)
+    val liveDataPublisher = defaultDataPublisher as LiveDataPublisher
+    liveDataPublisher.states.observeForever(tester.states)
+    liveDataPublisher.events.observeForever { tester.events.onChanged(it.content) }
+    return tester
+}
+
+fun LiveDataPublisher.createTestObserver(): TestViewObserver {
+    val tester = TestViewObserver()
+    states.observeForever(tester.states)
+    events.observeForever { tester.events.onChanged(it.content) }
     return tester
 }

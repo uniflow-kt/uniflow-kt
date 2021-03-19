@@ -5,7 +5,50 @@
 
 ## Changelog
 
+## 0.12.x
+
+### 0.12.0
+
+- `added` new Event/EventConsumer API to avoid need of take/peek operator, and help simplify the use of UIEvent.  
+
+
 ## 0.11.x
+
+### 0.11.7
+
+- `added` an empty logger (`EmptyLogger`, logs nothing): use `UniFlowLogger.init(EmptyLogger())` or `UniFlowLogger.empty()`
+- `fixed` Fatal exception in UIState - https://github.com/uniflow-kt/uniflow-kt/pull/48
+- `fixed` Error stacktrace on std out - https://github.com/uniflow-kt/uniflow-kt/pull/47
+
+### 0.11.6
+
+- `fixed` fix UIError message to include `origin` exception
+
+### 0.11.5
+
+- `fixed` compact message logs
+
+### 0.11.4
+
+- `fixed` test message comparison
+
+### 0.11.3
+
+- `fixed` android simple tester `verifySequence` API to help verify which state data is failing in the list
+- `fixed` UIError mapping
+- `fixed` Set initial state synchronously to avoid race condition - https://github.com/uniflow-kt/uniflow-kt/pull/41
+- `added` More logs
+- `added` `onTakeEvents` & `onPeekEvents` for Android observer components. Do directly take() or peek() on the event data & give it if non null
+
+### 0.11.2
+
+- `fixed` fix extensions `UIError` 
+
+### 0.11.1
+
+- `added` Add `UIError` object to help wrap exception make it comparable. (#35)
+- `fixed` Parameterize `TestCoroutineDispatcher` in `TestDispatchers` and `TestDispatchersRule` (#30)
+- `fixed` Make `Event<out T>` covariant with `UIEvent` (#32)
 
 ### 0.11.0
 
@@ -44,5 +87,4 @@ _no backward compatibility API with previous version!_
 #### 0.8.5
 
 - merge `AndroidDataFlow` and `AndroidActorFlow` classes in both Android libs to provide an actor based ViewModel by default, to ensure event scheduling ordered.
-
 

@@ -1,162 +1,70 @@
 
-# Uniflow 🦄- Simple Unidirectional Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming
+![Uniflow logo](./doc/uniflow_header.png)
 
-## Setup
+## Setup 🚀
 
-#### Current version is `0.11.0`
-
-Choose one of the following dependency:
+### Current version
 
 ```gradle
-jcenter()
+// Current Stable
+uniflow_version = "1.0.1"
+```
 
-// Minimal Core
-implementation 'io.uniflow:uniflow-core:$version'
-testImplementation 'io.uniflow:uniflow-test:$version'
+### Gradle setup
+
+Repository is now __Maven Central__:
+
+```gradle
+repositories {
+    mavenCentral()
+}
+```
+
+Check the [latest version](https://search.maven.org/search?q=org.uniflow-kt)
+
+```gradle
+// Core
+implementation 'org.uniflow-kt:uniflow-core:$uniflow_version'
+testImplementation 'org.uniflow-kt:uniflow-test:$uniflow_version'
 
 // Android
-implementation 'io.uniflow:uniflow-android:$version'
-testImplementation 'io.uniflow:uniflow-android-test:$version'
+implementation 'org.uniflow-kt:uniflow-android:$uniflow_version'
+testImplementation 'org.uniflow-kt:uniflow-android-test:$uniflow_version'
 
-// AndroidX
-implementation 'io.uniflow:uniflow-androidx:$version'
-testImplementation 'io.uniflow:uniflow-androidx-test:$version'
+// Extras
+implementation 'org.uniflow-kt:uniflow-saferesult:$uniflow_version'
+implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 ```
 
-this version is based on Kotlin `1.3.72` & Coroutines `1.3.5`
+⚠️ Due to Maven Central migration, group id has been updated from `io.uniflow` to `org.uniflow-kt` ⚠️
 
-## Web Article 🎉
+## Getting started & Documentation 📖
 
-- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
+- [What is Uniflow?](doc/what.md)
+- [Getting Started](doc/start.md)
+- [Writing an Action to update your state](doc/state_action.md)
+- [Pushing Events for side effects](doc/events.md)
+- [Easy Error Handling](doc/errors.md)
+- [Logging Actions](doc/logging.md)
+- [Testing your DataFlow](doc/testing.md)
+- [Using coroutines from your Action](doc/coroutines.md)
+- [Mapping Coroutines Flow to States](doc/flow.md)
+- [Defining Multiple Streams](doc/multiple_streams.md)
+- [Persistent Stream to recover state](doc/persistent.md)
+- [More Safely with Functional Approach](doc/functional.md)
+- [Migrating from Uniflow 0.x to 1.0.x](doc/migrating.md)
+
+### Sample Apps 🎉
+
+- [Weather App](https://github.com/uniflow-kt/weatherapp-uniflow)
+- [Jetpack Compose Samples with Uniflow](https://github.com/uniflow-kt/compose-samples)
+
+## Resources ☕️
+
+- [Riding the state flow (AndroidMakers 2020)](https://www.youtube.com/watch?v=m6dyIv1rDdo)
 - [Making Android unidirectional data flow with Kotlin coroutines 🦄](https://medium.com/@giuliani.arnaud/making-android-unidirectional-data-flow-with-kotlin-coroutines-d69966717b6e)
+- [An efficient way to use Uniflow](https://blog.kotlin-academy.com/an-efficient-way-to-use-uniflow-2b41a9785a05?gi=bce973f6a529)
 
-## Full documentation 📖
+## Contact us 💬
 
-- Documentation can be found [here](./Documentation.md)
-- Sample app: https://github.com/arnaudgiuliani/weatherapp-uniflow
-
-## Chat on Slack 💬
-
-Come talk on Kotlin Slack @ [#uniflow channel](https://kotlinlang.slack.com/?redir=%2Fmessages%2Funiflow)
-
-## Quick intro 🚸
-
-UniFlow help you write your app with a simple unidirectional data flow approach (think states and events) to ensure consistency through the time, and this with Kotlin Coroutines.
-
-UniFlow provides:
-* Smart way to write a Data flow in pure Kotlin
-* Android extensions to let you just focus on States & Events
-* Ready for Kotlin coroutines
-* Easy to test
-* Open to functional programming with [Arrow](https://arrow-kt.io/)
-
-<details><summary>What is Unidirectional Data Flow? 🤔</summary>
-<p>
-
-### What is Unidirectional Data Flow?
-
-Unidirectional Data Flow is a concept that means that data has one, and only one, way to be transferred to other parts of the application.
-
-This means that:
-
-- state is passed to the view
-- actions are triggered by the view
-- actions can update the state
-- the state change is passed to the view
-
-The view is a result of the application state. State can only change when actions happen. When actions happen, the state is updated.
-
-Thanks to one-way bindings, data cannot flow in the opposite way (as would happen with two-way bindings, for example), and this has some key advantages:
-
-it’s less error prone, as you have more control over your data
-it’s easier to debug, as you know what is coming from where
-
-</p>
-</details>
-
-## Getting Started 🚀
-
-### Writing your first UI state
-
-Describe your data flow states with `UIState`:
-
-```kotlin
-data class WeatherState(val day : String, val temperature : String) : UIState()
-```
-
-Publish state updates from your ViewModel:
-
-```kotlin
-class WeatherDataFlow(val repo : WeatherRepository) : AndroidDataFlow(defaultState = Empty) {
-
-    fun getWeather() = action {
-        // call to get data
-        val weather = repo.getWeatherForToday().await()
-        // return a new state
-        setState { WeatherState(weather.day, weather.temperature) }
-    }
-}
-```
-
-Observe your state flow from your Activity or Fragment:
-
-```kotlin
-class WeatherActivity : AppCompatActivity {
-
-	val weatherFlow : WeatherDataFlow ... // ViewModel created with Koin for example :)
-	
-	override fun onCreate(savedInstanceState: Bundle?) {		
-		// Observe incoming states
-		onStates(weatherFlow) { state ->
-			when (state) {
-				// react on WeatherState update
-				is WeatherState -> showWeather(state)
-			}
-		}
-	}
-}
-
-```
-
-### Easy to test!
-
-Create your ViewModel instance and mock your states observer:
-
-```kotlin
-val mockedRepo : WeatherRepository = mockk(relaxed = true)
-lateinit var dataFlow : WeatherDataFlow
-
-@Before
-fun before() {
-    // create WeatherDataFlow instance with mocked WeatherRepository
-    dataFlow = WeatherDataFlow(mockedRepo)
-    // create test observer 
-    view = detailViewModel.createTestObserver()
-}
-```
-
-Now you can test incoming states & events with `assertReceived`:
-
-```kotlin
-@Test
-fun `has some weather`() {
-    // prepare test data
-    val weatherData = WeatherData(...)
-    // setup mocked call
-    coEvery { mockedRepo.getWeatherForToday() } return weatherData
-
-    // Call getWeather()
-    dataFlow.getWeather()
-        
-    // verify state
-    dataFlow.assertReceived (
-    	UIState.Empty,
-        WeatherState(weatherData.day, weatherData.temperature)
-    )
-}
-```
-
-## Want to see more?
-
-Documentation can be found [here](./Documentation.md)
-
+Come talk on Kotlin Slack @ [#uniflow channel](https://kotlinlang.slack.com/?redir=%2Fmessages%2Funiflow) 

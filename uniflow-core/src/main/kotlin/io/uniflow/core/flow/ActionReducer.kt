@@ -1,57 +1,64 @@
 package io.uniflow.core.flow
 
-import io.uniflow.core.dispatcher.UniFlowDispatcher
 import io.uniflow.core.flow.data.UIState
+import io.uniflow.core.flow.error.BadOrWrongStateException
 import io.uniflow.core.logger.UniFlowLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 
-@UseExperimental(ObsoleteCoroutinesApi::class)
-class ActionReducer(
-        private val uiDataStore: UIDataStore,
-        private val coroutineScope: CoroutineScope,
-        private val defaultDispatcher: CoroutineDispatcher,
-        defaultCapacity: Int = Channel.BUFFERED
+/**
+ * Action processor component, backed by a coroutine Actor to execute a queue of Actions
+ *
+ * enqueueAction - enqueue in incoming Action
+ * reduceAction - Execute an action to proceed any state update or event push
+ *
+ * @author Arnaud Giuliani
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+open class ActionReducer(
+    private val defaultPublisher: () -> DataPublisher,
+    private val coroutineScope: CoroutineScope,
+    private val defaultDispatcher: CoroutineDispatcher,
+    defaultCapacity: Int = Channel.BUFFERED,
+    private val tag: String
 ) {
 
-    private val actor = coroutineScope.actor<ActionFlow>(UniFlowDispatcher.dispatcher.default(),
-            capacity = defaultCapacity) {
+    @OptIn(ObsoleteCoroutinesApi::class)
+    private val actor = coroutineScope.actor<Action>(defaultDispatcher, capacity = defaultCapacity) {
         for (action in channel) {
             if (coroutineScope.isActive) {
-                withContext(defaultDispatcher) {
+                withContext(defaultDispatcher){
                     reduceAction(action)
                 }
             } else {
-                UniFlowLogger.log("actor $action cancelled")
+                UniFlowLogger.debug("$tag - $action cancelled")
             }
         }
     }
 
-    suspend fun enqueueAction(action: ActionFlow) {
-        actor.send(action)
+    open fun enqueueAction(action: Action) {
+        val offered = if (!actor.isClosedForSend) actor.offer(action) else false
+        if (!offered) {
+            UniFlowLogger.logError("$tag - $action couldn't be enqueued")
+        }
     }
 
-    private suspend fun reduceAction(action: ActionFlow) {
-        val currentState: UIState = uiDataStore.currentState
+    private suspend fun reduceAction(action: Action) {
+        UniFlowLogger.debug("$tag - reduce: $action")
+        val currentState: UIState = defaultPublisher().getState()
         try {
-            val onSuccess = action.onSuccess
-            flow<UIDataUpdate> {
-                action.flow = this
-                onSuccess(action, currentState)
-            }.collect { dataUpdate ->
-                uiDataStore.pushNewData(dataUpdate)
+            action.targetState?.let { targetState ->
+                if (targetState != currentState::class) {
+                    action.onError(BadOrWrongStateException(currentState, targetState), currentState)
+                    return
+                }
             }
+            action.onSuccess(currentState)
+            UniFlowLogger.debug("$tag - completed: $action")
         } catch (e: Exception) {
-            val onError = action.onError
-            flow<UIDataUpdate> {
-                action.flow = this
-                onError(action, e, currentState)
-            }.collect { dataUpdate ->
-                uiDataStore.pushNewData(dataUpdate)
-            }
+            UniFlowLogger.debug("$tag - error: $action")
+            action.onError(e, currentState)
         }
     }
 

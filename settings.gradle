@@ -1,6 +1,7 @@
 // Core modules
-include 'uniflow-core', 'uniflow-test'
-include 'uniflow-android', 'uniflow-android-test'
-include 'uniflow-androidx', 'uniflow-androidx-test'
-include 'uniflow-arrow'
+include 'uniflow-core'
+include 'uniflow-test'
+include 'uniflow-android'
+include 'uniflow-android-test'
 include 'uniflow-saferesult'
+include 'uniflow-arrow'

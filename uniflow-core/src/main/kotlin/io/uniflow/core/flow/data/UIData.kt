@@ -1,3 +1,5 @@
 package io.uniflow.core.flow.data
 
-interface UIData
+import java.io.Serializable
+
+interface UIData : Serializable

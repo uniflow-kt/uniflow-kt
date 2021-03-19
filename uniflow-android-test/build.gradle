@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android'
 ext {
     android_sourceSet = true
     pom_name = "uniflow-android-test"
-    pom_description = "UniFlow a Kotlin unidrectional data flow framework for testing Android"
 }
 
 android {
@@ -13,21 +12,28 @@ android {
 
     defaultConfig {
         minSdkVersion android_min_version
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
     api project(":uniflow-android")
+    implementation "androidx.appcompat:appcompat:$androidx_lib_version"
+    implementation("androidx.lifecycle:lifecycle-common:$androidx_lifecycle_version") {
+        exclude group: "core-runtime"
+    }
+    // Architecture ViewModel
+    implementation("androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_version") {
+        exclude module: "lifecycle-livedata"
+        exclude module: "lifecycle-service"
+        exclude module: "lifecycle-process"
+        exclude module: "runtime"
+        exclude group: "androidx.legacy"
+    }
     implementation project(":uniflow-test")
     implementation "io.mockk:mockk:$mockk_version"
 
-    implementation "com.android.support:appcompat-v7:$support_lib_version"
-    implementation("android.arch.lifecycle:common:$android_arch_version")
-    implementation("android.arch.lifecycle:extensions:$android_arch_version") {
-        exclude module: "livedata"
-        exclude module: "runtime"
-    }
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
 
-apply from: '../gradle/publish-android.gradle'
+apply from: '../gradle/sources-android.gradle'
+apply from: '../gradle/publish-maven-central.gradle'
