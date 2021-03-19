@@ -40,7 +40,8 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 
 ## Getting started & Documentation 📖
 
-- [Getting Started](doc/intro.md)
+- [What is Uniflow?](doc/what.md)
+- [Getting Started](doc/start.md)
 - [Writing an Action to update your state](doc/state_action.md)
 - [Pushing Events for side effects](doc/events.md)
 - [Easy Error Handling](doc/errors.md)
@@ -49,7 +50,7 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 - [Using coroutines from your Action](doc/coroutines.md)
 - [Mapping Coroutines Flow to States](doc/flow.md)
 - [Defining Multiple Streams](doc/multiple_streams.md)
-- [Persistent Stream - Recover state](doc/persistent.md)
+- [Persistent Stream to recover state](doc/persistent.md)
 - [More Safely with Functional Approach](doc/functional.md)
 - [Migrating from Uniflow 0.x to 1.0.x](doc/migrating.md)
 
