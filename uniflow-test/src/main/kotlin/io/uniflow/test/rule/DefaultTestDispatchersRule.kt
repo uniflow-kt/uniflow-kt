@@ -19,7 +19,7 @@ import org.junit.runner.Description
  * Defaults to `TestCoroutineDispatcher()`.
  */
 @ExperimentalCoroutinesApi
-class TestDispatcherRule(
+class DefaultTestDispatchersRule(
     val testCoroutineDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ) : TestWatcher() {
     override fun starting(description: Description?) {

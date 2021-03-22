@@ -5,9 +5,8 @@ import io.uniflow.android.test.TestViewObserver
 import io.uniflow.android.test.createTestObserver
 import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.DebugMessageLogger
-import io.uniflow.core.logger.SimpleMessageLogger
 import io.uniflow.core.logger.UniFlowLogger
-import io.uniflow.test.rule.TestDispatcherRule
+import io.uniflow.test.rule.DefaultTestDispatchersRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -24,7 +23,7 @@ class SyncFlowTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
-    val td = TestDispatcherRule()
+    val td = DefaultTestDispatchersRule()
 
     @get:Rule
     val rule = InstantTaskExecutorRule()

@@ -5,12 +5,25 @@
 
 ## Changelog
 
+## 1.0.x
+
+### 1.0.2
+
+- `Maven Central` migration, publishing the project to change group id from `io.uniflow` to `org.uniflow-kt`
+- `Reworked` DataFlow type hierarchy to avoid leak internals
+- `Reworked` Dispatcher engine to more efficient running actions
+- `Reworked` DataFlow `onError` has now only 2 params (exception and state). We can use directly `setState`/`sendEvent` from there
+- `DataPublisher` design reworked to allow multiple streams
+- `action` & `actionOn` won't leak any internal `Action` reference anymore
+- `Merged` Android/AndroidX implementation of Uniflow. `uniflow-android` bring the AndroidX API, as the old support is deprecated
+- `Reworked` TestDispatcher with 2 implementations: `UniflowTestDispatchersRule` (flatten on the same dispatcher, make async code more sequential) and `DefaultTestDispatchersRule` (allow dispatch on different Dispatchers)
+- Documentation update
+
 ## 0.12.x
 
 ### 0.12.0
 
 - `added` new Event/EventConsumer API to avoid need of take/peek operator, and help simplify the use of UIEvent.  
-
 
 ## 0.11.x
 

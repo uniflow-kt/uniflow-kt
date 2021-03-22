@@ -86,11 +86,11 @@ companion object {
 
 ### Test Dispatchers
 
-- `TestDispatcherRule` - simply uses Coroutines TestDispatcher to run your test (really dispatch on IO or other context)
+- `DefaultTestDispatchersRule` - simply uses Coroutines TestDispatcher to run your test (really dispatch on IO or other context)
 
 ```kotlin
 @get:Rule
-val testDispatcherRule = TestDispatcherRule()
+val testDispatcherRule = DefaultTestDispatchersRule()
 
 private val testCoroutineDispatcher = testDispatchersRule.testCoroutineDispatcher
 ```

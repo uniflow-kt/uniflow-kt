@@ -44,6 +44,7 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 - [Getting Started](doc/start.md)
 - [Writing an Action to update your state](doc/state_action.md)
 - [Pushing Events for side effects](doc/events.md)
+- [Notifying State changes](doc/notify_update.md)
 - [Easy Error Handling](doc/errors.md)
 - [Logging Actions](doc/logging.md)
 - [Testing your DataFlow](doc/testing.md)
