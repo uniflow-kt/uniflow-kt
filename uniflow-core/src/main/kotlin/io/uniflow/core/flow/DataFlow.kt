@@ -37,13 +37,13 @@ interface DataFlow {
     val actionDispatcher: ActionDispatcher
     val coroutineScope: CoroutineScope
     fun defaultPublisher(): DataPublisher
-    fun action(onAction: ActionFunction): Action = actionDispatcher.dispatchAction(onAction)
-    fun action(onAction: ActionFunction, onError: ActionErrorFunction): Action = actionDispatcher.dispatchAction(onAction, onError)
+    fun action(onAction: ActionFunction) : Unit = actionDispatcher.dispatchAction(onAction)
+    fun action(onAction: ActionFunction, onError: ActionErrorFunction): Unit = actionDispatcher.dispatchAction(onAction, onError)
     suspend fun onError(error: Exception, currentState: UIState) {
         UniFlowLogger.logError("Uncaught error: $error - ${error.stackTrace}", error)
         throw error
     }
 }
 
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction)
-inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>, noinline onError: ActionErrorFunction_T<T>): Action = actionDispatcher.actionOn(T::class, onAction as ActionFunction, onError as ActionErrorFunction)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>) : Unit= actionDispatcher.actionOn(T::class, onAction as ActionFunction)
+inline fun <reified T : UIState> DataFlow.actionOn(noinline onAction: ActionFunction_T<T>, noinline onError: ActionErrorFunction_T<T>): Unit = actionDispatcher.actionOn(T::class, onAction as ActionFunction, onError as ActionErrorFunction)

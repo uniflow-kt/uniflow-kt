@@ -19,25 +19,26 @@ class ActionDispatcher(
     private val runError: suspend (Exception, UIState) -> Unit,
     val tag: String
 ) {
-    fun dispatchAction(onAction: ActionFunction): Action =
+    fun dispatchAction(onAction: ActionFunction): Unit =
         dispatchAction(onAction) { error, state -> runError(error, state) }
 
-    fun dispatchAction(onAction: ActionFunction, onError: ActionErrorFunction): Action =
+    fun dispatchAction(onAction: ActionFunction, onError: ActionErrorFunction){
         Action(onAction, onError).also {
             dispatchAction(it)
         }
-
+    }
 
     fun dispatchAction(action: Action) {
         UniFlowLogger.debug("$tag - enqueue: $action")
         reducer.enqueueAction(action)
     }
 
-    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Action =
+    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction): Unit =
         actionOn(kClass, onAction) { error, state -> runError(error, state) }
 
-    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction, onError: ActionErrorFunction): Action =
+    fun actionOn(kClass: KClass<out UIState>, onAction: ActionFunction, onError: ActionErrorFunction){
         Action(onAction, onError, kClass).also { dispatchAction(it) }
+    }
 
     fun close() {
         reducer.close()

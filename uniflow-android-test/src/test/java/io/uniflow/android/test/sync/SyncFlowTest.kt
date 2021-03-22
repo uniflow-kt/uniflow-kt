@@ -69,4 +69,18 @@ class SyncFlowTest {
             CountState(3)
         )
     }
+
+    @Test
+    fun `actions error order`() = runBlocking {
+        dataFlow.actionBoom()
+        dataFlow.action1()
+
+        delay(20)
+
+        tester.verifySequence(
+            UIState.Empty,
+            UIState.Failed(error = IllegalStateException("boom")),
+            CountState(1)
+        )
+    }
 }

@@ -32,6 +32,10 @@ class SyncFlow : AndroidDataFlow(UIState.Empty) {
         setState { CountState(3) }
     }
 
+    fun actionBoom() = action {
+        error("boom")
+    }
+
     fun actionList() {
         viewModelScope.launch {
             val flow = flow { (1..3).forEach { emit(it) } }
@@ -41,6 +45,10 @@ class SyncFlow : AndroidDataFlow(UIState.Empty) {
                 }
             }
         }
+    }
+
+    override suspend fun onError(error: Exception, currentState: UIState) {
+        setState { UIState.Failed(error = error) }
     }
 }
 

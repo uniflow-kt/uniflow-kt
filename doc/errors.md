@@ -44,8 +44,11 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 class WeatherDataFlow(...) : AndroidDataFlow() {
 
     // Unhandled errors goes here
-    override suspend fun onError(error: Exception, currentState: UIState) {
+    override suspend fun onError(ex: Exception, currentState: UIState) {
         // Error handling ...
+
+        // Can also set a new state or send an event
+        setState { UIState.Failed(message = "Uncaught Error", error = ex)}
     }
 }
 ```
