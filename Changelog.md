@@ -7,6 +7,11 @@
 
 ## 1.0.x
 
+### 1.0.3
+
+- `Gradle` force Java 8 Compile for Android projects
+- `OnFlow` operator to help emit Actions from Coroutines Flow<T>
+
 ### 1.0.2
 
 - `Maven Central` migration, publishing the project to change group id from `io.uniflow` to `org.uniflow-kt`

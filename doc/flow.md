@@ -1,7 +1,7 @@
 
 # Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin
 
-## Mapping Coroutines Flow to States
+## Coroutines Flow to UI States
 
 When we have to use coroutines [Flow<T>`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/) 
 we need to collect the resulting value to finally emit our state ou event data.
@@ -12,7 +12,7 @@ fun actionList() {
     // Launch a job
     viewModelScope.launch {
         // get our Flow
-        val flow = flow { (1..3).forEach { emit(it) } }
+        val flow = flow { ... }
         // Collect it
         flow.collect { value ->
             // Make an action per value
@@ -20,6 +20,50 @@ fun actionList() {
                 setState { CountState(value) }
             }
         }
+    }
+}
+```
+
+## OnFlow - Mapping Coroutines Flow to States
+
+We can work with Flow<T> data in a safer way. Uniflow offers the `onFlow()` function like follow:
+
+```kotlin
+fun actionList() {
+    // Launch a job
+    viewModelScope.launch {
+        // get our Flow
+        val flow = flow { ... }
+        
+        // Collect from Flow and emit actions
+        onFlow( { flow } ){ value ->
+            // Push new state
+            setState { CountState(value) }
+        }
+    }
+}
+```
+
+By default, any error encountered in `onFlow`, from the observed `flow` will emit an action error. We can also provide an error function if needed, like on a regular action:
+
+```kotlin
+fun actionList() {
+    // Launch a job
+    viewModelScope.launch {
+        // get our Flow
+        val flow = flow { ... }
+        
+        // Collect from Flow and emit actions
+        onFlow( 
+            flow = { flow },
+            doAction = { value ->
+                // Push new state
+                setState { CountState(value) }
+            },
+            onError = { error, state -> 
+                // Handle an error
+            }
+        )
     }
 }
 ```
