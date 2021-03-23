@@ -32,9 +32,9 @@ class MyActivity : AppCompatActivity(){
         
         // Let's observe incoming events
         onEvents(viewModel) { event ->
-            when (val data = event.take()) {
-                is WeatherListUIEvent.Success -> showSuccess(data.location)
-                is WeatherListUIEvent.Failed -> showFailed(data.location, data.error)
+            when (event) {
+                is WeatherListUIEvent.Success -> showSuccess(event.location)
+                is WeatherListUIEvent.Failed -> showFailed(event.location, event.error)
             }
         }
     }
