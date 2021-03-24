@@ -96,18 +96,6 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
-## Executing an action only from a given state
-
-The `actionOn<T>` function help set a new state if you are in the given state <T>. Else your DataFlow will send `BadOrWrongState` event:
-
-```kotlin
-// Execute loadNewLocation action only if current state is in WeatherListState
-fun loadNewLocation(location: String) = actionOn<WeatherState>{ currentState : WeatherListState ->
-    // currentState is WeatherListState
-    // ...
-}
-```
-
 ----
 
 ## [Back To Documentation Topics](../README.md#getting-started--documentation-)

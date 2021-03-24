@@ -39,7 +39,6 @@ class MyActivity : AppCompatActivity(){
         }
     }
 }
-—
 ```
 
 _Warning_: An event is "one shot". It won't persist in the current Dataflow. Once consumed, an event is cleared from the Dataflow 

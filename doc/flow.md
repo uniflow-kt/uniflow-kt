@@ -1,7 +1,7 @@
 
 # Uniflow 🦄- Simple Unidirectionnel Data Flow for Android & Kotlin
 
-## Coroutines Flow to UI States
+## Collecting a coroutines Flow<T> to run Actions
 
 When we have to use coroutines [Flow<T>`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/) 
 we need to collect the resulting value to finally emit our state ou event data.
@@ -24,7 +24,7 @@ fun actionList() {
 }
 ```
 
-## OnFlow - Mapping Coroutines Flow to States
+## OnFlow - Wrapping directly Coroutines Flow<T> to Actions
 
 We can work with Flow<T> data in a safer way. Uniflow offers the `onFlow()` function like follow:
 

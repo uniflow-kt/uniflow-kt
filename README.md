@@ -38,18 +38,22 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 
 ⚠️ Due to Maven Central migration, group id has been updated from `io.uniflow` to `org.uniflow-kt` ⚠️
 
-## Getting started & Documentation 📖
+## Getting started 🚀
+
+- [Quick start with Uniflow](doc/start.md)
+
+## Documentation 📖
 
 - [What is Uniflow?](doc/what.md)
-- [Getting Started](doc/start.md)
 - [Writing an Action to update your state](doc/state_action.md)
 - [Pushing Events for side effects](doc/events.md)
-- [Notifying State changes](doc/notify_update.md)
+- [Running coroutines from your Action](doc/coroutines.md)
+- [State Guard - Running an action on a given state](doc/state_guard.md)
+- [Notifying State Changes](doc/notify_update.md)
 - [Easy Error Handling](doc/errors.md)
 - [Logging Actions](doc/logging.md)
 - [Testing your DataFlow](doc/testing.md)
-- [Using coroutines from your Action](doc/coroutines.md)
-- [Mapping Coroutines Flow to States](doc/flow.md)
+- [From Coroutines Flow<T> to Actions](doc/flow.md)
 - [Defining Multiple Streams](doc/multiple_streams.md)
 - [Persistent Stream to recover state](doc/persistent.md)
 - [More Safely with Functional Approach](doc/functional.md)
