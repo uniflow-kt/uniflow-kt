@@ -18,20 +18,14 @@ apply from: '../gradle/versions.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-//ext {
-//    signingKeyId = ''
-//    signingPassword = ''
-//    signingSecretKeyRingFile = ''
-//    ossrhUsername = ''
-//    ossrhPassword = ''
-//    sonatypeStagingProfileId = ''
-//}
+def getRepositoryUsername() {
+    return findProperty('SONATYPE_NEXUS_USERNAME') ?: System.getenv('SONATYPE_NEXUS_USERNAME') ?: ""
+}
 
-//ext["signing.keyId"] = System.getProperty('signing.keyId')
-//ext["signing.password"] = System.getProperty('signing.password')
-//ext["signing.secretKeyRingFile"] = System.getProperty('signing.secretKeyRingFile')
-ext["ossrhUsername"] = System.getProperty('SONATYPE_NEXUS_USERNAME')
-ext["ossrhPassword"] = System.getProperty('SONATYPE_NEXUS_PASSWORD')
+def getRepositoryPassword() {
+    return findProperty('SONATYPE_NEXUS_PASSWORD') ?: System.getenv('SONATYPE_NEXUS_PASSWORD') ?: ""
+}
+
 
 def isSnapshotBuild() {
     return is_snapshot
@@ -88,9 +82,9 @@ afterEvaluate { project ->
                 def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
                 def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
                 url = isSnapshotBuild() ? snapshotsRepoUrl : releasesRepoUrl
-                credentials(PasswordCredentials) {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                credentials {
+                    username = getRepositoryUsername()
+                    password = getRepositoryPassword()
                 }
             }
         }
