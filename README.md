@@ -7,7 +7,7 @@
 
 ```gradle
 // Current Stable
-uniflow_version = "1.0.3"
+uniflow_version = "1.0.4"
 ```
 
 ### Gradle setup
