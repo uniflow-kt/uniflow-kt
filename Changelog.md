@@ -7,6 +7,12 @@
 
 ## 1.0.x
 
+### 1.0.4
+
+- `states` is exposed from AndroidDataFlow (to help consumes states for Jetpack Compose)
+- `onState`, `getStateOrNull()` operators fixed to not be suspended
+- `letOnState` execute lambda on given state, return a result
+
 ### 1.0.3
 
 - `Gradle` force Java 8 Compile for Android projects

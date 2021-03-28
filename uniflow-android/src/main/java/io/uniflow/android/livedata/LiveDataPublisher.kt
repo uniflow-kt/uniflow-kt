@@ -2,7 +2,7 @@ package io.uniflow.android.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import io.uniflow.android.AndroidDataFlow
 import io.uniflow.core.flow.DataPublisher
 import io.uniflow.core.flow.data.Event
 import io.uniflow.core.flow.data.UIEvent
@@ -22,7 +22,7 @@ open class LiveDataPublisher(
     internal val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events
 
-    override suspend fun getState(): UIState = _states.value ?: error("No state in LiveData")
+    override fun getState(): UIState = _states.value ?: error("No state in LiveData")
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
         onMain(immediate = true) {
@@ -39,3 +39,5 @@ open class LiveDataPublisher(
     }
 }
 fun liveDataPublisher(defaultState: UIState = UIState.Empty, tag: String? = null) = LiveDataPublisher(defaultState, tag)
+
+val AndroidDataFlow.states: LiveData<UIState> get() = (defaultDataPublisher as LiveDataPublisher).states

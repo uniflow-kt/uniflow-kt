@@ -18,31 +18,20 @@ apply from: '../gradle/versions.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-ext {
-    signingKeyId = ''
-    signingPassword = ''
-    signingSecretKeyRingFile = ''
-    ossrhUsername = ''
-    ossrhPassword = ''
-    sonatypeStagingProfileId = ''
-}
+//ext {
+//    signingKeyId = ''
+//    signingPassword = ''
+//    signingSecretKeyRingFile = ''
+//    ossrhUsername = ''
+//    ossrhPassword = ''
+//    sonatypeStagingProfileId = ''
+//}
 
-File secretPropsFile = project.rootProject.file('local.properties')
-if (secretPropsFile.exists()) {
-    Properties p = new Properties()
-    new FileInputStream(secretPropsFile).withCloseable { is ->
-        p.load(is)
-    }
-    p.each { name, value ->
-        ext[name] = value
-    }
-} else {
-    ext["signing.keyId"] = System.getProperty('SIGNING_KEY_ID')
-    ext["signing.password"] = System.getProperty('SIGNING_PASSWORD')
-    ext["signing.secretKeyRingFile"] = System.getProperty('SIGNING_SECRET_KEY_RING_FILE')
-    ext["ossrhUsername"] = System.getProperty('NEXUS_USERNAME')
-    ext["ossrhPassword"] = System.getProperty('NEXUS_PASSWORD')
-}
+//ext["signing.keyId"] = System.getProperty('signing.keyId')
+//ext["signing.password"] = System.getProperty('signing.password')
+//ext["signing.secretKeyRingFile"] = System.getProperty('signing.secretKeyRingFile')
+ext["ossrhUsername"] = System.getProperty('SONATYPE_NEXUS_USERNAME')
+ext["ossrhPassword"] = System.getProperty('SONATYPE_NEXUS_PASSWORD')
 
 def isSnapshotBuild() {
     return is_snapshot

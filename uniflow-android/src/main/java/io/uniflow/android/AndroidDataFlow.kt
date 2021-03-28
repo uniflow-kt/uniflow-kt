@@ -58,7 +58,7 @@ abstract class AndroidDataFlow(
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) = defaultPublisher().publishState(state, pushStateUpdate)
     override suspend fun publishEvent(event: UIEvent) = defaultPublisher().publishEvent(event)
-    override suspend fun getState(): UIState = defaultPublisher().getState()
+    override fun getState(): UIState = defaultPublisher().getState()
     override fun defaultPublisher(): DataPublisher = defaultDataPublisher
 
     private val actionReducer = ActionReducer(::defaultPublisher, coroutineScope, config.defaultDispatcher, config.defaultCapacity, tag)

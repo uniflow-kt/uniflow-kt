@@ -12,7 +12,7 @@ import io.uniflow.core.logger.UniFlowLogger
  */
 interface StatePublisher {
     suspend fun publishState(state: UIState, pushStateUpdate: Boolean = true)
-    suspend fun getState(): UIState
+    fun getState(): UIState
     suspend fun setState(state: UIState) = publishState(state)
     suspend fun setState(state: () -> UIState) = publishState(state())
 }
@@ -42,15 +42,25 @@ interface DataPublisher : StatePublisher, EventPublisher {
 }
 
 /**
- *
+ * Get state for type T or return null
  */
-suspend inline fun <reified T : UIState> StatePublisher.getStateOrNull(): T? {
+inline fun <reified T : UIState> StatePublisher.getStateOrNull(): T? {
     val state = getState()
     return if (state is T) {
         state
     } else null
 }
 
-suspend inline fun <reified T : UIState> StatePublisher.onState(code: (T) -> Unit) {
-    getStateOrNull<T>()?.let { code(it) } ?: UniFlowLogger.log("onState ${T::class} returned null")
+/**
+ * Let execute block on given state T if not null
+ */
+inline fun <reified T : UIState> StatePublisher.onState(code: (T) -> Unit){
+    getStateOrNull<T>()?.let { code(it) }
+}
+
+/**
+ * Let execute block on given state T if not null, return a Result R
+ */
+inline fun <reified T : UIState, R: Any> StatePublisher.letOnState(code: (T) -> R) : R? {
+    return getStateOrNull<T>()?.let { code(it) }
 }

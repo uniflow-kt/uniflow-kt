@@ -31,6 +31,7 @@ class MultiFlow(private val repository: TodoRepository) : AbstractSampleFlow(UIS
     }
 
     fun manualGuard(todo: String) = action {
+        // onState doesn't send
         pub1.getStateOrNull<TodoListState>()?.let {
             repository.add(todo)
             val todos = repository.getAllTodo()
