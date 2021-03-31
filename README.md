@@ -7,7 +7,7 @@
 
 ```gradle
 // Current Stable
-uniflow_version = "1.0.4"
+uniflow_version = "1.0.5"
 ```
 
 ### Gradle setup
@@ -53,6 +53,7 @@ implementation 'org.uniflow-kt:uniflow-arrow:$uniflow_version'
 - [Easy Error Handling](doc/errors.md)
 - [Logging Actions](doc/logging.md)
 - [Testing your DataFlow](doc/testing.md)
+- [States and Jetpack Compose](doc/composes.md)
 - [From Coroutines Flow<T> to Actions](doc/flow.md)
 - [Defining Multiple Streams](doc/multiple_streams.md)
 - [Persistent Stream to recover state](doc/persistent.md)

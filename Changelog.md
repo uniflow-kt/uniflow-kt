@@ -7,6 +7,10 @@
 
 ## 1.0.x
 
+### 1.0.5
+
+- `LiveDataPublisher` avoid to send default state automatically. Must be done in ViewModel init phase.
+
 ### 1.0.4
 
 - `states` is exposed from AndroidDataFlow (to help consumes states for Jetpack Compose)

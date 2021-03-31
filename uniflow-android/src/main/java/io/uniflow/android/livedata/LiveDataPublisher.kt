@@ -11,18 +11,18 @@ import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
 open class LiveDataPublisher(
-    defaultState: UIState,
+    val defaultState: UIState,
     _tag: String? = null
 ) : DataPublisher {
 
     val tag = _tag ?: this.toString()
 
-    internal val _states = MutableLiveData(defaultState)
+    internal val _states = MutableLiveData<UIState>()
     val states: LiveData<UIState> = _states
     internal val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events
 
-    override fun getState(): UIState = _states.value ?: error("No state in LiveData")
+    override fun getState(): UIState = _states.value ?: defaultState
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
         onMain(immediate = true) {

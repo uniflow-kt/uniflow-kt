@@ -38,17 +38,19 @@ class SyncFlowTest {
     }
 
     @Test
+    fun `init state`(){
+        assert(dataFlow.getState() == UIState.Empty)
+    }
+
+    @Test
     fun `actions are done in orders`() = runBlocking {
         dataFlow.action2()
         dataFlow.action1()
         dataFlow.action3()
 
-        while (tester.statesCount < 4) {
-            delay(25)
-        }
+        delay(50)
 
         tester.verifySequence(
-            UIState.Empty,
             CountState(2),
             CountState(1),
             CountState(3)
@@ -62,7 +64,6 @@ class SyncFlowTest {
         delay(20)
 
         tester.verifySequence(
-            UIState.Empty,
             CountState(1),
             CountState(2),
             CountState(3)
@@ -77,7 +78,6 @@ class SyncFlowTest {
         delay(20)
 
         tester.verifySequence(
-            UIState.Empty,
             UIState.Failed(error = IllegalStateException("boom")),
             CountState(1)
         )

@@ -13,7 +13,7 @@ class SimpleDataPublisher(val defaultState: UIState, val tag : String) : DataPub
     val data = arrayListOf<UIData>()
     val events = arrayListOf<UIEvent>()
 
-    override suspend fun getState(): UIState = states.lastOrNull() ?: defaultState
+    override fun getState(): UIState = states.lastOrNull() ?: defaultState
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
         onMain(immediate = true) {

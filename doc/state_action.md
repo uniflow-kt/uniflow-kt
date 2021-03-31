@@ -96,6 +96,30 @@ class WeatherDataFlow(...) : AndroidDataFlow() {
 }
 ```
 
+## Default state
+
+You can set a "default state" for your Data Flow. This set your first state value, it's not emitted at start.
+
+```kotlin
+class WeatherDataFlow() : AndroidDataFlow(defaultState = UIState.Empty) {
+
+    // no state emitted at start
+}
+```
+
+To emit a state at start, we need to write an init block like following:
+
+```kotlin
+class WeatherDataFlow() : AndroidDataFlow() {
+
+    init {
+        // Emit first state at start
+        setState(UIState.Empty)
+    }
+    
+}
+```
+
 ----
 
 ## [Back To Documentation Topics](../README.md#getting-started--documentation-)
