@@ -114,7 +114,7 @@ class WeatherDataFlow() : AndroidDataFlow() {
 
     init {
         // Emit first state at start
-        setState(UIState.Empty)
+        action { setState(UIState.Empty) }
     }
     
 }
