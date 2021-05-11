@@ -11,28 +11,25 @@ import kotlin.random.Random
 
 class SyncFlow : AndroidDataFlow(UIState.Empty) {
 
-    fun action1() = action {
-        val d = getRandomDelay()
+    fun action1(d: Long = getRandomDelay()) = action {
         println("delay: $d")
         delay(d)
         setState { CountState(1) }
     }
 
-    fun action2() = action {
-        val d = getRandomDelay()
+    fun action2(d: Long = getRandomDelay()) = action {
         println("delay: $d")
         delay(d)
         setState { CountState(2) }
     }
 
-    fun action3() = action {
-        val d = getRandomDelay()
+    fun action3(d: Long = getRandomDelay()) = action {
         println("delay: $d")
         delay(d)
         setState { CountState(3) }
     }
 
-    private fun getRandomDelay(): Long {
+    fun getRandomDelay(): Long {
         return Random.nextLong(50)
     }
 

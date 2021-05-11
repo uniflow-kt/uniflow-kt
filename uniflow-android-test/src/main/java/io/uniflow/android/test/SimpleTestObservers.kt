@@ -38,6 +38,7 @@ class TestViewObserver {
     fun assertReceived(vararg any: UIData) = verifySequence(*any)
     fun verifySequence(vararg testingData: UIData) {
         val testingValues = testingData.toList()
+        assertEquals(values.size, testingValues.size, "Incorrect size of list ")
         values.forEachIndexed { index, uiData ->
             assertEquals(uiData, testingValues[index],
                     "Wrong values at [$index] - expecting: ${uiData::class.simpleName}"

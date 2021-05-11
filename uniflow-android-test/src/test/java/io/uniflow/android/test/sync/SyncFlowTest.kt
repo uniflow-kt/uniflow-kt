@@ -44,15 +44,33 @@ class SyncFlowTest {
 
     @Test
     fun `actions are done in orders`() = runBlocking {
-        dataFlow.action2()
-        dataFlow.action1()
-        dataFlow.action3()
+        val randomDelayAction2 = dataFlow.getRandomDelay()
+        val randomDelayAction1 = dataFlow.getRandomDelay()
+        val randomDelayAction3 = dataFlow.getRandomDelay()
+        dataFlow.action2(randomDelayAction2)
+        dataFlow.action1(randomDelayAction1)
+        dataFlow.action3(randomDelayAction3)
+
+        delay(randomDelayAction2 + randomDelayAction1 + randomDelayAction3 + dataFlow.getRandomDelay())
+
+        tester.verifySequence(
+            CountState(2),
+            CountState(1),
+            CountState(3)
+        )
+    }
+
+    @Test(expected= AssertionError::class)
+    fun `incorrect size of state in verifySequence`() = runBlocking {
+        dataFlow.actionList()
 
         delay(50)
 
         tester.verifySequence(
             CountState(2),
             CountState(1),
+            CountState(3),
+            CountState(3),
             CountState(3)
         )
     }
@@ -75,7 +93,7 @@ class SyncFlowTest {
         dataFlow.actionBoom()
         dataFlow.action1()
 
-        delay(20)
+        delay(70)
 
         tester.verifySequence(
             UIState.Failed(error = IllegalStateException("boom")),
