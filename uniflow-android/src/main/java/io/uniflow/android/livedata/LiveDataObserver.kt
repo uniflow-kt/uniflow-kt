@@ -64,7 +64,7 @@ fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) ->
 }
 
 fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) -> Unit) {
-    val consumer = EventConsumer(consumerId)
+    val consumer = EventConsumer(owner.consumerId)
     events.observe(owner, Observer { event ->
         event?.let {
             consumer.onEvent(event)?.let {
