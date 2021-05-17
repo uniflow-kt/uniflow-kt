@@ -18,5 +18,5 @@ ext {
     // MockK Patterns
     mockk_patterns_junit4_version = '1.0.0'
 
-    junit_version = "4.12"
+    junit_version = "4.13.1"
 }
