@@ -7,6 +7,11 @@
 
 ## 1.0.x
 
+### 1.0.6
+
+- Bug consuming events in two places #73 @nicbel
+- Testing improvment - verifySequence #69 @MarcinChrapowicz
+
 ### 1.0.5
 
 - `LiveDataPublisher` avoid to send default state automatically. Must be done in ViewModel init phase.
