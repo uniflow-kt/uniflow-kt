@@ -27,9 +27,7 @@ open class LiveDataPublisher(
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
         onMain(immediate = true) {
             UniFlowLogger.debug("$tag --> $state")
-            if (pushStateUpdate) {
-                _states.value = state
-            }
+            _states.value = state
         }
     }
 
