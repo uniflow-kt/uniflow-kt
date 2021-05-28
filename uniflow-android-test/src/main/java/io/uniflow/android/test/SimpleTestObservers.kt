@@ -40,7 +40,7 @@ class TestViewObserver {
         val testingValues = testingData.toList()
         assertEquals(testingValues.size, values.size, "Incorrect size of list ")
         values.forEachIndexed { index, uiData ->
-            assertEquals(uiData, testingValues[index],
+            assertEquals(testingValues[index], uiData,
                     "Wrong values at [$index] - expecting: ${uiData::class.simpleName}"
             )
         }
