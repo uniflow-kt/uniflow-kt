@@ -48,24 +48,17 @@ fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
 fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) -> Unit) {
-    var lastState: UIState? = null
-    states.observe(owner, Observer { state: UIState? ->
+    states.observe(owner, { state: UIState? ->
         state?.let {
-            UniFlowLogger.debug("onStates - $owner - last state: $lastState")
-            if (lastState != state) {
-                UniFlowLogger.debug("onStates - $owner <- $state")
-                handleStates(state)
-                lastState = state
-            } else {
-                UniFlowLogger.debug("onStates - already received -  $owner <- $state")
-            }
+            UniFlowLogger.debug("onStates - $owner <- $state")
+            handleStates(state)
         }
     })
 }
 
 fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) -> Unit) {
     val consumer = EventConsumer(owner.consumerId)
-    events.observe(owner, Observer { event ->
+    events.observe(owner, { event ->
         event?.let {
             consumer.onEvent(event)?.let {
                 UniFlowLogger.debug("onEvents - $owner <- $event")
