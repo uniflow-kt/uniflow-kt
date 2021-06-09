@@ -44,7 +44,7 @@ it’s easier to debug, as you know what is coming from where
 
 ## Uniflow and MVI
 
-There is many articles around MVI appraoch, which is an implementation of Unidirectional Data Flow inspired by [Redux](https://redux.js.org/) and other JS frameworks approaches.
+There is many articles around MVI approach, which is an implementation of Unidirectional Data Flow inspired by [Redux](https://redux.js.org/) and other JS frameworks approaches.
 
 Uniflow provides the same aspect of MVI approach ([MVIKotlin](https://github.com/arkivanov/MVIKotlin)) but with less "plumbery". __The aim is to help focus on your content not your tool__
 
