@@ -15,8 +15,8 @@
  */
 package io.uniflow.android.livedata
 
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import io.uniflow.android.AndroidDataFlow
 import io.uniflow.android.consumerId
 import io.uniflow.core.flow.data.EventConsumer
@@ -33,8 +33,22 @@ import io.uniflow.core.logger.UniFlowLogger
 /**
  * Listen incoming states (UIState) on given AndroidDataFlow
  */
+fun Fragment.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onStates(this.viewLifecycleOwner, handleStates)
+}
+
+/**
+ * Listen incoming states (UIState) on given AndroidDataFlow
+ */
 fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit) {
     (vm.defaultDataPublisher as? LiveDataPublisher)?.onStates(this, handleStates)
+}
+
+/**
+ * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
+ */
+fun Fragment.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this.viewLifecycleOwner, handleEvents)
 }
 
 /**
@@ -43,6 +57,7 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
     (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this, handleEvents)
 }
+
 
 /**
  * Listen incoming states (UIState) on given AndroidDataFlow
