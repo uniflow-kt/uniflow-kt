@@ -1,8 +1,9 @@
 ext {
-    uniflow_version = "1.0.6"
+    uniflow_version = "1.0.7"
     is_snapshot = false
 
     // Kotlin
+    // TODO Update for 1.1.x
     kotlin_version = '1.4.31'
     coroutines_version = "1.4.3"
 

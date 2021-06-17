@@ -5,7 +5,11 @@
 
 ## Changelog
 
-## 1.0.x
+### 1.0.7
+
+- Incorrect order in verifySequence #75 @MarcinChrapowicz
+- Remove restriction of pushing state #78 @MarcinChrapowicz
+- Fragment add extension for state and events #79 @MarcinChrapowicz
 
 ### 1.0.6
 
