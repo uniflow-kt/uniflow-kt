@@ -48,14 +48,14 @@ fun LifecycleOwner.onStates(vm: AndroidDataFlow, handleStates: (UIState) -> Unit
  * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
  */
 fun Fragment.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this.viewLifecycleOwner, handleEvents)
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this.viewLifecycleOwner, this.consumerId, handleEvents)
 }
 
 /**
  * Listen incoming events (Event<UIEvent>) on given AndroidDataFlow
  */
 fun LifecycleOwner.onEvents(vm: AndroidDataFlow, handleEvents: (UIEvent) -> Unit) {
-    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this, handleEvents)
+    (vm.defaultDataPublisher as? LiveDataPublisher)?.onEvents(this, this.consumerId, handleEvents)
 }
 
 
@@ -71,8 +71,8 @@ fun LiveDataPublisher.onStates(owner: LifecycleOwner, handleStates: (UIState) ->
     })
 }
 
-fun LiveDataPublisher.onEvents(owner: LifecycleOwner, handleEvents: (UIEvent) -> Unit) {
-    val consumer = EventConsumer(owner.consumerId)
+fun LiveDataPublisher.onEvents(owner: LifecycleOwner, ownerId: String, handleEvents: (UIEvent) -> Unit) {
+    val consumer = EventConsumer(ownerId)
     events.observe(owner, { event ->
         event?.let {
             consumer.onEvent(event)?.let {
