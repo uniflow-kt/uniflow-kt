@@ -5,6 +5,10 @@
 
 ## Changelog
 
+### 1.0.8
+
+- Fragment set correct owner ID #81 @MarcinChrapowicz
+
 ### 1.0.7
 
 - Incorrect order in verifySequence #75 @MarcinChrapowicz
