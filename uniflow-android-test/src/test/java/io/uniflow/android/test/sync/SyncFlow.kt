@@ -2,6 +2,7 @@ package io.uniflow.android.test.sync
 
 import androidx.lifecycle.viewModelScope
 import io.uniflow.android.AndroidDataFlow
+import io.uniflow.core.flow.data.UIEvent
 import io.uniflow.core.flow.data.UIState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -48,9 +49,17 @@ class SyncFlow : AndroidDataFlow(UIState.Empty) {
         }
     }
 
+    fun clearState() = action {
+        notifyStateUpdate(
+            CountState(0),
+            ClearStateEvent
+        )
+    }
+
     override suspend fun onError(error: Exception, currentState: UIState) {
         setState { UIState.Failed(error = error) }
     }
 }
 
 data class CountState(val c: Int) : UIState()
+object ClearStateEvent : UIEvent()

@@ -5,7 +5,6 @@ import io.uniflow.core.flow.data.UIState
 import io.uniflow.core.logger.UniFlowLogger
 import io.uniflow.core.threading.onMain
 
-
 class PersistentLiveDataPublisher(
     defaultState: UIState,
     private val savedStateHandle: SavedStateHandle,
@@ -25,10 +24,7 @@ class PersistentLiveDataPublisher(
     }
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
-        onMain(immediate = true) {
-            UniFlowLogger.debug("$tag --> $state")
-            _states.value = state
-        }
+        super.publishState(state, pushStateUpdate)
         saveState(state)
     }
 

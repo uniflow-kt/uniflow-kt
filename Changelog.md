@@ -5,6 +5,10 @@
 
 ## Changelog
 
+### 1.0.9
+
+- NotifyStateUpdate fix for LiveDataPublisher
+
 ### 1.0.8
 
 - Fragment set correct owner ID #81 @MarcinChrapowicz
