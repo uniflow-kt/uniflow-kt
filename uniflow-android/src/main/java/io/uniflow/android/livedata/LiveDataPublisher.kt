@@ -27,6 +27,7 @@ open class LiveDataPublisher(
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
         onMain(immediate = true) {
+            UniFlowLogger.logState(state)
             UniFlowLogger.debug("$tag new state $state")
             _currentState = state
             if (pushStateUpdate) {
@@ -39,6 +40,7 @@ open class LiveDataPublisher(
     override suspend fun publishEvent(event: UIEvent) {
         onMain(immediate = true) {
             UniFlowLogger.debug("$tag --> $event")
+            UniFlowLogger.logEvent(event)
             _events.value = Event(content = event)
         }
     }
