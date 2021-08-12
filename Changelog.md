@@ -5,7 +5,7 @@
 
 ## Changelog
 
-### 1.1.0
+### 1.0.10
 
 - Fix issue with sending logs for state and event #83 @MarcinChrapowicz
 
