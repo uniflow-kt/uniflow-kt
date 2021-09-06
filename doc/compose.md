@@ -3,7 +3,7 @@
 
 ## Jetpack Compose 🚀
 
-When working with Jetpacvk compose, you can simply observe your `AndroidDataFlow` states with the `states` property. 
+When working with Jetpack compose, you can simply observe your `AndroidDataFlow` states with the `states` property. 
 From it you can observe Uniflow `UIState` and observe them as Compose `State`, with `observeAsState()`:
 
 `states.observeAsState().value?.let { state -> }`
@@ -13,7 +13,7 @@ In the following example (JetSurvey App), we observe incoming `UIState` to make 
 ```kotlin
 class SurveyFragment : Fragment() {
 
-	private val viewModel: SurveyViewModel
+    private val viewModel: SurveyViewModel
 
     override fun onCreateView(...): View? {
         return ComposeView(requireContext()).apply {
