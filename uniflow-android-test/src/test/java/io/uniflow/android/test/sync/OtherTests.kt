@@ -54,5 +54,7 @@ class OtherTests {
         androidDataFlow.foo() // Should log an uncaught error about a BadOrWrongStateException
 
         assertEquals(1, logger.messages.size)
+        
+        UniFlowLogger.default()
     }
 }
