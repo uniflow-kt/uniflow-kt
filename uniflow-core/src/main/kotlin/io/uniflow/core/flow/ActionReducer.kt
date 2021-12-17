@@ -58,7 +58,9 @@ open class ActionReducer(
             UniFlowLogger.debug("$tag - completed: $action")
         } catch (e: Exception) {
             UniFlowLogger.debug("$tag - error: $action")
-            action.onError(e, currentState)
+            if (e !is BadOrWrongStateException){
+                action.onError(e, currentState)
+            }
         }
     }
 
