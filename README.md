@@ -3,12 +3,8 @@
 
 ## Setup 🚀
 
-### Current version
+### Current version [![Maven Central](https://img.shields.io/maven-central/v/org.uniflow-kt/uniflow-core)](https://search.maven.org/search?q=org.uniflow-kt)
 
-```gradle
-// Current Stable
-uniflow_version = "1.0.10"
-```
 
 ### Gradle setup
 
