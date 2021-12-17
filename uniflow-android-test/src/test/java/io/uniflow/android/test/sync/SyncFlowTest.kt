@@ -55,7 +55,7 @@ class SyncFlowTest {
 
         delay(randomDelayAction2 + randomDelayAction1 + randomDelayAction3 + dataFlow.getRandomDelay())
 
-        assertEquals(3,tester.statesCount)
+        assertEquals(4,tester.statesCount)
     }
 
     @Test(expected= AssertionError::class)
