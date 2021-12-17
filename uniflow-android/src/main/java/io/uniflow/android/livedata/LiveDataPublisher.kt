@@ -17,7 +17,7 @@ open class LiveDataPublisher(
 
     val tag = _tag ?: this.toString()
 
-    internal val _states = MutableLiveData<UIState>()
+    internal val _states = MutableLiveData<UIState>(defaultState)
     val states: LiveData<UIState> = _states
     internal val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events

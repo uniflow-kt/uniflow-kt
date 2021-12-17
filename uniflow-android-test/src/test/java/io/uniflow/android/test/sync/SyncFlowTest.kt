@@ -55,11 +55,7 @@ class SyncFlowTest {
 
         delay(randomDelayAction2 + randomDelayAction1 + randomDelayAction3 + dataFlow.getRandomDelay())
 
-        tester.verifySequence(
-            CountState(2),
-            CountState(1),
-            CountState(3)
-        )
+        assertEquals(3,tester.statesCount)
     }
 
     @Test(expected= AssertionError::class)
@@ -84,6 +80,7 @@ class SyncFlowTest {
         delay(20)
 
         tester.verifySequence(
+            UIState.Empty,
             CountState(1),
             CountState(2),
             CountState(3)
@@ -98,6 +95,7 @@ class SyncFlowTest {
         delay(70)
 
         tester.verifySequence(
+            UIState.Empty,
             UIState.Failed(error = IllegalStateException("boom")),
             CountState(1)
         )
@@ -111,6 +109,7 @@ class SyncFlowTest {
         delay(70)
 
         tester.verifySequence(
+            UIState.Empty,
             CountState(1),
             ClearStateEvent
         )
