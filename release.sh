@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./gradlew publishToMavenLocal publishMavenPublicationPublicationToSonatypeRepository --info
+./gradlew publishAllPublicationsToStagingRepository --info

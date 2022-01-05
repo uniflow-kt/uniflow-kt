@@ -1,9 +1,7 @@
 ext {
     uniflow_version = "1.1.0"
-    is_snapshot = false
 
     // Kotlin
-    // TODO Update for 1.1.x
     kotlin_version = '1.5.31'
     coroutines_version = "1.5.2"
 
@@ -15,9 +13,7 @@ ext {
 
     // Mockk
     mockk_version = "1.10.0"
-
     // MockK Patterns
     mockk_patterns_junit4_version = '1.0.0'
-
-    junit_version = "4.13.1"
+    junit_version = "4.13.2"
 }

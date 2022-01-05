@@ -11,5 +11,4 @@ dependencies {
     api "io.mockk:mockk:$mockk_version"
 }
 
-apply from: '../gradle/sources.gradle'
 apply from: '../gradle/publish-maven-central.gradle'

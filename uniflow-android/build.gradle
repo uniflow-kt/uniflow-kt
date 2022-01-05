@@ -38,5 +38,4 @@ dependencies {
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_vm_version"
 }
 
-apply from: '../gradle/sources-android.gradle'
 apply from: '../gradle/publish-maven-central.gradle'

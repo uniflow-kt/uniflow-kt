@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply from: '../gradle/versions.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+
+//def isReleaseBuild() {
+//    return "$is_snapshot" == "false"
+//}
 
 def getRepositoryUsername() {
     return findProperty('SONATYPE_NEXUS_USERNAME') ?: System.getenv('SONATYPE_NEXUS_USERNAME') ?: ""
@@ -25,73 +28,98 @@ def getRepositoryPassword() {
     return findProperty('SONATYPE_NEXUS_PASSWORD') ?: System.getenv('SONATYPE_NEXUS_PASSWORD') ?: ""
 }
 
-
-def isSnapshotBuild() {
-    return is_snapshot
+if (!project.tasks.findByName('sourcesJar')) {
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
+        if (pluginManager.hasPlugin('com.android.library')) {
+            from android.sourceSets.main.java.srcDirs
+        } else {
+            from sourceSets.main.java.srcDirs
+        }
+    }
 }
 
-afterEvaluate { project ->
-    def pubComponent
-    if (PLATFORM == "kmm") { pubComponent = components.kotlin } else if (PLATFORM == "android") {pubComponent = components.release} else {pubComponent = components.java}
-    def sourcesArtifact = (PLATFORM == "kmm") ? jvmSourcesJar : sourcesJar
-    def implementations = (PLATFORM == "kmm") ? project.configurations.jvmImplementation : project.configurations.implementation
+artifacts {
+    archives dokkaJar
+    archives sourcesJar
+}
 
-    artifacts {
-        archives sourcesArtifact, dokkaJar
-    }
-
+afterEvaluate {
     publishing {
-        publications {
-            mavenPublication(MavenPublication) {
-                from pubComponent
-                artifact sourcesArtifact
-                artifact dokkaJar
-                pom {
-                    name = POM_NAME
-                    description = POM_DESCRIPTION
-                    url = POM_URL
-                    inceptionYear = POM_INCEPTION_YEAR
-                    licenses {
-                        license {
-                            name = POM_LICENCE_NAME
-                            url = POM_LICENCE_URL
-                            distribution = POM_LICENCE_DIST
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = POM_DEVELOPER_ID
-                            name = POM_DEVELOPER_NAME
-                            email = POM_DEVELOPER_EMAIL
-                            url = POM_DEVELOPER_URL
-                        }
-                    }
-                    scm {
-                        url = POM_SCM_URL
-                        connection = POM_SCM_CONNECTION
-                        developerConnection = POM_SCM_DEV_CONNECTION
-                    }
-                }
-            }
-        }
-
         repositories {
             maven {
-                name = "sonatype"
-                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-                url = isSnapshotBuild() ? snapshotsRepoUrl : releasesRepoUrl
+                name "snapshot"
+                url = "https://oss.sonatype.org/content/repositories/snapshots"
+                credentials {
+                    username = getRepositoryUsername()
+                    password = getRepositoryPassword()
+                }
+            }
+            maven {
+                name "staging"
+                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                 credentials {
                     username = getRepositoryUsername()
                     password = getRepositoryPassword()
                 }
             }
         }
+
+        if (!pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+            publications {
+                release(MavenPublication) {
+                    if (pluginManager.hasPlugin('com.android.library')) {
+                        from components.release
+                    } else {
+                        from components.java
+                    }
+                    artifact sourcesJar
+                    artifactId = project.name
+                }
+            }
+        }
+
+        publications.all {
+            artifact dokkaJar
+
+            pom.withXml {
+                def root = asNode()
+
+                root.children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+
+                    description "Uniflow - Simple Unidirectionnel Data Flow for Android & Kotlin, using Kotlin coroutines and open to functional programming"
+                    name project.name
+                    url "https://github.com/uniflow-kt/uniflow-kt"
+                    licenses {
+                        license {
+                            name "The Apache Software License, Version 2.0"
+                            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    scm {
+                        url "https://github.com/uniflow-kt/uniflow-kt"
+                        connection "scm:git:git://github.com/uniflow-kt/uniflow-kt.git"
+                        developerConnection "scm:git:git://github.com/uniflow-kt/uniflow-kt.git"
+                    }
+                    developers {
+                        developer {
+                            id "arnaudgiuliani"
+                            name "Arnaud Giuliani"
+                        }
+                    }
+                }
+            }
+        }
     }
 
     signing {
-        publishing.publications.all { publication ->
-            sign publication
+        if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+            publishing.publications.all {
+                sign it
+            }
+        } else {
+            sign publishing.publications.release
         }
     }
 }

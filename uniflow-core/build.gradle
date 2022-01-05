@@ -12,5 +12,4 @@ dependencies {
     testImplementation project(':uniflow-test')
 }
 
-apply from: '../gradle/sources.gradle'
 apply from: '../gradle/publish-maven-central.gradle'

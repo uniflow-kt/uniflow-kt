@@ -1,8 +1,0 @@
-// Dokka
-apply plugin: 'org.jetbrains.dokka'
-dokkaJavadoc {
-}
-task dokkaJar(type: Jar) {
-    classifier = 'javadoc'
-    from dokka
-}

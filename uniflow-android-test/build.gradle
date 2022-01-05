@@ -40,5 +40,4 @@ dependencies {
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
 
-apply from: '../gradle/sources-android.gradle'
 apply from: '../gradle/publish-maven-central.gradle'

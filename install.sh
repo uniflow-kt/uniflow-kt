@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./gradlew install publishToMavenLocal
+./gradlew publishToMavenLocal
 
