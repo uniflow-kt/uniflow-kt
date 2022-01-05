@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./gradlew dokka install publishToMavenLocal publishMavenPublicationPublicationToSonatypeRepository --info
+./gradlew publishToMavenLocal publishMavenPublicationPublicationToSonatypeRepository --info
