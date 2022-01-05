@@ -5,6 +5,11 @@
 
 ## Changelog
 
+### 1.1.0
+
+- Fix #86 default state
+- Update to Kotlin 1.5.31, Coroutines 1.5.2 & Arrow 1.0.1
+
 ### 1.0.10
 
 - Fix issue with sending logs for state and event #83 @MarcinChrapowicz

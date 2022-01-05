@@ -8,7 +8,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
-    compile("io.arrow-kt:arrow-core-data:$arrow_version"){
+    compile("io.arrow-kt:arrow-core:$arrow_version"){
         exclude group:"org.jetbrains.kotlin"
     }
 

@@ -22,7 +22,7 @@ fun <A, R> Either<Throwable, A>.get(result: (A) -> R): R =
 suspend fun <A> Either<Throwable, A>.onSuccess(f: suspend (A) -> Unit): Either<Throwable, A> =
     when (this) {
         is Either.Right -> {
-            f(b)
+            f(value)
             this
         }
         else -> this
@@ -31,7 +31,7 @@ suspend fun <A> Either<Throwable, A>.onSuccess(f: suspend (A) -> Unit): Either<T
 suspend fun <A> Either<Throwable, A>.onFailure(f: suspend (Throwable) -> Unit): Either<Throwable, A> =
     when (this) {
         is Either.Left -> {
-            f(a)
+            f(value)
             this
         }
         else -> this
@@ -40,7 +40,7 @@ suspend fun <A> Either<Throwable, A>.onFailure(f: suspend (Throwable) -> Unit): 
 fun <A> Either<Throwable, A>.onValue(f: (A) -> Unit): Either<Throwable, A> =
     when (this) {
         is Either.Right -> {
-            f(b)
+            f(value)
             this
         }
         else -> this

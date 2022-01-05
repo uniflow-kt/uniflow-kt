@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply from: '../gradle/dokka.gradle'
 apply from: '../gradle/versions.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'

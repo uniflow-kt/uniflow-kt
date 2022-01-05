@@ -3,14 +3,16 @@ buildscript {
     apply from: "./gradle/versions-android.gradle"
 
     repositories {
+        mavenCentral()
         google()
-        jcenter()
+//        jcenter()
     }
     dependencies {
         // Kotlin
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Dokka
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}")
         // Android
         classpath "com.android.tools.build:gradle:$android_gradle_version"
     }
@@ -18,8 +20,9 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
-        jcenter()
+//        jcenter()
         maven { url "https://dl.bintray.com/arrow-kt/arrow-kt/" }
         maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
     }
@@ -27,4 +30,13 @@ allprojects {
     group = "org.uniflow-kt"
     version = uniflow_version
     description = 'UniFlow a Kotlin unidrectional data flow framework'
+
+    // Dokka
+    apply plugin: 'org.jetbrains.dokka'
+    dokkaJavadoc {
+    }
+    task dokkaJar(type: Jar) {
+        classifier = 'javadoc'
+        from dokkaJavadoc
+    }
 }
