@@ -19,6 +19,7 @@ class PersistentLiveDataPublisher(
         return savedStateHandle.get<UIState>(tag)?.let { state ->
             UniFlowLogger.debug("$tag --> restore --> $state")
             _states.value = state
+            _currentState = state
             state
         }
     }

@@ -22,7 +22,7 @@ open class LiveDataPublisher(
     internal val _events = MutableLiveData<Event<UIEvent>>()
     val events: LiveData<Event<UIEvent>> = _events
 
-    private var _currentState: UIState = defaultState
+    internal var _currentState: UIState = defaultState
     override fun getState(): UIState = _currentState
 
     override suspend fun publishState(state: UIState, pushStateUpdate: Boolean) {
