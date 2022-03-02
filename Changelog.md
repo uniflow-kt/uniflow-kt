@@ -5,6 +5,10 @@
 
 ## Changelog
 
+### 1.1.1
+
+- Fix #90 #91 - PersistentLiveDataPublisher - Open state to help restore it - @nicbell
+
 ### 1.1.0
 
 - Fix #86 default state

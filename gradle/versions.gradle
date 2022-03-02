@@ -1,5 +1,5 @@
 ext {
-    uniflow_version = "1.1.0"
+    uniflow_version = "1.1.1"
 
     // Kotlin
     kotlin_version = '1.5.31'
