@@ -9,7 +9,7 @@ ext {
     arrow_version = "1.0.1"
     
     // Dokka
-    dokka_version = '1.5.31'
+    dokka_version = '1.4.32'
 
     // Mockk
     mockk_version = "1.10.0"
