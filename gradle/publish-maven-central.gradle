@@ -16,9 +16,9 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-//def isReleaseBuild() {
-//    return "$is_snapshot" == "false"
-//}
+def isReleaseBuild() {
+    return !is_snaptshot
+}
 
 def getRepositoryUsername() {
     return findProperty('SONATYPE_NEXUS_USERNAME') ?: System.getenv('SONATYPE_NEXUS_USERNAME') ?: ""
@@ -112,14 +112,16 @@ afterEvaluate {
             }
         }
     }
-
-    signing {
-        if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
-            publishing.publications.all {
-                sign it
+    
+    if (isReleaseBuild()) {
+        signing {
+            if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+                publishing.publications.all {
+                    sign it
+                }
+            } else {
+                sign publishing.publications.release
             }
-        } else {
-            sign publishing.publications.release
         }
     }
 }

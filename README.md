@@ -3,8 +3,9 @@
 
 ## Setup 🚀
 
-### Version [![Maven Central](https://img.shields.io/maven-central/v/org.uniflow-kt/uniflow-core)](https://search.maven.org/search?q=org.uniflow-kt)
+### Current Version - 1.1.2 
 
+[![Maven Central](https://img.shields.io/maven-central/v/org.uniflow-kt/uniflow-core)](https://search.maven.org/search?q=org.uniflow-kt)
 
 ### Gradle setup
 

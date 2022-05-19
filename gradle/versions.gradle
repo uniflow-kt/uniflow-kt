@@ -1,5 +1,8 @@
 ext {
-    uniflow_version = "1.1.1"
+    uniflow_version = "1.1.2"
+
+    // pass it to true to make release
+    is_snaptshot = true
 
     // Kotlin
     kotlin_version = '1.5.31'
