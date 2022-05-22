@@ -36,6 +36,7 @@ dependencies {
         exclude group: "androidx.legacy"
     }
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_vm_version"
+    api "androidx.compose.runtime:runtime-livedata:$androidx_compose_version"
 }
 
 apply from: '../gradle/publish-maven-central.gradle'

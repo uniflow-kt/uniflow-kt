@@ -8,4 +8,5 @@ ext {
     androidx_lib_version = "1.4.0"
     androidx_vm_version = '2.4.0'
 	androidx_lifecycle_version = '2.2.0'
+    androidx_compose_version = '1.0.1'
 }
