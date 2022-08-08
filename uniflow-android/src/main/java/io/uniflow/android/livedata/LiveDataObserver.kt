@@ -82,3 +82,51 @@ fun LiveDataPublisher.onEvents(owner: LifecycleOwner, ownerId: String, handleEve
         }
     })
 }
+
+/**
+ * Only reacts to state changes of a specific type, useful for exhaustive when statements
+ */
+inline fun <reified TState : UIState> Fragment.onStatesOfType(
+    vm: AndroidDataFlow,
+    crossinline handleStates: (TState) -> Unit
+) {
+    onStates(vm) {
+        if (it is TState) handleStates(it)
+    }
+}
+
+/**
+ * Only handles events are a specific type, useful for exhaustive when statements
+ */
+inline fun <reified TEvent : UIEvent> Fragment.onEventsOfType(
+    vm: AndroidDataFlow,
+    crossinline handleEvents: (TEvent) -> Unit
+) {
+    onEvents(vm) {
+        if (it is TEvent) handleEvents(it)
+    }
+}
+
+/**
+ * Only reacts to state changes of a specific type, useful for exhaustive when statements
+ */
+inline fun <reified TState : UIState> LifecycleOwner.onStatesOfType(
+    vm: AndroidDataFlow,
+    crossinline handleStates: (TState) -> Unit
+) {
+    onStates(vm) {
+        if (it is TState) handleStates(it)
+    }
+}
+
+/**
+ * Only handles events are a specific type, useful for exhaustive when statements
+ */
+inline fun <reified TEvent : UIEvent> LifecycleOwner.onEventsOfType(
+    vm: AndroidDataFlow,
+    crossinline handleEvents: (TEvent) -> Unit
+) {
+    onEvents(vm) {
+        if (it is TEvent) handleEvents(it)
+    }
+}
